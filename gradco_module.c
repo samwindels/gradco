@@ -257,6 +257,34 @@ PyObject *count_G1(PyArrayObject *A, int n){
 }
 
 
+PyObject *count_G4(PyArrayObject *A, int n){
+
+	/* initialise output array */
+	/* returns 1d array = upper triangle adjacency matrix*/
+	const npy_intp dims = (npy_intp) n * (n-1) / 2;
+	PyObject *AG4 = PyArray_SimpleNew(1, &dims, NPY_INT);
+	PyArray_FILLWBYTE(AG4, 0);
+	
+	/* graphlet G2 counts needed to apply redundancy equations */
+	PyObject *AG2 = count_G2(A, n);
+
+	/* Input: A, n, degrees, neighbours, countarray, touches_G */
+		
+	int i, j;  /* Used to iterate neighbours*/
+	int a, b, c;  /* Node indices in A*/
+
+	for(a=0; a<n; ++a){
+		for(i=0; i<deg_mono[a]; i++)
+		{       
+			b = adj_mono[a][i];
+
+			
+		}
+	}
+	return AG4;
+}
+
+
 PyObject *count_G7(PyArrayObject *A, int n){
 
 	/* initialise output array */
@@ -385,10 +413,10 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	switch(graphlet) {
 	   case 1:
 		return count_G1(A, n);
-	   case 2 :
+	   case 2:
 	   	return count_G2(A, n);
-	   /* case 7: */
-		/* return count_G7(A, n); */
+	   case 4:
+		return count_G4(A, n);
 	   case 8  :
 	   	return count_G8(A, n);
 	   default : 

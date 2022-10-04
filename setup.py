@@ -1,71 +1,41 @@
-#!/usr/bin/env python
-
+from distutils.core import setup, Extension
 import os
-import sys
 import sysconfig
 import numpy as np
-from distutils.core import setup, Extension
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+def main():
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+    _DEBUG = False
+    # Generally I write code so that if DEBUG is defined as 0 then all optimisations
+    # # are off and asserts are enabled. Typically run times of these builds are x2 to x10
+    # # release builds.
+    # # If DEBUG > 0 then extra code paths are introduced such as checking the integrity of
+    # # internal data structures. In this case the performance is by no means comparable
+    # # with release builds.
+    # _DEBUG_LEVEL = 0
+    #
+    # # Common flags for both release and debug builds.
+    extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
+    extra_compile_args += ["-Wall", "-Wextra"]
+    if _DEBUG:
+        extra_compile_args += ["-g3", "-O0", "-DDEBUG=%s" % _DEBUG_LEVEL, "-UNDEBUG"]
+    else:
+        extra_compile_args += ["-DNDEBUG", "-O2"]  # careful, does this compile for current system architecture only?
 
-# Common flags for both release and debug builds.
-_DEBUG = False
+    print(extra_compile_args)
+    setup(name="gradco",
+          version="1.0.0",
+          description="Python interface for the fputs C library function",
+          author="<your name>",
+          author_email="your_email@gmail.com",
+          ext_modules=[Extension("gradco", 
+                                 ["gradco_module.c"],
+                                 include_dirs=[np.get_include()],
+                                 extra_compile_args=extra_compile_args
+                                 )
+                       ]
+          )
 
-extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
-extra_compile_args += ["-Wall", "-Wextra"]
-if _DEBUG:
-    extra_compile_args += ["-g3", "-O0", "-DDEBUG=%s" % _DEBUG_LEVEL, "-UNDEBUG"]
-else:
-    extra_compile_args += ["-DNDEBUG", "-O2"]
-print(extra_compile_args)
+if __name__ == "__main__":
+    main()
 
-readme = open('README.rst').read()
-doclink = """
-Documentation
--------------
-
-The full documentation is at http://gradco.rtfd.org."""
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
-
-setup(
-    name='gradco',
-    version='0.1.0',
-    description='Python package to count graphlet adjacencies for graphlets up to four nodes.',
-    long_description=readme + '\n\n' + doclink + '\n\n' + history,
-    author='Sam Windels',
-    author_email='sam.windels@gmail.com',
-    url='https://gitlab.bsc.es/swindels/gradco',
-    ext_modules=[Extension("gradco", 
-                           ["gradco/gradco_module.c"],
-                           include_dirs=[np.get_include()],
-                           extra_compile_args=extra_compile_args)],
-    packages=[
-        'gradco',
-    ],
-    package_dir={'gradco': 'gradco'},
-    include_package_data=True,
-    install_requires=[
-    ],
-    license='MIT',
-    zip_safe=False,
-    keywords='gradco',
-    classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: Implementation :: PyPy',
-    ],
-)
