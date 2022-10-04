@@ -16,6 +16,8 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 # Common flags for both release and debug builds.
+_DEBUG = False
+
 extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
 extra_compile_args += ["-Wall", "-Wextra"]
 if _DEBUG:
@@ -41,9 +43,9 @@ setup(
     author_email='sam.windels@gmail.com',
     url='https://gitlab.bsc.es/swindels/gradco',
     ext_modules=[Extension("gradco", 
-                           ["gradco_module.c"],
+                           ["gradco/gradco_module.c"],
                            include_dirs=[np.get_include()],
-                           extra_compile_args=extra_compile_args)]
+                           extra_compile_args=extra_compile_args)],
     packages=[
         'gradco',
     ],
