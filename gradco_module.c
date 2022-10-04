@@ -232,8 +232,8 @@ PyObject *count_G1(PyArrayObject *A, int n){
 				/* a is at orbit 2, b and c are at orbit 1 */
 				/* all neighbours of a not connected to b */
 				/* (if b and c connect they form G2 instead of G1)*/
-				for(j=0; j<deg[a]; j++){ /*mono?*/
-					c = adj[a][j]; /* mono?*/
+				for(j=0; j<deg_mono[a]; j++){ /*mono?*/
+					c = adj_mono[a][j]; /* mono?*/
 					if (c>b && !*(int*) PyArray_GETPTR2(A, b, c)){
 						/* c> b is because we only store the triu*/ 
 						*(int*)	PyArray_GETPTR1(AG1, to_flat_index(b, c)) += 1;
