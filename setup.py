@@ -2,16 +2,27 @@
 
 import os
 import sys
+import sysconfig
+import numpy as np
+from distutils.core import setup, Extension
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
+
+# Common flags for both release and debug builds.
+extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
+extra_compile_args += ["-Wall", "-Wextra"]
+if _DEBUG:
+    extra_compile_args += ["-g3", "-O0", "-DDEBUG=%s" % _DEBUG_LEVEL, "-UNDEBUG"]
+else:
+    extra_compile_args += ["-DNDEBUG", "-O2"]
+print(extra_compile_args)
 
 readme = open('README.rst').read()
 doclink = """
@@ -28,7 +39,11 @@ setup(
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Sam Windels',
     author_email='sam.windels@gmail.com',
-    url='https://github.com/samwindels/gradco',
+    url='https://gitlab.bsc.es/swindels/gradco',
+    ext_modules=[Extension("gradco", 
+                           ["gradco_module.c"],
+                           include_dirs=[np.get_include()],
+                           extra_compile_args=extra_compile_args)]
     packages=[
         'gradco',
     ],
