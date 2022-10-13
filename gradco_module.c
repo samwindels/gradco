@@ -272,11 +272,106 @@ PyObject *count_G4(PyArrayObject *A, int n){
 		
 	int i, j;  /* Used to iterate neighbours*/
 	int a, b, c;  /* Node indices in A*/
+	int e, s, t;
+	int orbitcount_6, orbitcount_7;
 
 	for(a=0; a<n; ++a){
 		for(i=0; i<deg_mono[a]; i++)
 		{       
 			b = adj_mono[a][i];
+
+			/* a AT ORBIT 7 (i.e, centre). */
+			/* check if a and b form star graphlet */ 
+			s = 0;
+			for(j=0; j<deg[a]; j++)
+			{    
+				c = adj[a][j];
+				if (c > a){
+					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, c));
+				}
+				else{
+					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(c, a));
+				}
+
+			}	
+			t = *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
+			e = ((deg[a] - 1) * (deg[a] - 2))/2;
+			
+			orbitcount_7 = e -s + t;
+			if (orbitcount_7>0)
+			{
+				*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, b)) += orbitcount_7;
+
+			/* printf("a: %d", a); */
+			/* printf("b: %d", b); */
+			/* printf("c: %d", c); */
+			/* printf("deg: %d", deg[a]); */
+
+			/* printf("e: %d", e); */
+			/* printf("s: %d", s); */
+			/* printf("t: %d", t); */
+			/* printf("orbitcount_2: %d", *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b))); */
+			/* printf("orbitcount_7: %d", orbitcount_7); */
+				
+				/* if form star, add counts to neighbours of a that not connect to b */
+				{ 
+					for(j=0; j<deg_mono[a]; j++)
+					{    
+						c = adj_mono[a][j];
+
+						if (c>b && !*(int*) PyArray_GETPTR2(A, b, c)){
+							/* c> b is because we only store the triu*/ 
+							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += 1;
+						}
+						
+					}	
+				}
+			}
+			
+			/* a AT ORBIT 6 (i.e, perifery), b at centre. */
+			s = 0;
+			for(j=0; j<deg[b]; j++)
+			{    
+				c = adj[b][j];
+
+				if (c > b){
+					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(b, c));
+				}
+				else{
+					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(c, b));
+				}
+			}	
+			t = *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
+
+			e = ((deg[b] - 1) * (deg[b] - 2))/2;
+			orbitcount_6 = e -s + t;
+			
+			/* if form star, add counts to neighbours of b that not connect to a */
+			if (orbitcount_6>0)
+			{ 
+			/* printf("a: %d", a); */
+			/* printf("b: %d", b); */
+			/* printf("c: %d", c); */
+			/* printf("deg: %d", deg[a]); */
+
+			/* printf("e: %d", e); */
+			/* printf("s: %d", s); */
+			/* printf("t: %d", t); */
+			/* printf("orbitcount_6: %d", orbitcount_6); */
+				*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, b)) += orbitcount_6;
+				
+				for(j=0; j<deg[b]; j++)
+				{    
+					c = adj[b][j];
+
+					if (c>a && !*(int*) PyArray_GETPTR2(A, a, c)){
+						/* c> a is because we only store the triu*/ 
+						*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, c)) += 1;
+					}
+					
+				}	
+			}
+
 
 			
 		}
