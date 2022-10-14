@@ -14,19 +14,19 @@ from scipy.spatial.distance import squareform
 import pandas as pd
 
 def write_leda(net, file_name):
-    """ Output the network into LEDA format (also remove non-connected nodes) """
+    """ Output the network into LEDA format"""
     vertices = []
     vertex_map = {}
     nb_vertex = 0
     noNeighbours = 0
     for i in net.nodes():
         neighbours = list(net.neighbors(i))
-        if len(neighbours) > 0:
-            vertices.append(i)
-            vertex_map[i] = nb_vertex
-            nb_vertex += 1
-        else:
-            noNeighbours += 1
+        # if len(neighbours) > 0:
+        vertices.append(i)
+        vertex_map[i] = nb_vertex
+        nb_vertex += 1
+        # else:
+        #     noNeighbours += 1
 
     ofile = open(file_name, "w")
     ofile.write("LEDA.GRAPH\nstring\nshort\n-2\n")
@@ -58,36 +58,40 @@ def write_leda(net, file_name):
             if adjacent[i][j] == 1:
                 ofile.write("%i %i 0 |{}|\n" % (i + 1, j + 1))
                 count_write += 1
-    print("edges: ", nb_edge, "actually printed: ", count_write)
+    # print("edges: ", nb_edge, "actually printed: ", count_write)
     ofile.close()
-    print ("-- %i nodes, %i edges\n" % (nb_vertex, nb_edge))
-    print ("no neighbours: ", noNeighbours)
+    # print ("-- %i nodes, %i edges\n" % (nb_vertex, nb_edge))
+    # print ("no neighbours: ", noNeighbours)
     return vertices
 
 
-def get_graphlet_adjacency(G):
+def get_graphlet_adjacency(G, graphlet):
     
-    # try:
         unique_id = uuid.uuid1()
-        edgelist_file ='G_{}.txt'.format(unique_id)
-        g_file ='GA_{}'.format(unique_id)
+        edgelist_file ='G_{}'.format(unique_id)
         # H=convert_node_labels_to_integers(G) #node ordering is same as G.nodes()
         H = G
         H.remove_edges_from(nx.selfloop_edges(H)) 
 
         write_leda(H, edgelist_file)
    
-        command = ['./ncount3', '-i', edgelist_file, '-o', g_file]
-        print(" ".join(command))
-        # subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.call(command)
-        # return np.loadtxt(gdv_file)
-    
-    # finally:
-    #     # os.remove(gdv_file)
-    #     # os.remove(edgelist_file)
-        exit()
-
+        command = ['./ncount2', '-i', edgelist_file]
+        subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # subprocess.call(command)
+        L_file = f"{edgelist_file}_{graphlet}.edgelist" 
+        L = np.zeros((5,5), dtype=int)
+        for line in open(L_file):
+            i, j, v = line.strip().split()
+            i = int(i)
+            j = int(j)
+            v = -int(round(float(v) * (graphlet2size[graphlet]-1)))
+            if i != j:
+                L[i,j] = v
+                L[j,i] = v
+        os.remove(edgelist_file)
+        for i in range(9):
+            os.remove(f"{edgelist_file}_{i}.edgelist")
+        return L
 
 
 def get_gdv(G):
@@ -154,7 +158,7 @@ def assert_touches_graphlet(gdv, orbits):
 def main():
 
 
-    graphlets = [4]
+    graphlets = range(1, 9)
 
     graphlet2orbits = [[],
                        [1, 2],
@@ -167,27 +171,43 @@ def main():
                        [14]
                       ]
 
-    graphlet2size =[2, 3, 3, 4, 4, 4, 4, 4, 4]
 
     for graphlet in graphlets:
         print(f"generating tests for graphlet {graphlet}")
-        with open(f"generate_tests/tests/test_G{graphlet}.py", 'w') as ostr:
-            for A, integer, str_bit_array in generate_subraph_permutations(5):
-                    G = nx.from_numpy_matrix(A)
-                    gdv = get_gdv(G)
-                    
-                    GA = get_graphlet_adjacency(G)
+        with open(f"generate_tests/tests/test_G{graphlet}_orca.py", 'w') as ostr_orca:
+            with open(f"generate_tests/tests/test_G{graphlet}_windels.py", 'w') as ostr_windels:
+                for A, integer, str_bit_array in generate_subraph_permutations(5):
+    
+                        # ORCA tests
+                        G = nx.from_numpy_matrix(A)
+                        gdv = get_gdv(G)
+                        counts = np.sum(gdv[:, graphlet2orbits[graphlet]], axis=1)
+                        expected_counts_orca = np.asarray(counts * (graphlet2size[graphlet] - 1), dtype=int)
+                        str_expected_counts_orca = [str(c) for c in expected_counts_orca]
+                        
+                        ostr_orca.write(f"def test_{integer}():\n\n")
+                        ostr_orca.write(f"    triu = [{', '.join(str_bit_array)}]\n")
+                        ostr_orca.write(f"    expected_counts = [{', '.join(str_expected_counts_orca)}]\n")
+                        ostr_orca.write(f"    assert matches_count_orca(triu, {graphlet}, expected_counts_orca)\n\n\n")
+    
+                        # Graphlet adjacency tests
+                        AG = get_graphlet_adjacency(G, graphlet)
 
-                    counts = np.sum(gdv[:, graphlet2orbits[graphlet]],axis=1)
-                    
-                    expected_counts = np.asarray(counts * (graphlet2size[graphlet] - 1), dtype=int)
-                    str_expected_counts = [str(c) for c in expected_counts]
-                    
-                    ostr.write(f"def test_{integer}():\n\n")
-                    ostr.write(f"    triu = [{', '.join(str_bit_array)}]\n")
-                    ostr.write(f"    expected_counts = [{', '.join(str_expected_counts)}]\n")
-                    ostr.write(f"    assert outputs_expected_count(triu, {graphlet}, expected_counts)\n\n\n")
+                        # make sure windels et. al. match orca
+                        if not np.array_equal(np.sum(AG, axis=1), expected_counts_orca):
+                            print(A)
+                            print(np.sum(AG, axis=1), expected_counts_orca)
+                            write_leda(G, 'debug.leda')
+                        assert np.array_equal(np.sum(AG, axis=1), expected_counts_orca)
 
+                        expected_counts_windels = AG[np.triu_indices(5, 1)]
+                        str_expected_counts_windels = [str(c) for c in expected_counts_windels]
+                       
+                        ostr_windels.write(f"def test_{integer}():\n\n")
+                        ostr_windels.write(f"    triu = [{', '.join(str_bit_array)}]\n")
+                        ostr_windels.write(f"    expected_counts = [{', '.join(str_expected_counts_windels)}]\n")
+                        ostr_windels.write(f"    assert matches_count_windels(triu, {graphlet}, expected_counts)\n\n\n")
+    
 
 
                 # bits_str = ', '.join([str(bit) for bit in bits])
@@ -234,5 +254,6 @@ def main():
     
 
 if __name__ == "__main__":
+    graphlet2size =[2, 3, 3, 4, 4, 4, 4, 4, 4]
     assert get_little_endian_string(2) == "01"  # sanity check is little endian
     main()
