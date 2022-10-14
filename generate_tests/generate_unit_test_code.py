@@ -176,6 +176,10 @@ def main():
         print(f"generating tests for graphlet {graphlet}")
         with open(f"generate_tests/tests/test_G{graphlet}_orca.py", 'w') as ostr_orca:
             with open(f"generate_tests/tests/test_G{graphlet}_windels.py", 'w') as ostr_windels:
+                
+                ostr_orca.write("from test.test_helper import matches_count_orca\n\n\n")
+                ostr_windels.write("from test.test_helper import matches_count_windels\n\n\n")
+
                 for A, integer, str_bit_array in generate_subraph_permutations(5):
     
                         # ORCA tests
