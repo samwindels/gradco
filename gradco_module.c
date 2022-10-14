@@ -321,7 +321,8 @@ PyObject *count_G4(PyArrayObject *A, int n){
 
 						if (c>b && !*(int*) PyArray_GETPTR2(A, b, c)){
 							/* c> b is because we only store the triu*/ 
-							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += 1;
+							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += deg[a]-2 ;
+							/* *(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += deg[a]-2 -(*(int*)PyArray_GETPTR2(A, a, c)); */
 						}
 						
 					}	
