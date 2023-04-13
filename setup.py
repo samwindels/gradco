@@ -3,6 +3,7 @@ import os
 import sysconfig
 import numpy as np
 
+
 def main():
 
     _DEBUG = False
@@ -18,17 +19,19 @@ def main():
     extra_compile_args = sysconfig.get_config_var('CFLAGS').split()
     extra_compile_args += ["-Wall", "-Wextra"]
     if _DEBUG:
-        extra_compile_args += ["-g3", "-O0", "-DDEBUG=%s" % _DEBUG_LEVEL, "-UNDEBUG"]
+        extra_compile_args += ["-g3", "-O0",
+                               "-DDEBUG=%s" % _DEBUG_LEVEL, "-UNDEBUG"]
     else:
-        extra_compile_args += ["-DNDEBUG", "-O2"]  # careful, does this compile for current system architecture only?
+        # careful, does this compile for current system architecture only?
+        extra_compile_args += ["-DNDEBUG", "-O2"]
 
     print(extra_compile_args)
     setup(name="gradco",
-          version="1.0.0",
+          version="0.0.1",
           description="Python interface for the fputs C library function",
           author="<your name>",
           author_email="your_email@gmail.com",
-          ext_modules=[Extension("gradco", 
+          ext_modules=[Extension("gradco",
                                  ["gradco_module.c"],
                                  include_dirs=[np.get_include()],
                                  extra_compile_args=extra_compile_args
@@ -36,6 +39,6 @@ def main():
                        ]
           )
 
+
 if __name__ == "__main__":
     main()
-

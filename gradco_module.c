@@ -35,6 +35,19 @@ int to_flat_index(i, j){
 	/* } */
 }
 
+int to_flat_index_undirected(i, j){
+		/* return offsets[i]+j; */
+	if (i<j){
+		return offsets[i]+j;
+	}
+	else{
+		/* printf("undir %d %d \n ",i, j); */
+		return offsets[j]+i;
+	}
+}
+
+
+
 int **adj; /* adjacency as a list of list */
 int **adj_mono; /* monotonically increasing adjacency list of list, only points to nodes with higher index */ 
 int *deg; /* node degrees */
@@ -267,12 +280,14 @@ PyObject *count_G4(PyArrayObject *A, int n){
 	
 	/* graphlet G2 counts needed to apply redundancy equations */
 	PyObject *AG2 = count_G2(A, n);
+	
+	PyObject *AG1 = count_G1(A, n);
 
 	/* Input: A, n, degrees, neighbours, countarray, touches_G */
 		
-	int i, j;  /* Used to iterate neighbours*/
-	int a, b, c;  /* Node indices in A*/
-	int e, s, t;
+	int i, j, k;  /* Used to iterate neighbours*/
+	int a, b, c, d;  /* Node indices in A*/
+	int x, e, s, t;
 	int orbitcount_6, orbitcount_7;
 
 	for(a=0; a<n; ++a){
@@ -282,47 +297,76 @@ PyObject *count_G4(PyArrayObject *A, int n){
 
 			/* a AT ORBIT 7 (i.e, centre). */
 			/* check if a and b form star graphlet */ 
+			
+			/* t = *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b)); */
 			s = 0;
 			for(j=0; j<deg[a]; j++)
 			{    
 				c = adj[a][j];
-				if (c > a){
-					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, c));
-				}
-				else{
-					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(c, a));
+		
+				if (c != b){
+					s += *(int*) PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c));
+					if (*(int*) PyArray_GETPTR2(A, b, c)){
+						for(k=0; k<deg[c]; k++){
+							d = adj[a][k];
+							if (d!=c && d!= b && *(int*) PyArray_GETPTR2(A, a, d)){
+								s -=2;
+							}
+						}
+					
+					}
 				}
 
+				/* if (!t){ */
+				/* s += *(int*) PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c)); */
+				/* } */	
+				/* if (*(int*) PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c))&& t){ s-=1; */
+				/* } */ 
+				/* - 2* *(int*) PyArray_GETPTR2(A, b, c); */
+				/* } */
+
+				/* if (c > a){ */
+				/* 	s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, c)); */
+				/* } */
+				/* else{ */
+				/* 	s += *(int*) PyArray_GETPTR1(AG2, to_flat_index(c, a)); */
+				/* } */
+
 			}	
-			t = *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
-			e = ((deg[a] - 1) * (deg[a] - 2))/2;
+			x = deg[a] - *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
+			e = ((x - 1) * (x - 2))/2;
 			
-			orbitcount_7 = e -s + t;
+			orbitcount_7 = e - s/2;
+				printf("a: %d", a);
+				printf(", b: %d", b);
+				/* printf(", c: %d", c); */
+
+				printf("\tdeg: %d", deg[a]);
+				printf(", e: %d", e);
+				printf(", s: %d", s);
+				printf(", t: %d", t);
+				printf("orbitcount_2: %d", *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b)));
+				printf("orbitcount_7: %d  \n", orbitcount_7);
 			if (orbitcount_7>0)
 			{
 				*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, b)) += orbitcount_7;
-
-			/* printf("a: %d", a); */
-			/* printf("b: %d", b); */
-			/* printf("c: %d", c); */
-			/* printf("deg: %d", deg[a]); */
-
-			/* printf("e: %d", e); */
-			/* printf("s: %d", s); */
-			/* printf("t: %d", t); */
-			/* printf("orbitcount_2: %d", *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b))); */
-			/* printf("orbitcount_7: %d", orbitcount_7); */
 				
 				/* if form star, add counts to neighbours of a that not connect to b */
 				{ 
-					for(j=0; j<deg_mono[a]; j++)
+					for(j=0; j<deg[a]; j++)
 					{    
-						c = adj_mono[a][j];
-
+						c = adj[a][j];
 						if (c>b && !*(int*) PyArray_GETPTR2(A, b, c)){
-							/* c> b is because we only store the triu*/ 
-							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += deg[a]-2 ;
-							/* *(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += deg[a]-2 -(*(int*)PyArray_GETPTR2(A, a, c)); */
+							e = (deg[a]-2);
+							s = *(int*)PyArray_GETPTR1(AG2, to_flat_index(a, b)) + *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c));
+
+							/* if (*(int*)PyArray_GETPTR1(AG2, to_flat_index(a, b)) &&  *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c))){ */
+
+							/*  s -= *(int*)PyArray_GETPTR1(AG1, to_flat_index_undirected(b, c))>0; */
+							/* } */
+
+							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(b, c)) += e - s ;
+
 						}
 						
 					}	
@@ -344,8 +388,10 @@ PyObject *count_G4(PyArrayObject *A, int n){
 			}	
 			t = *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
 
-			e = ((deg[b] - 1) * (deg[b] - 2))/2;
-			orbitcount_6 = e -s + t;
+			x = deg[b] - *(int*) PyArray_GETPTR1(AG2, to_flat_index(a, b));
+			e = ((x - 1) * (x - 2))/2;
+			/* e = ((deg[b] - 1) * (deg[b] - 2))/2; */
+			orbitcount_6 = e -s/2 + t;
 			
 			/* if form star, add counts to neighbours of b that not connect to a */
 			if (orbitcount_6>0)
@@ -359,6 +405,8 @@ PyObject *count_G4(PyArrayObject *A, int n){
 			/* printf("s: %d", s); */
 			/* printf("t: %d", t); */
 			/* printf("orbitcount_6: %d", orbitcount_6); */
+				
+				printf("should not be hit\n");
 				*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, b)) += orbitcount_6;
 				
 				for(j=0; j<deg[b]; j++)
@@ -367,7 +415,8 @@ PyObject *count_G4(PyArrayObject *A, int n){
 
 					if (c>a && !*(int*) PyArray_GETPTR2(A, a, c)){
 						/* c> a is because we only store the triu*/ 
-						*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, c)) += 1;
+						/* *(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, c)) += 1; */
+							*(int*)	PyArray_GETPTR1(AG4, to_flat_index(a, c)) += (deg[b] -2) - *(int*)PyArray_GETPTR1(AG2, to_flat_index(a, b)) - *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(b, c));
 					}
 					
 				}	
@@ -378,6 +427,76 @@ PyObject *count_G4(PyArrayObject *A, int n){
 		}
 	}
 	return AG4;
+}
+
+
+PyObject *count_G3(PyArrayObject *A, int n){
+
+	/* initialise output array */
+	/* returns 1d array = upper triangle adjacency matrix*/
+	const npy_intp dims = (npy_intp) n * (n-1) / 2;
+	PyObject *AG3 = PyArray_SimpleNew(1, &dims, NPY_INT);
+	PyArray_FILLWBYTE(AG3, 0);
+	
+	/* graphlet G1 and G2 counts needed to apply redundancy equations */
+	PyObject *AG1 = count_G1(A, n);
+	PyObject *AG8 = count_G8(A, n);
+	
+	/* Input: A, n, degrees, neighbours, countarray, touches_G */
+		
+	int i, j;  /* Used to iterate neighbours*/
+	int a, b, c;  /* Node indices in A*/
+
+	int p_bc;
+	int orbit_8;
+
+	/* used to check if sugraph of A touches graphlet G */
+	/* a is on orbit 4 */
+	/* int ab_bc = 5;  /1* litle endian *1/ */
+	/* int ab_bc_ac; */
+	/* a is on orbit 5 */
+        /* int ab_ac = 3; */	
+	/* int ab_ac_bc; */
+
+	/* a is on orbit 4 */
+	for(a=0; a<n; ++a){
+		printf("a %d", a);
+		for(i=0; i<deg[a]; i++)
+		{       
+			b = adj[a][i];		
+			for(j=0; j<deg[b]; j++){
+
+				c = adj[b][j];
+				if (a==c) continue;
+				if (*(int*)PyArray_GETPTR2(A, a, c)) continue;  /* a and c are connected, so not on G1*/ 
+
+				/* G(x,y,z) ~ G1 == a is on orbit 4, b is on orbit 5*/
+				p_bc = *(int*)PyArray_GETPTR1(AG1, to_flat_index_undirected(b, c));
+
+				printf("p_bc %d", p_bc);
+
+				if (p_bc > 0) {
+					/* number of times a and c form G1 without b -> a, b, c form a square  */
+					orbit_8 = (*(int*)(PyArray_GETPTR1(AG1, to_flat_index(a, c))))-1;
+					printf("orbit_8 %d", orbit_8);
+					/* subtract the times the t is also connected to b (no square but a four node clique) */
+					/* double_orbit_8 -= */ 
+					if (orbit_8){
+						int count = p_bc - (2*orbit_8);
+						if (count>0){
+							/* *(int*)	PyArray_GETPTR1(AG3, to_flat_index(a, c)) += count; */
+							*(int*)	PyArray_GETPTR1(AG3, to_flat_index_undirected(a, b)) += count;
+							/* *(int*)	PyArray_GETPTR1(AG3, to_flat_index_undirected(a, c)) += count; */
+							/* *(int*)	PyArray_GETPTR1(AG3, to_flat_index_undirected(b, c)) += count; */
+						}
+
+					}
+					
+				}
+			}
+		}
+	}
+	return AG3;
 }
 
 
@@ -455,6 +574,9 @@ PyObject *count_G7(PyArrayObject *A, int n){
 
 
 static PyObject *gradco_count(PyObject *self, PyObject *args) {
+	
+	/* set stdio buffer to zero to always show printf. TODO: remove this line */	
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	/* parse input from python */
 	int n;
@@ -511,6 +633,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 		return count_G1(A, n);
 	   case 2:
 	   	return count_G2(A, n);
+	   case 3:
+	   	return count_G3(A, n);
 	   case 4:
 		return count_G4(A, n);
 	   case 8  :
