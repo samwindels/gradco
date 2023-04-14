@@ -505,7 +505,7 @@ PyObject *count_G7(PyArrayObject *A, int n){
 	/* initialise output array */
 	/* returns 1d array = upper triangle adjacency matrix*/
 	const npy_intp dims = (npy_intp) n * (n-1) / 2;
-	PyObject *AG7 = PyArray_SimpleNew(1, &dims, NPY_INT);
+	PyObject *AG7 = PyArray_SimpleNew(1, &dims, NPY_FLOAT);
 	PyArray_FILLWBYTE(AG7, 0);
 	
 	/* graphlet G2 and G8 counts needed to apply redundancy equations */
@@ -519,56 +519,109 @@ PyObject *count_G7(PyArrayObject *A, int n){
 
 	/* used to check if sugraph of A touches graphlet G */
 	/* a is on orbit 1 */
-	int ab_bc = 5;  /* litle endian */
-	int ab_bc_ac;
-	/* a is on orbit 2 */
-        int ab_ac = 3;	
-	int ab_ac_bc;
+	/* int ab_bc = 5;  /1* litle endian *1/ */
+	/* int ab_bc_ac; */
+	/* /1* a is on orbit 2 *1/ */
+        /* int ab_ac = 3; */	
+	/* int ab_ac_bc; */
+
+	float o12_o14;
+	float count_ab;
+	float count_ac;
+	float count_bc;
 
 	/* todo: continues kunnen vermeden worden. monotonic incresing bij oorbit 1, een increasing en decreasing bij orbit 2 */
+	/* ORBIT 12 */	
 	for(a=0; a<n; ++a){
 		for(i=0; i<deg[a]; i++)
 		{       
 			b = adj[a][i];		
-			/* int eb = to_flat_index(a, b); */
-			/* a is on orbit 1: the 3-node path outer */
-			for(j=0; j<deg[b]; j++){
+			for(j=0; j<deg_mono[b]; j++){
 
-				c = adj[b][j];
+				c = adj_mono[b][j];
 				if (a==c) continue;
-				/* ec = to_flat_index(a, c) */
-				ab_bc_ac = ab_bc + (*(int*)PyArray_GETPTR2(A, a, c)!=0)*2;
+				if (!(*(int*)PyArray_GETPTR2(A, a, c))) continue;  /* a and c are not connected so not on G2*/ 
+				
+				o12_o14 = (float) *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(b, c)) - 1;
+				count_ab = o12_o14 - (float) (*(int*)PyArray_GETPTR1(AG8, to_flat_index_undirected(a, b))*3);
+				count_ac = o12_o14 - (float) (*(int*)PyArray_GETPTR1(AG8, to_flat_index_undirected(a, c))*3);
 
-				if (touches_G1[ab_bc_ac]){
-					/* three node path */ 
-					/* printf("hit orbit 1"); */	  	
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[a]+b) += 1; */
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[a]+c) += 1; */
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[b]+c) += 1; */
+				count_bc = o12_o14/2;
+				/* printf("a%d ",a); */
+				/* printf("b%d ",b); */
+				/* printf("c%d\n",c); */
+				/* printf("count_ab %d\n\n",count_ab); */
+				/* printf("o12_o14%d ",o12_o14); */
+				/* printf("count_ac %f\n\n",count_ac); */
+
+				if (count_ab > 0){
+					*(float*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(a, b)) += count_ab;
 				}
-				else{
-
-				   /* three node path */ 
+				if (count_ac > 0){
+				*(float*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(a, c)) += count_ac;
 				}
-
-
-			}
-			/* a is on orbit 2: the 3-node path middle */
-			for(j=0; j<deg[a]; j++){
-				c = adj[a][j];
-				if (b==c) continue;
-
-				ab_ac_bc = ab_ac + (*(int*)PyArray_GETPTR2(A, b, c)!=0)*4;
-				if (touches_G1[ab_bc_ac]){
-					  	
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[a]+b) += 1; */
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[a]+c) += 1; */
-					/* *(int*)	PyArray_GETPTR1(AG1, offsets[b]+c) += 1; */
+				if (count_bc > 0 && b<c){
+					*(float*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(b, c)) += count_bc;
 				}
-
 			}
 		}
 	}
+
+	/* ORBIT 9 and 12*/
+
+	float o13_o14;
+	for(a=0; a<n; ++a){
+		for(i=0; i<deg[a]; i++)
+		{       
+			b = adj[a][i];		
+			for(j=0; j<deg_mono[b]; j++){
+
+				c = adj_mono[b][j];
+				if (a==c) continue;
+	 			if (!(*(int*)PyArray_GETPTR2(A, a, c))) continue;  /* a and c are not connected so not on G2*/ 
+
+				o13_o14 = (float) *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(a, b)) - 1.0;
+				o13_o14 += (float) *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(a, c)) - 1.0;
+				o13_o14 /= 2.0;
+
+				if (o13_o14){
+					*(float*) PyArray_GETPTR1(AG7, to_flat_index_undirected(b, c)) += o13_o14;
+				}
+			}
+		}
+	}
+
+/* 	float o9_o12; */
+/* 	/1* float count_ac; *1/ */
+/* 	for(b=0; b<n; ++b){ */
+/* 		for(i=0; i<deg[b]; i++) */
+/* 		{ */       
+/* 			a = adj[b][i]; */		
+/* 			for(j=0; j<deg[b]; j++){ */
+
+/* 				c = adj[b][j]; */
+/* 				if (a==c) continue; */
+				
+/* 	 			/1* a and c are connected so not on G1*/ 
+/* 				if ((*(int*)PyArray_GETPTR2(A, a, c))) continue; */    
+
+/* 				o9_o12 = ((float) *(int*)PyArray_GETPTR1(AG2, to_flat_index_undirected(b, c)))/4; */
+
+/* 				count_ac = o9_o12; */ 
+/* 				printf("a%d ",a); */
+/* 				printf("b%d ",b); */
+/* 				printf("c%d\n",c); */
+/* 				printf("count_ac %f\n",count_ac); */
+
+
+/* 				/1* *(int*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(a, c)) += count_ac; *1/ */
+/* 				*(float*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(c, a)) += count_ac; */
+/* 				/1* *(int*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(b, a)) += count_ac; *1/ */
+/* 				/1* *(int*)	PyArray_GETPTR1(AG7, to_flat_index_undirected(b, c)) += count_ac; *1/ */
+/* 			} */
+/* 		} */
+/* 	} */
+
 	return AG7;
 }
 
@@ -637,6 +690,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	   	return count_G3(A, n);
 	   case 4:
 		return count_G4(A, n);
+	   case 7:
+		return count_G7(A, n);
 	   case 8  :
 	   	return count_G8(A, n);
 	   default : 

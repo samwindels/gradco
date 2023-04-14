@@ -27,8 +27,11 @@ def matches_count_windels(triu, graphlet, expected_counts):
 
         node_counts = np.sum(AG, axis=1)
         node_counts_expected = np.sum(AG_expected, axis=1)
+
+        letters = ['a', 'b', 'c', 'd', 'e']
         labels = [
-            f"{i}: C={node_counts[i]} EC={node_counts_expected[i]}" for i in range(n)]
+            # f"i: C={node_counts[i]} EC={node_counts_expected[i]}" for i in range(n)]
+            f"{i}:" for i in range(n)]
 
         node_diff = node_counts - node_counts_expected
         colors = []
