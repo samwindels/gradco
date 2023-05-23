@@ -27,7 +27,7 @@ def main():
 
     print(extra_compile_args)
     setup(name="gradco",
-          version="0.0.1",
+          version="0.0.2",
           description="Python interface for the fputs C library function",
           author="<your name>",
           author_email="your_email@gmail.com",

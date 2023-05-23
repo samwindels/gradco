@@ -625,6 +625,102 @@ PyObject *count_G7(PyArrayObject *A, int n){
 	return AG7;
 }
 
+PyObject *count_A12_12(PyArrayObject *A, int n){
+
+	/* initialise output array */
+	/* returns 1d array = upper triangle adjacency matrix*/
+	const npy_intp dims = (npy_intp) n * (n-1) / 2;
+	PyObject *A12_12 = PyArray_SimpleNew(1, &dims, NPY_FLOAT);
+	PyArray_FILLWBYTE(A12_12, 0);
+	
+	/* Input: A, n, degrees, neighbours, countarray, touches_G */
+		
+	int i, j;  /* Used to iterate neighbours*/
+	int a, b, c, d;  /* Node indices in A*/
+	int z; /* neighbour of b, connected or not connected to a */
+
+
+	int ii, jj; /* used to iterate connected or not_connected*/
+	int iii, jjj; /* used to iterate connected or not_connected*/
+	int connected[n];
+	int not_connected[n];
+	/* ORBIT 12 */	
+	for(a=0; a<n; a++){
+		for(i=0; i<deg[a]; i++)
+		{       
+			b = adj[a][i];		
+			ii = 0;
+			jj = 0;
+			for(j=0; j<deg[b]; j++){
+
+				z = adj[b][j];
+				if (z==a) continue;
+				
+				if ((*(int*)PyArray_GETPTR2(A, a, z)))
+				{
+					if (z>b){
+						connected[ii]=z;
+						ii++;
+					}
+				}
+				else if (z<a) {
+					not_connected[jj]=z;
+					jj++;
+				}
+				for(iii=0; iii<ii; iii++){
+					c = connected[iii];
+					for(jjj=0; jjj<jj; jjj++){
+						d = not_connected[jjj];
+						if ((*(int*)PyArray_GETPTR2(A, c, d))){
+							if (c > b){
+								if (a<d){
+								*(float*) PyArray_GETPTR1(A12_12, to_flat_index_undirected(a, d)) += 1;
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
+	/* a on ORBIT 13 */	
+	for(a=0; a<n; a++){
+		/* printf("%d %d %d\n ",a, n, deg_mono[a]); */
+		for(i=0; i<deg_mono[a]; i++)
+		{       
+			/* printf("%d %d \n ",b, n); */
+			b = adj_mono[a][i];		
+			ii = 0;
+			for(j=0; j<deg[b]; j++){
+
+				z = adj[b][j];
+				if (z==a) continue;
+				
+				if ((*(int*)PyArray_GETPTR2(A, a, z)))
+				{
+					connected[ii]=z;
+					ii++;
+				}
+			}
+			for(iii=0; iii<ii; iii++){
+				c = connected[iii];
+				for(jjj=iii+1; jjj<ii; jjj++){
+					d = connected[jjj];
+					if (!(*(int*)PyArray_GETPTR2(A, c, d))){
+						/* if (c<d){ */
+						*(float*) PyArray_GETPTR1(A12_12, to_flat_index_undirected(c, d)) += 1;
+						/* } */
+					}
+				}
+			}
+		}
+	}
+	return A12_12;
+}
+				
+
+
 
 static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	
@@ -681,6 +777,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	init_adjacency(A, n);
 	
 	/* run counter depending on graphlet*/
+	/* printf( "hoot \n" ); */
 	switch(graphlet) {
 	   case 1:
 		return count_G1(A, n);
@@ -690,10 +787,14 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	   	return count_G3(A, n);
 	   case 4:
 		return count_G4(A, n);
+	   /* case 5: */
+		/* return count_G5(A, n); */
 	   case 7:
 		return count_G7(A, n);
 	   case 8  :
 	   	return count_G8(A, n);
+	   case 1212:
+		return count_A12_12(A, n);
 	   default : 
     	   	printf( "choose a graphlet in range [1,8] \n" );
     	   	exit(-1);
