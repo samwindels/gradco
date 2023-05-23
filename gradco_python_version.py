@@ -684,29 +684,6 @@ def compute_AG7_digraph(G):
                                         A[d, b] += 1
                                         A[d, c] += 1
 
-    # ESCAPE, FIG 4 (b)
-    # b = i, c = j
-    print('ESCAPE (B)')
-    for a in G_digraph.nodes():
-        for b in G_digraph.successors(a):
-            for c in G_digraph.predecessors(a):
-                if b != c and G.has_edge(b, c):
-                    for d in G_digraph.successors(c):
-                        if d != a and not G.has_edge(a, d):
-                            if d > a:
-                                if G_digraph.has_edge(d, b):
-                                    A[a, b] += 1
-                                    A[a, c] += 1
-                                    A[a, d] += 1
-                                    A[b, a] += 1
-                                    A[b, c] += 1
-                                    A[b, d] += 1
-                                    A[c, a] += 1
-                                    A[c, b] += 1
-                                    A[c, d] += 1
-                                    A[d, a] += 1
-                                    A[d, b] += 1
-                                    A[d, c] += 1
     # ESCAPE, FIG 4 (c)
     # b = i, c = j
     print('ESCAPE (C)')
@@ -746,6 +723,30 @@ def compute_AG7_digraph(G):
                     #             A[d, b] += 1
                     #             A[d, c] += 1
     # orbit 13
+    # ESCAPE, FIG 4 (b)
+    # b = i, c = j
+    print('ESCAPE (B)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.predecessors(a):
+                if b != c and G.has_edge(b, c):
+                    for d in G_digraph.successors(c):
+                        if d != a and not G.has_edge(a, d):
+                            if d > a:
+                                if G_digraph.has_edge(d, b):
+                                    A[a, b] += 1
+                                    A[a, c] += 1
+                                    A[a, d] += 1
+                                    A[b, a] += 1
+                                    A[b, c] += 1
+                                    A[b, d] += 1
+                                    A[c, a] += 1
+                                    A[c, b] += 1
+                                    A[c, d] += 1
+                                    A[d, a] += 1
+                                    A[d, b] += 1
+                                    A[d, c] += 1
+
     # b=i, c=j
     print('orbit 13')
     for a in G_digraph.nodes():
