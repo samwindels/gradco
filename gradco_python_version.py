@@ -904,22 +904,6 @@ def compute_AG3_digraph(G):
                             A[d, a] += 1
                             A[d, b] += 1
                             A[d, c] += 1
-                    for d in G_digraph.successors(c):
-                        if d != a and d != b and not G.has_edge(d, b) and not G.has_edge(d, a):
-                            if not G.has_edge(d, c) and not G.has_edge(d, b):
-                                print('loop (D, 2)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
 
     print('(C)')
     for a in G_digraph.nodes():
