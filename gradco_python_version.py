@@ -861,7 +861,7 @@ def compute_AG3_digraph(G):
                             A[d, c] += 1
     # ESCAPE, FIG 4 (b)
     # b = i, c = j
-    print('ESCAPE (B)')
+    print('(B)')
     for a in G_digraph.nodes():
         # b and c are swapped places
         # can be optimised by having a list of sucessors
@@ -869,9 +869,10 @@ def compute_AG3_digraph(G):
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
                 if b != c and not G.has_edge(b, c):
-                    for d in G_digraph.predecessors(b):
+                    # for d in G_digraph.predecessors(b):
+                    for d in G.neighbors(b):
                         if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
-                            print('loop (B, 1)', a, b, c)
+                            print('loop (B)', a, b, c)
                             A[a, b] += 1
                             A[a, c] += 1
                             A[a, d] += 1
@@ -884,27 +885,6 @@ def compute_AG3_digraph(G):
                             A[d, a] += 1
                             A[d, b] += 1
                             A[d, c] += 1
-    print('D')
-    for a in G_digraph.nodes():
-        for b in G_digraph.successors(a):
-            for c in G_digraph.successors(a):
-                if b != c and not G.has_edge(b, c):
-                    for d in G_digraph.successors(b):
-                        if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
-                            print('loop (D, 1)', a, b, c)
-                            A[a, b] += 1
-                            A[a, c] += 1
-                            A[a, d] += 1
-                            A[b, a] += 1
-                            A[b, c] += 1
-                            A[b, d] += 1
-                            A[c, a] += 1
-                            A[c, b] += 1
-                            A[c, d] += 1
-                            A[d, a] += 1
-                            A[d, b] += 1
-                            A[d, c] += 1
-
     print('(C)')
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
