@@ -830,6 +830,173 @@ def compute_AG7_digraph(G):
     return A
 
 
+def compute_AG3_digraph(G):
+    G = nx.convert_node_labels_to_integers(G)
+    G_digraph = nx.DiGraph(nodes=G.nodes())
+    G_digraph.add_edges_from(G.edges())
+    k = G.number_of_nodes()
+    A = np.zeros((k, k))
+
+    # ESCAPE, FIG 4 (A)
+    # b=i, c=j
+    print('ESCAPE (A)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if b != c and not G.has_edge(b, c):
+                    for d in G.neighbors(b):
+                        if not G.has_edge(d, c) and not G.has_edge(d, a):
+                            if d != a and d < c:
+                                # print('loop (a, 1)', a, b, c)
+                                A[a, b] += 1
+                                A[a, c] += 1
+                                A[b, a] += 1
+                                A[b, c] += 1
+                                A[c, a] += 1
+                                A[c, b] += 1
+                    for d in G.neighbors(c):
+                        if not G.has_edge(d, c) and not G.has_edge(d, b):
+                            if d != a and d < b:
+                                A[a, b] += 1
+                                A[a, c] += 1
+                                A[b, a] += 1
+                                A[b, c] += 1
+                                A[c, a] += 1
+                                A[c, b] += 1
+
+    # ESCAPE, FIG 4 (b)
+    # b = i, c = j
+    print('ESCAPE (B)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.predecessors(a):
+                if b != c and not G.has_edge(b, c):
+                    for d in G.neighbors(b):
+                        if not G.has_edge(d, c) and not G.has_edge(d, a):
+                            if d != a and d < c:
+                                # print('loop (a, 1)', a, b, c)
+                                A[a, b] += 1
+                                A[a, c] += 1
+                                A[b, a] += 1
+                                A[b, c] += 1
+                                A[c, a] += 1
+                                A[c, b] += 1
+                    for d in G.neighbors(c):
+                        if not G.has_edge(d, c) and not G.has_edge(d, b):
+                            if d != a and d < b:
+                                A[a, b] += 1
+                                A[a, c] += 1
+                                A[b, a] += 1
+                                A[b, c] += 1
+                                A[c, a] += 1
+                                A[c, b] += 1
+
+    A /= 1  # overcount correction
+    # orbit_count = get_gdv(G)[:, 8]
+    # print('')
+    # print(nx.to_numpy_array(G))
+    # print(A)
+    # print(orbit_count)
+    # print((np.sum(A, axis=1))/3)
+    # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
+    return A
+
+
+def compute_AG2_digraph(G):
+    G = nx.convert_node_labels_to_integers(G)
+    G_digraph = nx.DiGraph(nodes=G.nodes())
+    G_digraph.add_edges_from(G.edges())
+    k = G.number_of_nodes()
+    A = np.zeros((k, k))
+
+    # ESCAPE, FIG 4 (A)
+    # b=i, c=j
+    print('ESCAPE (A)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if b != c and G.has_edge(b, c):
+                    if c < b:
+                        # print('loop (a)', a, b, c)
+                        A[a, b] += 1
+                        A[a, c] += 1
+                        A[b, a] += 1
+                        A[b, c] += 1
+                        A[c, a] += 1
+                        A[c, b] += 1
+
+    A /= 1  # overcount correction
+    # orbit_count = get_gdv(G)[:, 8]
+    # print('')
+    # print(nx.to_numpy_array(G))
+    # print(A)
+    # print(orbit_count)
+    # print((np.sum(A, axis=1))/3)
+    # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
+    return A
+
+
+def compute_AG1_digraph(G):
+    G = nx.convert_node_labels_to_integers(G)
+    G_digraph = nx.DiGraph(nodes=G.nodes())
+    G_digraph.add_edges_from(G.edges())
+    k = G.number_of_nodes()
+    A = np.zeros((k, k))
+
+    # ESCAPE, FIG 4 (A)
+    # b=i, c=j
+    print('ESCAPE (A)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if b != c and not G.has_edge(b, c):
+                    if c < b:
+                        # print('loop (a)', a, b, c)
+                        A[a, b] += 1
+                        A[a, c] += 1
+                        A[b, a] += 1
+                        A[b, c] += 1
+                        A[c, a] += 1
+                        A[c, b] += 1
+
+    # ESCAPE, FIG 4 (b)
+    # b = i, c = j
+    print('ESCAPE (B)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.predecessors(a):
+                if b != c and not G.has_edge(b, c):
+                    print('loop (b)', a, b, c)
+                    A[a, b] += 1
+                    A[a, c] += 1
+                    A[b, a] += 1
+                    A[b, c] += 1
+                    A[c, a] += 1
+                    A[c, b] += 1
+    print('ESCAPE (?C?)')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.predecessors(b):
+                if c > a and not G.has_edge(a, c):
+                    print('loop (c)', a, b, c)
+                    A[a, b] += 1
+                    A[a, c] += 1
+                    A[b, a] += 1
+                    A[b, c] += 1
+                    A[c, a] += 1
+                    A[c, b] += 1
+
+    A /= 1  # overcount correction
+    # orbit_count = get_gdv(G)[:, 8]
+    # print('')
+    # print(nx.to_numpy_array(G))
+    # print(A)
+    # print(orbit_count)
+    # print((np.sum(A, axis=1))/3)
+    # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
+    return A
+
+
 def count(G, adj_type):
 
     match adj_type:
@@ -839,8 +1006,14 @@ def count(G, adj_type):
             return compute_A12_12_digraph(G)
         case 'A13_12':
             return compute_A13_12(G)
+        case 1:
+            return compute_AG1_digraph(G)
+        case 2:
+            return compute_AG2_digraph(G)
         case 3:
-            return compute_AG3(G)
+            return compute_AG2_digraph(G)
+            # return compute_AG3(G)
+            # return compute_AG3_digraph(G)
         case 7:
             return compute_AG7_digraph(G)
             # return compute_AG7(G)
@@ -856,8 +1029,8 @@ def count(G, adj_type):
 
 def main():
 
-    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
     compute_AG7_digraph(G)
     # G = nx.read_edgelist('degenerate_tests/nets/PPI_yeast_degenerate.edgelist')
