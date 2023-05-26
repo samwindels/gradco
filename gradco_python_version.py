@@ -842,68 +842,72 @@ def compute_AG3_digraph(G):
     print('ESCAPE (A)')
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
-            for c in G_digraph.successors(a):
-                if b != c and not G.has_edge(b, c):
-                    for d in G_digraph.successors(b):
-                        if not G.has_edge(d, c) and not G.has_edge(d, a):
-                            if d != a:  # and d < c:
-                                print('loop (A, 1)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
+            for c in G_digraph.successors(b):
+                if not G.has_edge(a, c):
                     for d in G_digraph.successors(c):
-                        if not G.has_edge(d, c) and not G.has_edge(d, b):
-                            if d != a:  # d < b:
-                                print('loop (A, 2)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
-
+                        if not G.has_edge(d, a) and not G.has_edge(d, b):
+                            print('loop (A, 1)', a, b, c)
+                            A[a, b] += 1
+                            A[a, c] += 1
+                            A[a, d] += 1
+                            A[b, a] += 1
+                            A[b, c] += 1
+                            A[b, d] += 1
+                            A[c, a] += 1
+                            A[c, b] += 1
+                            A[c, d] += 1
+                            A[d, a] += 1
+                            A[d, b] += 1
+                            A[d, c] += 1
     # ESCAPE, FIG 4 (b)
     # b = i, c = j
     print('ESCAPE (B)')
     for a in G_digraph.nodes():
+        # b and c are swapped places
+        # can be optimised by having a list of sucessors
+        # get b and c from the list so that b<c and try extend  either b or c
         for b in G_digraph.successors(a):
-            for c in G_digraph.predecessors(a):
+            for c in G_digraph.successors(a):
                 if b != c and not G.has_edge(b, c):
-                    for d in G.neighbors(b):
-                        if not G.has_edge(d, c) and not G.has_edge(d, a):
-                            if d != a and d < c:
-                                print('loop (B, 1)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
-                    for d in G.neighbors(c):
-                        if not G.has_edge(d, c) and not G.has_edge(d, b):
-                            if d != a and d < b:
-                                print('loop (B, 2)', a, b, c)
+                    for d in G_digraph.predecessors(b):
+                        if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
+                            print('loop (B, 1)', a, b, c)
+                            A[a, b] += 1
+                            A[a, c] += 1
+                            A[a, d] += 1
+                            A[b, a] += 1
+                            A[b, c] += 1
+                            A[b, d] += 1
+                            A[c, a] += 1
+                            A[c, b] += 1
+                            A[c, d] += 1
+                            A[d, a] += 1
+                            A[d, b] += 1
+                            A[d, c] += 1
+    print('D')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if b != c and not G.has_edge(b, c):
+                    for d in G_digraph.successors(b):
+                        if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
+                            print('loop (D, 1)', a, b, c)
+                            A[a, b] += 1
+                            A[a, c] += 1
+                            A[a, d] += 1
+                            A[b, a] += 1
+                            A[b, c] += 1
+                            A[b, d] += 1
+                            A[c, a] += 1
+                            A[c, b] += 1
+                            A[c, d] += 1
+                            A[d, a] += 1
+                            A[d, b] += 1
+                            A[d, c] += 1
+                    for d in G_digraph.successors(c):
+                        if d != a and d != b and not G.has_edge(d, b) and not G.has_edge(d, a):
+                            if not G.has_edge(d, c) and not G.has_edge(d, b):
+                                print('loop (D, 2)', a, b, c)
                                 A[a, b] += 1
                                 A[a, c] += 1
                                 A[a, d] += 1
@@ -917,43 +921,26 @@ def compute_AG3_digraph(G):
                                 A[d, b] += 1
                                 A[d, c] += 1
 
-    print('ESCAPE (C)')
+    print('(C)')
     for a in G_digraph.nodes():
-        for b in G_digraph.predecessors(a):
-            for c in G_digraph.successors(a):
-                if not G.has_edge(b, c):
-                    for d in G_digraph.successors(b):
-                        if not G.has_edge(d, c) and not G.has_edge(d, a):
-                            if d != a:  # and d < c:
-                                print('loop (A, 1)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
-                    for d in G_digraph.successors(c):
-                        if not G.has_edge(d, c) and not G.has_edge(d, b):
-                            if d != a:  # d < b:
-                                print('loop (A, 2)', a, b, c)
-                                A[a, b] += 1
-                                A[a, c] += 1
-                                A[a, d] += 1
-                                A[b, a] += 1
-                                A[b, c] += 1
-                                A[b, d] += 1
-                                A[c, a] += 1
-                                A[c, b] += 1
-                                A[c, d] += 1
-                                A[d, a] += 1
-                                A[d, b] += 1
-                                A[d, c] += 1
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(b):
+                if not G.has_edge(a, c):
+                    for d in G_digraph.predecessors(c):
+                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+                            print('loop (C)', a, b, c)
+                            A[a, b] += 1
+                            A[a, c] += 1
+                            A[a, d] += 1
+                            A[b, a] += 1
+                            A[b, c] += 1
+                            A[b, d] += 1
+                            A[c, a] += 1
+                            A[c, b] += 1
+                            A[c, d] += 1
+                            A[d, a] += 1
+                            A[d, b] += 1
+                            A[d, c] += 1
 
     A /= 1  # overcount correction
     # orbit_count = get_gdv(G)[:, 8]
