@@ -868,28 +868,40 @@ def compute_AG2_digraph(G):
     # ESCAPE, FIG 4 (A)
     # b=i, c=j
     print('ESCAPE (A)')
-    for a in G_digraph.nodes():
-        for b in G_digraph.successors(a):
-            for c in G_digraph.successors(a):
-                if b != c and G.has_edge(b, c):
-                    if c < b:
-                        # print('loop (a)', a, b, c)
-                        A[a, b] += 1
-                        A[a, c] += 1
-                        A[b, a] += 1
-                        A[b, c] += 1
-                        A[c, a] += 1
-                        A[c, b] += 1
 
-    A /= 1  # overcount correction
-    # orbit_count = get_gdv(G)[:, 8]
+    for a, b, c in triangle_iterator(G_digraph):
+        # print('loop (a)', a, b, c)
+        A[a, b] += 1
+        A[a, c] += 1
+        A[b, a] += 1
+        A[b, c] += 1
+        A[c, a] += 1
+        A[c, b] += 1
+
+    # A /= 1  # overcount correction
+    # orbit_count = get_gdv(G)[:, 3]
     # print('')
     # print(nx.to_numpy_array(G))
     # print(A)
     # print(orbit_count)
-    # print((np.sum(A, axis=1))/3)
-    # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
+    # print((np.sum(A, axis=1))/2)
+    # assert np.array_equal(np.sum(A, axis=1)/2, orbit_count)
     return A
+
+
+# def triangle_iterator(G_digraph):
+#     for a in G_digraph.nodes():
+#         for b in G_digraph.successors(a):
+#             for c in G_digraph.successors(a):
+#                 if b < c and G_digraph.has_edge(b, c):
+#                     yield a, b, c
+
+def triangle_iterator(G_digraph):
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(b):
+                if G_digraph.has_edge(a, c):
+                    yield a, b, c
 
 
 def compute_AG7_digraph_two(G):
@@ -898,6 +910,8 @@ def compute_AG7_digraph_two(G):
     G_digraph.add_edges_from(G.edges())
     k = G.number_of_nodes()
     A = np.zeros((k, k))
+
+    degrees = G.degree(G.nodes)
 
     # ESCAPE, FIG 4 (A)
     # b=i, c=j
@@ -937,8 +951,21 @@ def compute_AG7_digraph_two(G):
                                     A[d, a] += 1
                                     A[d, b] += 1
                                     A[d, c] += 1
-                        for d in G.neighbors(b):
-                            if d > a and d != c and G.has_edge(c, d) and not G.has_edge(a, d):
+
+                        # possible optimisation:
+                        # instead of choosing the one with the lowest degree
+                        # choose the one with the fewest neighbours > a
+                        # via binary search.
+                        # can the same be achieved by choosing the one with the smallest in degree?
+                        if degrees[b] < degrees[c]:
+                            z = b
+                            y = c
+                        else:
+                            z = c
+                            y = b
+
+                        for d in G.neighbors(z):
+                            if d > a and d != y and G.has_edge(y, d) and not G.has_edge(a, d):
                                 A[a, b] += 1
                                 A[a, c] += 1
                                 A[a, d] += 1
@@ -1056,8 +1083,8 @@ def count(G, adj_type):
 
 def main():
 
-    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)
     compute_AG7_digraph_two(G)
