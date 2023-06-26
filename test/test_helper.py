@@ -16,13 +16,15 @@ def matches_count_windels(triu, graphlet, expected_counts):
     G = nx.from_numpy_array(A)
     # A_orbit = count(G, graphlet)
     AG = count(G, graphlet)
+    # print(A)
+    # print(AG)
     triu_counts = squareform(AG)
     # counts = np.sum(A_orbit, axis=1)
 
     # A = squareform(triu)
     # n = A.shape[0]
     # triu_counts = gradco.count(A, n, graphlet)
-    print(triu_counts)
+    # print(triu_counts)
     outcome = np.array_equal(triu_counts, expected_counts)
 
     if DEBUG and outcome is False:
