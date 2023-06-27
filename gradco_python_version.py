@@ -729,11 +729,8 @@ def compute_AG7_digraph(G):
 
 
 def compute_AG3_digraph(G):
-    G = nx.convert_node_labels_to_integers(G)
-    G_digraph = nx.DiGraph(nodes=G.nodes())
-    G_digraph.add_edges_from(G.edges())
-    k = G.number_of_nodes()
-    A = np.zeros((k, k))
+    G_digraph = to_digraph(G)
+    A = init_adjacency(G)
 
     # ESCAPE, FIG 4 (A)
     # b=i, c=j
@@ -744,45 +741,34 @@ def compute_AG3_digraph(G):
                 if not G.has_edge(a, c):
                     for d in G_digraph.successors(c):
                         if not G.has_edge(d, a) and not G.has_edge(d, b):
-                            print('loop (A, 1)', a, b, c)
-                            A[a, b] += 1
-                            A[a, c] += 1
-                            A[a, d] += 1
-                            A[b, a] += 1
-                            A[b, c] += 1
-                            A[b, d] += 1
-                            A[c, a] += 1
-                            A[c, b] += 1
-                            A[c, d] += 1
-                            A[d, a] += 1
-                            A[d, b] += 1
-                            A[d, c] += 1
-    # ESCAPE, FIG 4 (b)
-    # b = i, c = j
-    print('(B)')
+                            print('loop (A)', a, b, c)
+                            A = __add_count(A, a, b, c, d)
+    print('B')
     for a in G_digraph.nodes():
-        # b and c are swapped places
-        # can be optimised by having a list of sucessors
-        # get b and c from the list so that b<c and try extend  either b or c
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
-                if b != c and not G.has_edge(b, c):
-                    # for d in G_digraph.predecessors(b):
-                    for d in G.neighbors(b):
-                        if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
-                            print('loop (B)', a, b, c)
-                            A[a, b] += 1
-                            A[a, c] += 1
-                            A[a, d] += 1
-                            A[b, a] += 1
-                            A[b, c] += 1
-                            A[b, d] += 1
-                            A[c, a] += 1
-                            A[c, b] += 1
-                            A[c, d] += 1
-                            A[d, a] += 1
-                            A[d, b] += 1
-                            A[d, c] += 1
+                if b < c and not G.has_edge(b, c):
+                    for d in G_digraph.predecessors(c):
+                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+                            print('loop (B, 1)', a, b, c)
+                            A = __add_count(A, a, b, c, d)
+                    for d in G_digraph.predecessors(b):
+                        if d != c and d != a and not G.has_edge(d, c) and not G.has_edge(d, a):
+                            print('loop (B, 2)', a, b, c)
+                            A = __add_count(A, a, b, c, d)
+    print('D')
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if b < c and not G.has_edge(b, c):
+                    for d in G_digraph.successors(c):
+                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+                            print('loop (D, 1)', a, b, c)
+                            A = __add_count(A, a, b, c, d)
+                    for d in G_digraph.successors(b):
+                        if d != c and d != a and not G.has_edge(d, c) and not G.has_edge(d, a):
+                            print('loop (D, 2)', a, b, c)
+                            A = __add_count(A, a, b, c, d)
 
     print('(C)')
     for a in G_digraph.nodes():
@@ -792,18 +778,7 @@ def compute_AG3_digraph(G):
                     for d in G_digraph.predecessors(c):
                         if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
                             print('loop (C)', a, b, c)
-                            A[a, b] += 1
-                            A[a, c] += 1
-                            A[a, d] += 1
-                            A[b, a] += 1
-                            A[b, c] += 1
-                            A[b, d] += 1
-                            A[c, a] += 1
-                            A[c, b] += 1
-                            A[c, d] += 1
-                            A[d, a] += 1
-                            A[d, b] += 1
-                            A[d, c] += 1
+                            A = __add_count(A, a, b, c, d)
 
     A /= 1  # overcount correction
     # orbit_count = get_gdv(G)[:, 8]
@@ -814,6 +789,109 @@ def compute_AG3_digraph(G):
     # print((np.sum(A, axis=1))/3)
     # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
     return A
+
+
+def __add_count(A, a, b, c, d):
+    A[a, b] += 1
+    A[a, c] += 1
+    A[a, d] += 1
+    A[b, a] += 1
+    A[b, c] += 1
+    A[b, d] += 1
+    A[c, a] += 1
+    A[c, b] += 1
+    A[c, d] += 1
+    A[d, a] += 1
+    A[d, b] += 1
+    A[d, c] += 1
+    return A
+
+# def compute_AG3_digraph(G):
+#     G = nx.convert_node_labels_to_integers(G)
+#     G_digraph = nx.DiGraph(nodes=G.nodes())
+#     G_digraph.add_edges_from(G.edges())
+#     k = G.number_of_nodes()
+#     A = np.zeros((k, k))
+
+#     # ESCAPE, FIG 4 (A)
+#     # b=i, c=j
+#     print('ESCAPE (A)')
+#     for a in G_digraph.nodes():
+#         for b in G_digraph.successors(a):
+#             for c in G_digraph.successors(b):
+#                 if not G.has_edge(a, c):
+#                     for d in G_digraph.successors(c):
+#                         if not G.has_edge(d, a) and not G.has_edge(d, b):
+#                             print('loop (A, 1)', a, b, c)
+#                             A[a, b] += 1
+#                             A[a, c] += 1
+#                             A[a, d] += 1
+#                             A[b, a] += 1
+#                             A[b, c] += 1
+#                             A[b, d] += 1
+#                             A[c, a] += 1
+#                             A[c, b] += 1
+#                             A[c, d] += 1
+#                             A[d, a] += 1
+#                             A[d, b] += 1
+#                             A[d, c] += 1
+#     # ESCAPE, FIG 4 (b)
+#     # b = i, c = j
+#     print('(B)')
+#     for a in G_digraph.nodes():
+#         # b and c are swapped places
+#         # can be optimised by having a list of sucessors
+#         # get b and c from the list so that b<c and try extend  either b or c
+#         for b in G_digraph.successors(a):
+#             for c in G_digraph.successors(a):
+#                 if b != c and not G.has_edge(b, c):
+#                     # for d in G_digraph.predecessors(b):
+#                     for d in G.neighbors(b):
+#                         if d != a and d != c and not G.has_edge(d, c) and not G.has_edge(d, a):
+#                             print('loop (B)', a, b, c)
+#                             A[a, b] += 1
+#                             A[a, c] += 1
+#                             A[a, d] += 1
+#                             A[b, a] += 1
+#                             A[b, c] += 1
+#                             A[b, d] += 1
+#                             A[c, a] += 1
+#                             A[c, b] += 1
+#                             A[c, d] += 1
+#                             A[d, a] += 1
+#                             A[d, b] += 1
+#                             A[d, c] += 1
+
+#     print('(C)')
+#     for a in G_digraph.nodes():
+#         for b in G_digraph.successors(a):
+#             for c in G_digraph.successors(b):
+#                 if not G.has_edge(a, c):
+#                     for d in G_digraph.predecessors(c):
+#                         if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+#                             print('loop (C)', a, b, c)
+#                             A[a, b] += 1
+#                             A[a, c] += 1
+#                             A[a, d] += 1
+#                             A[b, a] += 1
+#                             A[b, c] += 1
+#                             A[b, d] += 1
+#                             A[c, a] += 1
+#                             A[c, b] += 1
+#                             A[c, d] += 1
+#                             A[d, a] += 1
+#                             A[d, b] += 1
+#                             A[d, c] += 1
+
+#     A /= 1  # overcount correction
+#     # orbit_count = get_gdv(G)[:, 8]
+#     # print('')
+#     # print(nx.to_numpy_array(G))
+#     # print(A)
+#     # print(orbit_count)
+#     # print((np.sum(A, axis=1))/3)
+#     # assert np.array_equal(np.sum(A, axis=1)/3, orbit_count)
+#     return A
 
 
 def compute_AG2_digraph(G):
@@ -1038,6 +1116,20 @@ def count(G, adj_type):
         case 2:
             return compute_AG2_digraph(G)
 
+        case 'A6_6':
+            return compute_A6_6(G)
+
+        case 'A6_7':
+            return compute_A6_7(G)
+
+        case 'A7_6':
+            return compute_A7_6(G)
+
+        case 4:
+            return compute_AG4_orbit_sum(G)
+        case 5:
+            return compute_AG5_orbit_sum(G)
+
         case 'A11_10':
             return compute_A11_10(G)
         case 'A10_11':
@@ -1154,11 +1246,69 @@ def compute_AG6_orbit_sum(G):
     A += compute_A10_9(G)
     A += compute_A9_11(G)
     A += compute_A11_9(G)
-
     A += compute_A10_10(G)
     A += compute_A10_11(G)
     A += compute_A11_10(G)
 
+    return A
+
+
+def compute_A6_6(G):
+
+    A = - compute_A9_10(G)
+    A1_2 = compute_A1_2(G)
+    for x, y, z in path_iterator(G):
+        A[x, z] += A1_2[x, y] - 1
+        A[z, x] += A1_2[z, y] - 1
+    return A
+
+
+def compute_A6_7(G):
+
+    A = - 2 * compute_A9_11(G)
+    A1_2 = compute_A1_2(G)
+    for x, y, z in path_iterator(G):
+        A[x, y] += A1_2[x, y] - 1
+        A[z, y] += A1_2[z, y] - 1
+    A /= 2
+    return A
+
+
+def compute_A7_6(G):
+    return compute_A6_7(G).transpose()
+
+
+def compute_AG4_orbit_sum(G):
+    A = init_adjacency(G)
+    A += compute_A6_6(G)
+    A += compute_A6_7(G)
+    A += compute_A7_6(G)
+    return A
+
+
+def compute_A8_8_double_hop_equation_based(G):
+    A = - 2 * compute_A12_12(G)
+    A1_1 = compute_A1_1(G)
+    for x, y, z in path_iterator(G):
+        A[x, z] += A1_1[x, z] - 1
+        A[z, x] += A1_1[z, x] - 1
+    A /= 2
+    return A
+
+
+def compute_A8_8_single_hop_equation_based(G):
+    A = - 1 * compute_A12_13(G)
+    A1_1 = compute_A1_1(G)
+    for x, y, z in path_iterator(G):
+        A[x, y] += A1_1[x, z] - 1
+        A[z, y] += A1_1[z, x] - 1
+    return A
+
+
+def compute_AG5_orbit_sum(G):
+    A = init_adjacency(G)
+    A += compute_A8_8_single_hop_equation_based(G)
+    A += compute_A8_8_double_hop_equation_based(G)
     return A
 
 
@@ -1183,6 +1333,7 @@ def main():
         # compute_A4_4_G(G)
         # compute_A4_3_double_hop(G)
         # compute_A4_3_single_hop(G)
+        # compute_A4_4_G(G)
         # compute_A5_5(G)
         # compute_A5_4_double_hop(G)
         # compute_A5_4_single_hop(G)
