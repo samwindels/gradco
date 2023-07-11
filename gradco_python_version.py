@@ -1314,15 +1314,18 @@ def compute_AG5_orbit_sum(G):
 
 def main():
 
+   
+    G = nx.scale_free_graph(100)
     # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)
-    compute_AG7_digraph_two(G)
+    # compute_AG7_digraph_two(G)
     # G = nx.read_edgelist('degenerate_tests/nets/PPI_yeast_degenerate.edgelist')
-    # A = nx.to_numpy_array(G, dtype=int)
-    # n = A.shape[0]
-    # triu_counts = gradco.count(A, n, 2)
+    A = nx.to_numpy_array(G, dtype=int)
+    n = A.shape[0]
+    triu_counts = gradco.count(*np.nonzero(A), n, 2)
+    print(triu_counts)
     # print(np.sum(triu_counts/3))
     return
 
@@ -1348,8 +1351,35 @@ def main():
         # A8_8_single = compute_A8_8_single_hop(G)
         # AG7 = compute_AG7(G)
         # AG5 = compute_AG5(G)
-        compute_AG7_digraph(G)
+        # compute_AG7_digraph(G)
 
+"""
+TODO:
+
+- sanity checks
+    - no self edges
+    - no duplicate edges
+- input: edelist of ints
+    alternatives:
+        leda, which is too much hastle
+        mapping in gradco, but then we also have to return the mapping, to much hastle. have the user do it
+- (to undirected graph)
+- get node ordering nodes
+    - degree based : arg sort on the degree  list 
+        (reading twice can be avoided by storing the edges in a queue)
+    - k core: 
+        - argsort on the core numbers
+- network to c data structure
+    - multi/doubly linked list (https://stackoverflow.com/questions/22808713/doubly-linked-list-vs-multi-linked-list-in-c-c ,
+    https://webdocs.cs.ualberta.ca/~holte/T26/mlinked-lists.html#sparse-matrices)
+- triangle iterator
+- path iterator
+- G3
+- (G4)
+- G7
+- G8
+
+"""
 
 if __name__ == "__main__":
     main()
