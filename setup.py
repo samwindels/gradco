@@ -29,12 +29,17 @@ def main():
     
     gradco_module = Extension("gradco",
                               sources=["directed_graph.cpp", "gradco_module.cpp"],
-                              library_dirs=['/opt/local/lib/boost'],
-                              runtime_library_dirs=['/opt/local/lib/boost'],
-                              libraries=['boost_python'],
-                              include_dirs=['/opt/local/include', np.get_include()],
-                              language='c++',
-                              extra_compile_args=['']
+                              # library_dirs=['/opt/local/lib/boost'],
+                              # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
+                              # runtime_library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
+                              # runtime_library_dirs=['/opt/local/lib/boost'],
+                              # libraries=['boost_python'],
+                              # include_dirs=['/opt/local/include', np.get_include()],
+                              # include_dirs=['/opt/local/include/boost/', np.get_include()],
+                              include_dirs=[ np.get_include()],
+                              language='c++'
+                              # ,
+                              # extra_compile_args=['']
                               )
 
 

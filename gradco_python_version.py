@@ -1324,7 +1324,10 @@ def main():
     # G = nx.read_edgelist('degenerate_tests/nets/PPI_yeast_degenerate.edgelist')
     A = nx.to_numpy_array(G, dtype=int)
     n = A.shape[0]
-    triu_counts = gradco.count(*np.nonzero(A), n, 2)
+    rows, cols = np.nonzero(A)
+    rows = np.ascontiguousarray(rows) 
+    cols = np.ascontiguousarray(cols) 
+    triu_counts = gradco.count(rows, cols, n, 2)
     print(triu_counts)
     # print(np.sum(triu_counts/3))
     return
