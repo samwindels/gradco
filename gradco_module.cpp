@@ -35,20 +35,16 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyArrayObject* cols = NULL;
 	if (!PyArg_ParseTuple(args, "O!O!ii", &PyArray_Type, &rows, &PyArray_Type, &cols, &n, &graphlet))
 		return NULL;
+
+	// Sanity checks
+	assert(PyArray_NDIM(rows)==1);
+	assert(PyArray_NDIM(cols)==1);
+
+
 	std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl;
     	std::cout<<"size"<<PyArray_SIZE(rows)<<std::endl;
 
-    	NpyIter* iter;
-    	NpyIter_IterNextFunc *iternext;
-    	char** dataptr;
-    	npy_intp* strideptr,* innersizeptr;
-
-
-    	iter = NpyIter_New(rows, NPY_ITER_READONLY, NPY_KEEPORDER, NPY_NO_CASTING, NULL);
-	/* std::cout<<"done done"<<std::endl; */
-    	std::cout<<*(rows->dimensions)<<std::endl;
-	Py_INCREF(rows);
-	DirectedGraph(rows, cols);
+	DirectedGraph(n, rows, cols);
 }
 
 

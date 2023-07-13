@@ -20,7 +20,7 @@
 class DirectedGraph
     {
     public:
-	DirectedGraph(PyArrayObject*, PyArrayObject*);
+	DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols);
 
 	std::vector<int>* get_successors(int node);
 	std::vector<int>* get_predecessors(int node);
