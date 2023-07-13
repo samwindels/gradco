@@ -27,7 +27,10 @@ class DirectedGraph
 	bool has_out_edge(int a, int b);
 	bool has_in_edge(int a, int b);
 
+	int get_n();
+
     private:
+	int n;
 	std::vector<std::vector<int> > adj_out; 
 	std::vector<std::vector<int> > adj_in;  
 	

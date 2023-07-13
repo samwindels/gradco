@@ -6,7 +6,6 @@
 // uncomment to disable assert()
 // #define NDEBUG
 #include <cassert>
-
 #include <iostream>
 
 #define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
@@ -14,6 +13,15 @@
 #include <numpy/ndarrayobject.h>
 
 #include "directed_graph.hh"
+#include "matrix.hh"
+
+Matrix* count_A_3_3(DirectedGraph *G){
+	
+	Matrix A = Matrix(G->get_n());	
+	
+	return &A;
+}
+
 
 static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
@@ -40,7 +48,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	/* std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl; */
 
-	DirectedGraph(n, rows, cols);
+	DirectedGraph G = DirectedGraph(n, rows, cols);
+	
 }
 
 

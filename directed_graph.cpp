@@ -1,7 +1,7 @@
 
 #include "directed_graph.hh"
 
-DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
+DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols) : n(n) {
 
 	// INITIALISE THE ADJACENY LISTS and ADJACENCY SETS
 	adj_in.resize(n, std::vector<int>());	
@@ -77,9 +77,7 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
 			
 			adj_out_set[row].insert(col);
     	    	}
-    		    /* std::cout<<"val"<< PyLong_Check(getitem(data,rows))<<std::endl; */
-    		    /* std::cout<<"val: "<< row << ' ' << col <<std::endl; */
-    	        data_rows += stride_rows;
+		data_rows += stride_rows;
     	        data_cols += stride_cols;
     	    }
 
@@ -88,7 +86,6 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
 
     	NpyIter_Deallocate(iter_rows);
     	NpyIter_Deallocate(iter_cols);
-
 
 }
 
@@ -108,3 +105,6 @@ bool DirectedGraph::has_in_edge(int a, int b){
 	return adj_out_set[b].find(a) != adj_out_set[b].end();
 }
 
+int DirectedGraph::get_n(){
+	return n;
+}
