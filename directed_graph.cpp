@@ -2,8 +2,14 @@
 #include "directed_graph.hh"
 
 DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
-	
 
+	// INITIALISE THE ADJACENY LISTS and ADJACENCY SETS
+	adj_in.resize(n, std::vector<int>());	
+	adj_out.resize(n, std::vector<int>());	
+	
+	adj_in_set.resize(n, std::unordered_set<int>());	
+
+	// FOR LOOP OVER THE ROWS/COLS TO FILL ADJACENCY LISTS
 	// Array iterator
     	NpyIter* iter_rows = NpyIter_New(rows, NPY_ITER_READONLY|
     	                      		 NPY_ITER_EXTERNAL_LOOP|
@@ -43,9 +49,10 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
     	char *data_rows, *data_cols;
 	npy_intp stride_rows, stride_cols;
 	
-	// track progress	
+	// track for loop progress	
 	npy_intp count_rows, count_cols;
-    	
+    
+	// values in the two arrays (finally)
 	int row, col;
 
 	do {
@@ -57,7 +64,7 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
     	    stride_cols = *strideptr_cols;
     	    
     	    count_rows = *innersizeptr_rows;
-    	    count_cols = *innersizeptr_rows;
+    	    count_cols = *innersizeptr_cols;
 
     	    /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
     	    while (count_rows-- and count_cols--) {
@@ -65,12 +72,13 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
     	    	row = PyLong_AsLong(getitem_rows(data_rows, rows));
     	    	col = PyLong_AsLong(getitem_cols(data_cols, cols));
     	    	if (row != col && col){
-    	    		/* adj_in; */
-    	    		/* adj_out; */
+			adj_out[row].push_back(col);
+			adj_in[col].push_back(row);
+			
+			adj_out_set[row].insert(col);
     	    	}
-    	    
     		    /* std::cout<<"val"<< PyLong_Check(getitem(data,rows))<<std::endl; */
-    		    std::cout<<"val: "<< row << ' ' << col <<std::endl;
+    		    /* std::cout<<"val: "<< row << ' ' << col <<std::endl; */
     	        data_rows += stride_rows;
     	        data_cols += stride_cols;
     	    }
@@ -91,3 +99,11 @@ std::vector<int>* DirectedGraph::get_successors(int node){
 std::vector<int>* DirectedGraph::get_predecessors(int node){
 	return &adj_in[node];
 }
+
+bool DirectedGraph::has_out_edge(int a, int b){
+	return adj_out_set[a].find(b) != s.end()};
+
+bool has_in_edge::has_in_edge(int a, int b){
+	return adj_out_set[b].find(a) != s.end()};
+}
+
