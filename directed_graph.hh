@@ -22,9 +22,13 @@ class DirectedGraph
     public:
 	DirectedGraph(PyArrayObject*, PyArrayObject*);
 
+	std::vector<int>* get_successors(int node);
+	std::vector<int>* get_predecessors(int node);
+	bool has_edge(int a, int b);
+
     private:
 	std::vector<std::vector<int> > adj_out; 
-	std::vector<std::vector<int> > adj_int;  
+	std::vector<std::vector<int> > adj_in;  
 	std::unordered_set<int> E;
 
 	/* std::vector<std::unordered_set<int> > adj_out_set; */ 

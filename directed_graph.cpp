@@ -55,3 +55,11 @@ DirectedGraph::DirectedGraph(PyArrayObject* rows, PyArrayObject* cols){
 
 
 }
+
+std::vector<int>* DirectedGraph::get_successors(int node){
+	return &adj_out[node];
+}
+
+std::vector<int>* DirectedGraph::get_predecessors(int node){
+	return &adj_in[node];
+}
