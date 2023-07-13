@@ -1315,7 +1315,7 @@ def compute_AG5_orbit_sum(G):
 def main():
 
    
-    G = nx.scale_free_graph(100)
+    G = nx.scale_free_graph(5)
     # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
@@ -1325,8 +1325,10 @@ def main():
     A = nx.to_numpy_array(G, dtype=int)
     n = A.shape[0]
     rows, cols = np.nonzero(A)
-    rows = np.ascontiguousarray(rows) 
-    cols = np.ascontiguousarray(cols) 
+    print(rows)
+    print(cols)
+    # rows = np.ascontiguousarray(rows) 
+    # cols = np.ascontiguousarray(cols) 
     triu_counts = gradco.count(rows, cols, n, 2)
     print(triu_counts)
     # print(np.sum(triu_counts/3))

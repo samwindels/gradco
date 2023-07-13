@@ -7,6 +7,11 @@
 #include <vector>
 #include <iostream>
 
+// For explanation on NO_IMPORT_ARRAT and PY_ARRAY_UNIQUE_SYMBOL, see: 
+// 	https://numpy.org/doc/1.13/reference/c-api.array.html: miscelaneous, importing the api
+// 	https://github.com/numpy/numpy/issues/9309
+#define NO_IMPORT_ARRAY
+#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
 #include <numpy/arrayobject.h>
 #include <numpy/ndarrayobject.h>
 
@@ -18,7 +23,11 @@ class DirectedGraph
 	DirectedGraph(PyArrayObject*, PyArrayObject*);
 
     private:
-	std::vector<std::unordered_set<int> > adj_out; 
-	std::vector<std::unordered_set<int> > adj_in;  
+	std::vector<std::vector<int> > adj_out; 
+	std::vector<std::vector<int> > adj_int;  
+	std::unordered_set<int> E;
+
+	/* std::vector<std::unordered_set<int> > adj_out_set; */ 
+	/* std::vector<std::unordered_set<int> > adj_in_set; */  
 	
     };

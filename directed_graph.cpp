@@ -3,58 +3,55 @@
 
 DirectedGraph::DirectedGraph(PyArrayObject* rows, PyArrayObject* cols){
 
+    /* Nonzero boolean function */
+    PyArray_NonzeroFunc* nonzero = PyArray_DESCR(rows)->f->nonzero;
+    PyArray_GetItemFunc* getitem = PyArray_DESCR(rows)->f->getitem;
+
     NpyIter* iter;
     NpyIter_IterNextFunc *iternext;
     char** dataptr;
     npy_intp* strideptr,* innersizeptr;
 
-    /* std::cout << "check a: " << **rows << std::endl; */
-    int d = PyArray_NDIM(rows);
+    iter = NpyIter_New(rows, NPY_ITER_READONLY|
+                             NPY_ITER_EXTERNAL_LOOP|
+                             NPY_ITER_REFS_OK,
+                             NPY_KEEPORDER, NPY_NO_CASTING,
+                             NULL);
 
-    std::cout << "check a: "<< d<< std::endl;
-    iter = NpyIter_New(rows, NPY_ITER_READONLY, NPY_KEEPORDER, NPY_NO_CASTING, NULL);
+    iternext = NpyIter_GetIterNext(iter, NULL);
     
-    std::cout << "check a: "<< d<< std::endl;
-    /* iter = NpyIter_New(cols, NPY_ITER_READONLY| */
-                             /* NPY_ITER_EXTERNAL_LOOP| */
-                             /* NPY_ITER_REFS_OK, */
-                             /* NPY_KEEPORDER, NPY_NO_CASTING, */
-                             /* NULL); */
-    /* if (iter == NULL) { */
-    /*     return NULL; */
-    /* } */
+    /* The location of the data pointer which the iterator may update */
+    dataptr = NpyIter_GetDataPtrArray(iter);
+    /* The location of the stride which the iterator may update */
+    strideptr = NpyIter_GetInnerStrideArray(iter);
+    /* The location of the inner loop size which the iterator may update */
+    innersizeptr = NpyIter_GetInnerLoopSizePtr(iter);
 
-    /* iternext = NpyIter_GetIterNext(iter, NULL); */
-    /* /1* if (iternext == NULL) { *1/ */
-    /* /1*     NpyIter_Deallocate(iter); *1/ */
-    /* /1*     return NULL; *1/ */
-    /* /1* } *1/ */
-    /* /1* The location of the data pointer which the iterator may update *1/ */
-    /* dataptr = NpyIter_GetDataPtrArray(iter); */
-    /* /1* The location of the stride which the iterator may update *1/ */
-    /* strideptr = NpyIter_GetInnerStrideArray(iter); */
-    /* /1* The location of the inner loop size which the iterator may update *1/ */
-    /* innersizeptr = NpyIter_GetInnerLoopSizePtr(iter); */
+    int nonzero_count = 0;
 
-    /* do { */
-    /*     /1* Get the inner loop data/stride/count values *1/ */
-    /*     char* data = *dataptr; */
-    /*     npy_intp stride = *strideptr; */
-    /*     npy_intp count = *innersizeptr; */
+    do {
+        /* Get the inner loop data/stride/count values */
+        char* data = *dataptr;
+        npy_intp stride = *strideptr;
+        npy_intp count = *innersizeptr;
 
-    /*     /1* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP *1/ */
-    /*     while (count--) { */
-	    /* std::cout << **dataptr << std::endl; */
-    /*         /1* if (nonzero(data, self)) { *1/ */
-    /*         /1*     ++nonzero_count; *1/ */
-    /*         /1* } *1/ */
-    /*         data += stride; */
-    /*     } */
+        /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
+        while (count--) {
+	
+    	    /* std::cout<<"val"<< PyLong_Check(getitem(data,rows))<<std::endl; */
+    	    std::cout<<"val: "<< PyLong_AsLong(getitem(data,rows))<<std::endl;
+            if (nonzero(data, rows)) {
+                ++nonzero_count;
+            }
+            data += stride;
+        }
 
-    /*     /1* Increment the iterator to the next inner loop *1/ */
-    /* } while(iternext(iter)); */
+        /* Increment the iterator to the next inner loop */
+    } while(iternext(iter));
 
-    /* NpyIter_Deallocate(iter); */
+    std::cout<<"counnt"<<nonzero_count<<std::endl;
+
+    NpyIter_Deallocate(iter);
 
 
 }
