@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
+#include <tuple>
+#include <coroutine>
 
 // For explanation on NO_IMPORT_ARRAT and PY_ARRAY_UNIQUE_SYMBOL, see: 
 // 	https://numpy.org/doc/1.13/reference/c-api.array.html: miscelaneous, importing the api
