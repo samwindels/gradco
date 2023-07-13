@@ -7,7 +7,7 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols){
 	adj_in.resize(n, std::vector<int>());	
 	adj_out.resize(n, std::vector<int>());	
 	
-	adj_in_set.resize(n, std::unordered_set<int>());	
+	adj_out_set.resize(n, std::unordered_set<int>());	
 
 	// FOR LOOP OVER THE ROWS/COLS TO FILL ADJACENCY LISTS
 	// Array iterator
@@ -101,9 +101,10 @@ std::vector<int>* DirectedGraph::get_predecessors(int node){
 }
 
 bool DirectedGraph::has_out_edge(int a, int b){
-	return adj_out_set[a].find(b) != s.end()};
+	return adj_out_set[a].find(b) != adj_out_set[a].end();
+}
 
-bool has_in_edge::has_in_edge(int a, int b){
-	return adj_out_set[b].find(a) != s.end()};
+bool DirectedGraph::has_in_edge(int a, int b){
+	return adj_out_set[b].find(a) != adj_out_set[b].end();
 }
 
