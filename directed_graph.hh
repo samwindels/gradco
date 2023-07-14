@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
-#include <tuple>
 #include <coroutine>
 
 // For explanation on NO_IMPORT_ARRAT and PY_ARRAY_UNIQUE_SYMBOL, see: 
@@ -31,9 +30,9 @@ class DirectedGraph
 
 	int get_n();
 
+	std::vector<std::vector<int> > adj_out; 
     private:
 	int n;
-	std::vector<std::vector<int> > adj_out; 
 	std::vector<std::vector<int> > adj_in;  
 	
 	std::vector<std::unordered_set<int> > adj_out_set; 

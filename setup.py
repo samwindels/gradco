@@ -37,10 +37,14 @@ def main():
                               # include_dirs=['/opt/local/include', np.get_include()],
                               # include_dirs=['/opt/local/include/boost/', np.get_include()],
                               include_dirs=[ np.get_include()],
-                              language='c++'
-                              # ,
-                              # extra_compile_args=['']
+                              language='c++',
+                              extra_compile_args=['-std=c++20', "-O3"]
                               )
+
+    # c++20 
+    # gnu++20 
+    # c++2b => 23 working draft 
+    # gnu++2b => working draft with GNU extensions 
 
 
     setup(name="gradco",

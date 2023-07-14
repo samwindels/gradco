@@ -7,6 +7,7 @@ import os
 from scipy.spatial.distance import squareform
 import pandas as pd
 import gradco
+from itertools import combinations
 
 
 def get_gdv(G):
@@ -25,7 +26,7 @@ def get_gdv(G):
             for line in nx.generate_edgelist(H, data=False):
                 o_stream.write("{}\n".format(line))
 
-        command = ['./orca_mac', str(4), edgelist_file, gdv_file]
+        command = ['./orca', 'node', str(4), edgelist_file, gdv_file]
         # print(" ".join(command))
         subprocess.call(command, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
@@ -791,19 +792,10 @@ def compute_AG3_digraph(G):
     return A
 
 
-def __add_count(A, a, b, c, d):
-    A[a, b] += 1
-    A[a, c] += 1
-    A[a, d] += 1
-    A[b, a] += 1
-    A[b, c] += 1
-    A[b, d] += 1
-    A[c, a] += 1
-    A[c, b] += 1
-    A[c, d] += 1
-    A[d, a] += 1
-    A[d, b] += 1
-    A[d, c] += 1
+def __add_count(A, nodes):
+    for a, b in combinations(nodes, 2):
+        A[a, b] += 1
+        A[b, a] += 1
     return A
 
 # def compute_AG3_digraph(G):
@@ -1114,7 +1106,8 @@ def count(G, adj_type):
             # return compute_AG1_orbit_sum(G)
             return compute_AG1_digraph(G)
         case 2:
-            return compute_AG2_digraph(G)
+            # return compute_AG2_digraph(G)
+            return count_all(G)['A3_3']
 
         case 'A6_6':
             return compute_A6_6(G)
@@ -1171,6 +1164,10 @@ def count(G, adj_type):
             return compute_A12_13(G)
         case 'A13_13':
             return compute_A13_13(G)
+        case 'A14_14':
+            # return compute_A14_14_oriented_in_out(G)
+            # return compute_A14_14_oriented_out_out(G)
+            return count_all(G)['A14_14']
         case _:
             ValueError('invalid adjacency type')
 
@@ -1311,6 +1308,72 @@ def compute_AG5_orbit_sum(G):
     A += compute_A8_8_double_hop_equation_based(G)
     return A
 
+def compute_A14_14_oriented_out_out(G):
+
+    G_digraph = to_digraph(G)
+    A = init_adjacency(G)
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(b):
+                if G_digraph.has_edge(a, c):
+                    for d in G_digraph.successors(c):
+                        if G_digraph.has_edge(a, d) and \
+                                G_digraph.has_edge(b, d):
+                               A[a, b] += 1
+                               A[a, c] += 1
+                               A[a, d] += 1
+                               A[b, a] += 1
+                               A[b, c] += 1
+                               A[b, d] += 1
+                               A[c, a] += 1
+                               A[c, b] += 1
+                               A[c, d] += 1
+                               A[d, a] += 1
+                               A[d, b] += 1
+                               A[d, c] += 1
+    return A
+
+def compute_A14_14_oriented_in_out(G):
+
+    G_digraph = to_digraph(G)
+    A = init_adjacency(G)
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if (b!=c) and G_digraph.has_edge(b, c):
+                    for d in G_digraph.successors(a):
+                        if (d!= c) and (d!=b) and G_digraph.has_edge(b,d) and G_digraph.has_edge(c,d):
+                                   A[a, b] += 1
+                                   A[a, c] += 1
+                                   A[a, d] += 1
+                                   A[b, a] += 1
+                                   A[b, c] += 1
+                                   A[b, d] += 1
+                                   A[c, a] += 1
+                                   A[c, b] += 1
+                                   A[c, d] += 1
+                                   A[d, a] += 1
+                                   A[d, b] += 1
+                                   A[d, c] += 1
+    return A
+
+def count_all(G):
+
+    G_digraph = to_digraph(G)
+    A14_14 = init_adjacency(G)
+    A3_3 = init_adjacency(G)
+    for a in G_digraph.nodes():
+        for b in G_digraph.successors(a):
+            for c in G_digraph.successors(a):
+                if (b<c) and G_digraph.has_edge(b, c):
+                    A3_3 = __add_count(A3_3, (a, b, c))
+                    for d in G_digraph.successors(a):
+                        if (c<d) and G_digraph.has_edge(b,d) and G_digraph.has_edge(c,d):
+                            A14_14 = __add_count(A14_14, (a, b, c, d))
+     
+    return  {'A3_3': A3_3,
+            'A14_14': A14_14}
+
 
 def main():
 
@@ -1329,8 +1392,8 @@ def main():
     print(cols)
     # rows = np.ascontiguousarray(rows) 
     # cols = np.ascontiguousarray(cols) 
-    triu_counts = gradco.count(rows, cols, n, 2)
-    print(triu_counts)
+    # triu_counts = gradco.count(rows, cols, n, 2)
+    # print(triu_counts)
     # print(np.sum(triu_counts/3))
     return
 

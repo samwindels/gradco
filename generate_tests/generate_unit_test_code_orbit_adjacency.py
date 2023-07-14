@@ -23,7 +23,7 @@ def get_gdv(G):
             for line in nx.generate_edgelist(H, data=False):
                 o_stream.write("{}\n".format(line))
 
-        command = ['./orca_mac', str(4), edgelist_file, gdv_file]
+        command = ['./orca', 'node', str(4), edgelist_file, gdv_file]
         # print(" ".join(command))
         subprocess.call(command, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
@@ -86,7 +86,8 @@ def write_tests_A_orbits(orbit_1, orbit_2):
                              (12, 12): 1,
                              (12, 13): 2,
                              (13, 12): 2,
-                             (13, 13): 1}
+                             (13, 13): 1,
+                             (14, 14): 3}
 
     adj_type = f'A{orbit_1}_{orbit_2}'
     fp = get_test_filepath(adj_type)
@@ -111,9 +112,9 @@ def main():
     # write_tests_A_orbits(1, 1)
     # write_tests_A_orbits(1, 2)
     # write_tests_A_orbits(2, 1)
-    write_tests_A_orbits(6, 7)
-    write_tests_A_orbits(6, 6)
-    write_tests_A_orbits(7, 6)
+    # write_tests_A_orbits(6, 7)
+    # write_tests_A_orbits(6, 6)
+    # write_tests_A_orbits(7, 6)
     # write_tests_A_orbits(11, 10)
     # write_tests_A_orbits(10, 11)
     # write_tests_A_orbits(9, 11)
@@ -125,6 +126,7 @@ def main():
     # write_tests_A_orbits(12, 13)
     # write_tests_A_orbits(13, 12)
     # write_tests_A_orbits(13, 13)
+    write_tests_A_orbits(14, 14)
 
 
 if __name__ == "__main__":

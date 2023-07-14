@@ -7,6 +7,8 @@
 // #define NDEBUG
 #include <cassert>
 #include <iostream>
+/* #include <string> */
+/* #include <sstream> */
 
 #define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
 #include <numpy/arrayobject.h>
@@ -49,6 +51,31 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	/* std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl; */
 
 	DirectedGraph G = DirectedGraph(n, rows, cols);
+
+	Matrix A14_14 = Matrix(n);	
+	Matrix A3_3 = Matrix(n);	
+
+	int b, c, d;
+
+	for (int a = 0; a < n; ++a){
+		for (int i=0; i<G.adj_out[a].size(); i++)
+		{
+			b = G.adj_out[a][i];
+			for (int j=i+1; j<G.adj_out[a].size(); j++){
+				c = G.adj_out[a][j];
+				if (G.has_out_edge(b, c)){
+					for (int k=j+1; k<G.adj_out[a].size(); k++){
+						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
+							A14_14.increment_all_2_all(a, b, c, d);
+						}
+					}
+				}
+			}
+		}
+	}	
+	
+	/* std::vector<std::vector<int> > adj_out; */ 
+	/* std::vector<std::vector<int> > adj_in; */  
 	
 }
 

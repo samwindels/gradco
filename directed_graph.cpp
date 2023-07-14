@@ -108,3 +108,4 @@ bool DirectedGraph::has_in_edge(int a, int b){
 int DirectedGraph::get_n(){
 	return n;
 }
+
