@@ -923,17 +923,20 @@ def triangle_iterator(G):
 
 def path_iterator(G):
     G_digraph = to_digraph(G)
+    # in out wedge
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
                 if b < c and not G.has_edge(b, c):
                     yield b, a, c  # orbit (1, 2, 1)
+    # out out wedge
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(b):
                 if not G.has_edge(a, c):
                     yield a, b, c  # orbit (1, 2, 1)
 
+    # out in wedge
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.predecessors(b):
@@ -1096,12 +1099,15 @@ def count(G, adj_type):
 
     match adj_type:
         case 'A1_1':
-            return compute_A1_1(G)
+            # return compute_A1_1(G)
+            return count_all(G)['A1_1']
         case 'A1_2':
-            return compute_A2_1(G).transpose()
+            # return compute_A2_1(G).transpose()
+            return count_all(G)['A1_2']
             # return compute_A1_2(G)
         case 'A2_1':
-            return compute_A2_1(G)
+            # return compute_A2_1(G)
+            return count_all(G)['A1_2'].transpose()
         case 1:
             # return compute_AG1_orbit_sum(G)
             return compute_AG1_digraph(G)
@@ -1362,24 +1368,50 @@ def count_all(G):
     G_digraph = to_digraph(G)
     A14_14 = init_adjacency(G)
     A3_3 = init_adjacency(G)
+    A1_1 = init_adjacency(G)
+    A1_2 = init_adjacency(G)
+
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
-                if (b<c) and G_digraph.has_edge(b, c):
-                    A3_3 = __add_count(A3_3, (a, b, c))
-                    for d in G_digraph.successors(a):
-                        if (c<d) and G_digraph.has_edge(b,d) and G_digraph.has_edge(c,d):
-                            A14_14 = __add_count(A14_14, (a, b, c, d))
+                # in out wedge
+                if (b<c):
+                    if G_digraph.has_edge(b, c):
+                        A3_3 = __add_count(A3_3, (a, b, c))
+                        for d in G_digraph.successors(a):
+                            if (c<d) and G_digraph.has_edge(b,d) and G_digraph.has_edge(c,d):
+                                A14_14 = __add_count(A14_14, (a, b, c, d))
+                    else:
+                        A1_1 = __add_count(A1_1, (b, c))
+                        A1_2[b, a] +=1
+                        A1_2[c, a] +=1
+
+            for c in G_digraph.successors(b):
+                # out out wedge
+                if not G.has_edge(a, c):
+                    A1_1 = __add_count(A1_1, (a, c))
+                    A1_2[a, b] +=1
+                    A1_2[c, b] +=1
+
+            for c in G_digraph.predecessors(b):
+                # out in wedge
+                if c > a and not G.has_edge(a, c):
+                # if c < a and not G.has_edge(c, a):
+                    A1_1 = __add_count(A1_1, (a, c))
+                    A1_2[a, b] +=1
+                    A1_2[c, b] +=1
      
-    return  {'A3_3': A3_3,
+    return  {'A1_1': A1_1,
+            'A1_2': A1_2,
+            'A3_3': A3_3,
             'A14_14': A14_14}
 
 
 def main():
 
    
-    G = nx.scale_free_graph(5)
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    # G = nx.scale_free_graph(5)
+    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)
@@ -1392,7 +1424,7 @@ def main():
     print(cols)
     # rows = np.ascontiguousarray(rows) 
     # cols = np.ascontiguousarray(cols) 
-    # triu_counts = gradco.count(rows, cols, n, 2)
+    triu_counts = gradco.count(rows, cols, n, 2)
     # print(triu_counts)
     # print(np.sum(triu_counts/3))
     return
