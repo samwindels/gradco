@@ -17,12 +17,9 @@
 #include "matrix.hh"
 
 
-static PyMODINIT_FUNC *gradco_count(PyObject *self, PyObject *args) {
+static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 
-	import_array();
-
-	
 	/* parse input from python */
 	int n;
 	int graphlet;
@@ -81,14 +78,13 @@ static PyMODINIT_FUNC *gradco_count(PyObject *self, PyObject *args) {
 
 	
 	// 
-	Py_DECREF(rows);
-	Py_DECREF(cols);
+	/* Py_DECREF(rows); */
+	/* Py_DECREF(cols); */
 
 	// Finish the Python Interpreter
 	/* Py_Finalize(); */
 	PyObject* A14_14_numpy = A14_14.to_numpy_arrays();
 	/* Py_INCREF(A14_14_numpy); */
-	
 	return	A14_14_numpy;
 	
 }
