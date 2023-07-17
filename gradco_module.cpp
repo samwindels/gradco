@@ -52,6 +52,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	DirectedGraph G = DirectedGraph(n, rows, cols);
 
+
+
+	// BRUTE FORCE
 	Matrix A14_14 = Matrix(n);	
 	Matrix A3_3 = Matrix(n);	
 
@@ -65,6 +68,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				c = G.adj_out[a][j];
 				if (G.has_out_edge(b, c)){
 					for (int k=j+1; k<G.adj_out[a].size(); k++){
+						d = G.adj_out[a][k];
 						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
 							A14_14.increment_all_2_all(a, b, c, d);
 						}
@@ -73,6 +77,23 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}	
+	/* for (int a = 0; a < n; ++a){ */
+	/* 	for (int i=0; i<G.adj_out[a].size(); i++) */
+	/* 	{ */
+	/* 		b = G.adj_out[a][i]; */
+	/* 		for (int j=0; j<G.adj_out[b].size(); j++){ */
+	/* 			c = G.adj_out[b][j]; */
+	/* 			if (G.has_out_edge(a, c)){ */
+	/* 				for (int k=0; k<G.adj_out[c].size(); k++){ */
+	/* 					d = G.adj_out[c][k]; */
+	/* 					if (G.has_out_edge(a, d) && G.has_out_edge(b, d)){ */
+	/* 						A14_14.increment_all_2_all(a, b, c, d); */
+	/* 					} */
+	/* 				} */
+	/* 			} */
+	/* 		} */
+	/* 	} */
+	/* } */	
 	
 	/* std::vector<std::vector<int> > adj_out; */ 
 	/* std::vector<std::vector<int> > adj_in; */  
