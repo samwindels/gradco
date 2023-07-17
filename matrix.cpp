@@ -21,6 +21,13 @@ void Matrix::increment_from_to(int a, int b){
 		n_entries++;
         }
 }
+
+void Matrix::increment_all_2_all(int a, int b){
+
+	increment_from_to(a, b);
+	increment_from_to(b, a);
+}
+
 void Matrix::increment_all_2_all(int a, int b, int c){
 
 	increment_from_to(a, b);

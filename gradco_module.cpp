@@ -47,8 +47,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Matrix A14_14 = Matrix(n);  // 4-node clique
 	Matrix A3_3   = Matrix(n);  // 3-node triangle
 	
-	/* Matrix A1_1   = Matrix(n);  // 3-node path, outside orbits */
-	/* Matrix A1_2   = Matrix(n);  // 3-node path, outside and midle orbits */
+	Matrix A1_1   = Matrix(n);  // 3-node path, outside orbits
+	Matrix A1_2   = Matrix(n);  // 3-node path, outside and midle orbits
 
 	int b, c, d;
 
@@ -60,6 +60,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				b = G.adj_out[a][i];
 				for (int j=i+1; j<G.adj_out[a].size(); j++){
 					// in-out wedge
+					// b <- a -> c
 					c = G.adj_out[a][j];
 					if (G.has_out_edge(b, c)){
 
@@ -71,7 +72,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							}
 						}
 					}else{
-						// increment A1_1
+						A1_1.increment_all_2_all(b, c);
 						// increment A1_2
 					}
 				}

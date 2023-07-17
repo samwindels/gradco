@@ -21,6 +21,7 @@ class Matrix {
 	
     public:
 	Matrix(int n);
+	void increment_all_2_all(int a, int b);
 	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
 	PyObject* to_numpy_arrays();
