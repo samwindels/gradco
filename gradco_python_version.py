@@ -1456,11 +1456,11 @@ def main():
 
    
     # G = nx.scale_free_graph(5)
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # compute_AG3_digraph(G)
     # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
+    # G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)
     # compute_AG7_digraph_two(G)
@@ -1472,9 +1472,9 @@ def main():
     # print(cols)
     # rows = np.ascontiguousarray(rows) 
     # cols = np.ascontiguousarray(cols) 
-    A_14_14_sparse = gradco.count(rows, cols, n, 2)
-    print(A_14_14_sparse.shape)
-
+    As = gradco.count(rows, cols, n, 2)
+    print(As[2])
+    return
 
     A = np.zeros((n, n))
     A[A_14_14_sparse[0,:], A_14_14_sparse[1,:]] = A_14_14_sparse[2,:]

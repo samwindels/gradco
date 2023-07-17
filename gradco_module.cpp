@@ -52,52 +52,52 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	int b, c, d;
 
-	/* std::cout<<"BRUTE FORCE"<<std::endl; */
-	/* std::cout<<"IN-OUT WEDGES"<<std::endl; */
-	/* for (int a = 0; a < n; a++){ */
-	/* 	if (G.adj_out[a].size() >= 2){ */
-	/* 		for (int i=0; i<G.adj_out[a].size(); i++){ */
-	/* 			b = G.adj_out[a][i]; */
-	/* 			for (int j=i+1; j<G.adj_out[a].size(); j++){ */
-	/* 				// in-out wedge */
-	/* 				// b <- a -> c */
-	/* 				c = G.adj_out[a][j]; */
-	/* 				if (G.has_out_edge(b, c)){ */
+	std::cout<<"BRUTE FORCE"<<std::endl;
+	std::cout<<"IN-OUT WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		if (G.adj_out[a].size() >= 2){
+			for (int i=0; i<G.adj_out[a].size(); i++){
+				b = G.adj_out[a][i];
+				for (int j=i+1; j<G.adj_out[a].size(); j++){
+					// in-out wedge
+					// b <- a -> c
+					c = G.adj_out[a][j];
+					if (G.has_out_edge(b, c)){
 
-	/* 					A3_3.increment_all_2_all(a, b, c); */
-	/* 					for (int k=j+1; k<G.adj_out[a].size(); k++){ */
-	/* 						d = G.adj_out[a][k]; */
-	/* 						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){ */
-	/* 							A14_14.increment_all_2_all(a, b, c, d); */
-	/* 						} */
-	/* 					} */
-	/* 				}else{ */
-	/* 					/1* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; *1/ */
-	/* 					A1_1.increment_all_2_all(b, c); */
-	/* 					A1_2.increment_from_to(b, a); */
-	/* 					A1_2.increment_from_to(c, a); */
-	/* 				} */
-	/* 			} */
-	/* 		} */
-	/* 	} */
-	/* } */	
-	/* std::cout<<"OUT-OUT WEDGES"<<std::endl; */
-	/* for (int a = 0; a < n; a++){ */
-	/* 	for (int i=0; i<G.adj_out[a].size(); i++){ */
-	/* 		b = G.adj_out[a][i]; */
-	/* 		for (int j=0; j<G.adj_out[b].size(); j++){ */
-	/* 			// in-out wedge */
-	/* 			// a -> b -> c */
-	/* 			c = G.adj_out[b][j]; */
-	/* 			if (! G.has_out_edge(a, c)){ */
-	/* 				/1* std::cout<<"out-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; *1/ */
-	/* 				A1_1.increment_all_2_all(a, c); */
-	/* 				A1_2.increment_from_to(a, b); */
-	/* 				A1_2.increment_from_to(c, b); */
-	/* 			} */
-	/* 		} */
-	/* 	} */
-	/* } */
+						A3_3.increment_all_2_all(a, b, c);
+						for (int k=j+1; k<G.adj_out[a].size(); k++){
+							d = G.adj_out[a][k];
+							if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
+								A14_14.increment_all_2_all(a, b, c, d);
+							}
+						}
+					}else{
+						/* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
+						A1_1.increment_all_2_all(b, c);
+						A1_2.increment_from_to(b, a);
+						A1_2.increment_from_to(c, a);
+					}
+				}
+			}
+		}
+	}	
+	std::cout<<"OUT-OUT WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=0; j<G.adj_out[b].size(); j++){
+				// in-out wedge
+				// a -> b -> c
+				c = G.adj_out[b][j];
+				if (! G.has_out_edge(a, c)){
+					/* std::cout<<"out-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
+					A1_1.increment_all_2_all(a, c);
+					A1_2.increment_from_to(a, b);
+					A1_2.increment_from_to(c, b);
+				}
+			}
+		}
+	}
 	std::cout<<"OUT-IN WEDGES"<<std::endl;
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
@@ -137,10 +137,21 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	// Finish the Python Interpreter
 	/* Py_Finalize(); */
 	std::cout<<"translating to numpy"<<std::endl;
-	/* return A14_14.to_numpy_arrays(); */
-	/* return A3_3.to_numpy_arrays(); */
-	/* return A1_1.to_numpy_arrays(); */
-	return A1_2.to_numpy_arrays();
+	PyObject* A1_1_numpy = A1_1.to_numpy_arrays();
+	PyObject* A1_2_numpy = A1_2.to_numpy_arrays();
+	PyObject* A3_3_numpy = A3_3.to_numpy_arrays();
+	PyObject* A14_14_numpy = A14_14.to_numpy_arrays();
+
+	PyObject* tuple = Py_BuildValue("(OOOO)",A1_1_numpy,
+						 A1_2_numpy,
+						 A3_3_numpy,
+						 A14_14_numpy);
+	//  Py_BuildValue increases reference count
+	Py_DECREF(A1_1_numpy);
+	Py_DECREF(A1_2_numpy);
+	Py_DECREF(A3_3_numpy);
+	Py_DECREF(A14_14_numpy);
+	return tuple;
 	
 }
 
