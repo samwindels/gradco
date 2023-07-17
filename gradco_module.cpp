@@ -17,7 +17,7 @@
 #include "matrix.hh"
 
 
-static PyObject *gradco_count(PyObject *self, PyObject *args) {
+static PyMODINIT_FUNC *gradco_count(PyObject *self, PyObject *args) {
 
 
 	import_array();
