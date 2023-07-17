@@ -67,6 +67,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			for (int j=i+1; j<G.adj_out[a].size(); j++){
 				c = G.adj_out[a][j];
 				if (G.has_out_edge(b, c)){
+
+					A3_3.increment_all_2_all(a, b, c, d);
 					for (int k=j+1; k<G.adj_out[a].size(); k++){
 						d = G.adj_out[a][k];
 						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
