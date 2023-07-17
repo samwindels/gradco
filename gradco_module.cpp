@@ -52,11 +52,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	int b, c, d;
 
-	/* std::cout<<"Hie"<<std::endl; */
+	std::cout<<"BRUTE FORCE"<<std::endl;
+	std::cout<<"IN-OUT WEDGES"<<std::endl;
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
-			for (int i=0; i<G.adj_out[a].size(); i++)
-			{
+			for (int i=0; i<G.adj_out[a].size(); i++){
 				b = G.adj_out[a][i];
 				for (int j=i+1; j<G.adj_out[a].size(); j++){
 					// in-out wedge
@@ -72,15 +72,52 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							}
 						}
 					}else{
+						std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl;
 						A1_1.increment_all_2_all(b, c);
-						// increment A1_2
+						A1_2.increment_from_to(b, a);
+						A1_2.increment_from_to(c, a);
 					}
 				}
 			}
 		}
 	}	
+	std::cout<<"OUT-OUT WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=0; j<G.adj_out[b].size(); j++){
+				// in-out wedge
+				// a -> b -> c
+				c = G.adj_out[b][j];
+				if (! G.has_out_edge(a, c)){
+					std::cout<<"out-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl;
+					A1_1.increment_all_2_all(a, c);
+					A1_2.increment_from_to(a, b);
+					A1_2.increment_from_to(c, b);
+				}
+			}
+		}
+	}
+	std::cout<<"OUT-IN WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=0; j<G.adj_in[b].size(); j++){
+				// in-out wedge
+				// a -> b <- c
+				c = G.adj_in[b][j];
+				if (c > a){
+					if (! G.has_out_edge(a, c)){
+						std::cout<<"out-in"<<a<<' '<<b<<' '<<' '<<c<<std::endl;
+						A1_1.increment_all_2_all(a, c);
+						A1_2.increment_from_to(a, b);
+						A1_2.increment_from_to(c, b);
+					}
+				}
+			}
+		}
+	}
 
-	
 	// 
 	/* Py_DECREF(rows); */
 	/* Py_DECREF(cols); */
@@ -89,10 +126,10 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	// Finish the Python Interpreter
 	/* Py_Finalize(); */
 	std::cout<<"translating to numpy"<<std::endl;
-	/* PyObject* A14_14_numpy = A14_14.to_numpy_arrays(); */
-	/* return	A14_14_numpy; */
-	PyObject* A3_3_numpy = A3_3.to_numpy_arrays();
-	return	A3_3_numpy;
+	/* return A14_14.to_numpy_arrays(); */
+	/* return A3_3.to_numpy_arrays(); */
+	/* return A1_1.to_numpy_arrays(); */
+	return A1_2.to_numpy_arrays();
 	
 }
 

@@ -1096,17 +1096,42 @@ def compute_AG1_orbit_sum(G):
     A += compute_A2_1(G)
     return A
 
+def format_gradco_output(A_sparse, n):
+    A = np.zeros((n, n))
+    if A.shape[1] >0:
+        A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+    return A
+
+def format_gradco_input(G):
+    A = nx.to_numpy_array(G, dtype=int)
+    A = A+A.transpose()
+    A[A>0]=1
+    n = A.shape[0]
+    rows, cols = np.nonzero(A)
+    return rows, cols, n
 
 def count(G, adj_type):
 
     match adj_type:
         case 'A1_1':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                A_sparse = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(A_sparse, n)
+            else:
+                return np.zeros((n, n))
             # return compute_A1_1(G)
-            return count_all(G)['A1_1']
+            # return count_all(G)['A1_1']
         case 'A1_2':
             # return compute_A2_1(G).transpose()
-            return count_all(G)['A1_2']
+            # return count_all(G)['A1_2']
             # return compute_A1_2(G)
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                A_sparse = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(A_sparse, n)
+            else:
+                return np.zeros((n, n))
         case 'A2_1':
             # return compute_A2_1(G)
             return count_all(G)['A1_2'].transpose()
@@ -1116,20 +1141,12 @@ def count(G, adj_type):
         case 2:
             # return compute_AG2_digraph(G)
             # return count_all(G)['A3_3']
-
-            A = nx.to_numpy_array(G, dtype=int)
-            A = A+A.transpose()
-            A[A>0]=1
-            n = A.shape[0]
-            rows, cols = np.nonzero(A)
+            rows, cols, n = format_gradco_input(G)
             if len(rows)>0:
-                # print(rows, cols)
                 A_sparse = gradco.count(rows, cols, n, 2)
-                print(A_sparse)
-                A = np.zeros((n, n))
-                if A.shape[1] >0:
-                    A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
-            return A
+                return format_gradco_output(A_sparse, n)
+            else:
+                return np.zeros((n, n))
 
         case 'A6_6':
             return compute_A6_6(G)
@@ -1440,8 +1457,8 @@ def main():
    
     # G = nx.scale_free_graph(5)
     G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    compute_AG3_digraph(G)
-    return
+    # compute_AG3_digraph(G)
+    # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)

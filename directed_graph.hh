@@ -29,9 +29,10 @@ class DirectedGraph
 	int get_n();
 
 	std::vector<std::vector<int> > adj_out; 
+	std::vector<std::vector<int> > adj_in;  
+
     private:
 	int n;
-	std::vector<std::vector<int> > adj_in;  
 	std::vector<std::unordered_set<int> > adj_out_set; 
 	
     };

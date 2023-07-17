@@ -73,7 +73,7 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols) : 
     	    	col = PyLong_AsLong(getitem_cols(data_cols, cols));
     	    	if (row != col && col){
 			if (col>row){
-				std::cout<<row<<' '<<col<<std::endl;
+				/* std::cout<<row<<' '<<col<<std::endl; */
 				adj_out[row].push_back(col);
 				adj_in[col].push_back(row);
 				
