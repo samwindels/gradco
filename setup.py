@@ -28,7 +28,9 @@ def main():
     # print(extra_compile_args)
     
     gradco_module = Extension("gradco",
-                              sources=["directed_graph.cpp", "gradco_module.cpp"],
+                              sources=["directed_graph.cpp", 
+                                       "gradco_module.cpp",
+                                       "matrix.cpp" ],
                               # library_dirs=['/opt/local/lib/boost'],
                               # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
                               # runtime_library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
@@ -38,7 +40,8 @@ def main():
                               # include_dirs=['/opt/local/include/boost/', np.get_include()],
                               include_dirs=[ np.get_include()],
                               language='c++',
-                              extra_compile_args=['-std=c++20', "-O3"]
+                              # extra_compile_args=['-std=c++20', "-O3", "-march=native"]
+                              extra_compile_args=['-std=c++20']
                               )
 
     # c++20 

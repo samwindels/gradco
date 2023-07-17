@@ -12,6 +12,7 @@ DEBUG = True
 
 def matches_count_windels(triu, graphlet, expected_counts):
 
+    print(inspect.stack()[1].function)  # print name of the test
     A = squareform(triu)
     G = nx.from_numpy_array(A)
     # A_orbit = count(G, graphlet)
@@ -82,6 +83,7 @@ def matches_count_windels(triu, graphlet, expected_counts):
 
 
 def matches_orca(triu, adj_type, expected_counts):
+    print(inspect.stack()[1].function)  # print name of the test
     A = squareform(triu)
     G = nx.from_numpy_array(A)
     A_orbit = count(G, adj_type)

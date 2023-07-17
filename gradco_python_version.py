@@ -739,47 +739,44 @@ def compute_AG3_digraph(G):
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(b):
+                # out out wedge
                 if not G.has_edge(a, c):
                     for d in G_digraph.successors(c):
                         if not G.has_edge(d, a) and not G.has_edge(d, b):
                             print('loop (A)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
+                            A = __add_count(A, (a, b, c, d))
+
+                    for d in G_digraph.predecessors(c):
+                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+                            print('loop (C)', a, b, c)
+                            A = __add_count(A, (a, b, c, d))
+
+
     print('B')
     for a in G_digraph.nodes():
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
+                # in out wedge
                 if b < c and not G.has_edge(b, c):
+
                     for d in G_digraph.predecessors(c):
                         if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
                             print('loop (B, 1)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
+                            A = __add_count(A, (a, b, c, d))
                     for d in G_digraph.predecessors(b):
-                        if d != c and d != a and not G.has_edge(d, c) and not G.has_edge(d, a):
+                        if d < c and d != a and not G.has_edge(c, d) and not G.has_edge(d, a):
                             print('loop (B, 2)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
-    print('D')
-    for a in G_digraph.nodes():
-        for b in G_digraph.successors(a):
-            for c in G_digraph.successors(a):
-                if b < c and not G.has_edge(b, c):
+                            A = __add_count(A, (a, b, c, d))
+                    
                     for d in G_digraph.successors(c):
                         if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
                             print('loop (D, 1)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
+                            A = __add_count(A, (a, b, c, d))
                     for d in G_digraph.successors(b):
                         if d != c and d != a and not G.has_edge(d, c) and not G.has_edge(d, a):
                             print('loop (D, 2)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
+                            A = __add_count(A, (a, b, c, d))
 
-    print('(C)')
-    for a in G_digraph.nodes():
-        for b in G_digraph.successors(a):
-            for c in G_digraph.successors(b):
-                if not G.has_edge(a, c):
-                    for d in G_digraph.predecessors(c):
-                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
-                            print('loop (C)', a, b, c)
-                            A = __add_count(A, a, b, c, d)
 
     A /= 1  # overcount correction
     # orbit_count = get_gdv(G)[:, 8]
@@ -1113,7 +1110,21 @@ def count(G, adj_type):
             return compute_AG1_digraph(G)
         case 2:
             # return compute_AG2_digraph(G)
-            return count_all(G)['A3_3']
+            # return count_all(G)['A3_3']
+
+            A = nx.to_numpy_array(G, dtype=int)
+            A = A+A.transpose()
+            A[A>0]=1
+            n = A.shape[0]
+            rows, cols = np.nonzero(A)
+            if len(rows)>0:
+                # print(rows, cols)
+                A_sparse = gradco.count(rows, cols, n, 2)
+                print(A_sparse)
+                A = np.zeros((n, n))
+                if A.shape[1] >0:
+                    A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+            return A
 
         case 'A6_6':
             return compute_A6_6(G)
@@ -1173,7 +1184,19 @@ def count(G, adj_type):
         case 'A14_14':
             # return compute_A14_14_oriented_in_out(G)
             # return compute_A14_14_oriented_out_out(G)
-            return count_all(G)['A14_14']
+            A = nx.to_numpy_array(G, dtype=int)
+            A = A+A.transpose()
+            A[A>0]=1
+            n = A.shape[0]
+            rows, cols = np.nonzero(A)
+            if len(rows)>0:
+                # print(rows, cols)
+                A_14_14_sparse = gradco.count(rows, cols, n, 2)
+                A = np.zeros((n, n))
+                if A.shape[1] >0:
+                    A[A_14_14_sparse[0,:], A_14_14_sparse[1,:]] = A_14_14_sparse[2,:]
+            return A
+            # return count_all(G)['A14_14']
         case _:
             ValueError('invalid adjacency type')
 
@@ -1395,7 +1418,7 @@ def count_all(G):
 
             for c in G_digraph.predecessors(b):
                 # out in wedge
-                if c > a and not G.has_edge(a, c):
+                # if c > a and not G.has_edge(a, c):
                 # if c < a and not G.has_edge(c, a):
                     A1_1 = __add_count(A1_1, (a, c))
                     A1_2[a, b] +=1
@@ -1420,12 +1443,17 @@ def main():
     A = nx.to_numpy_array(G, dtype=int)
     n = A.shape[0]
     rows, cols = np.nonzero(A)
-    print(rows)
-    print(cols)
+    # print(rows)
+    # print(cols)
     # rows = np.ascontiguousarray(rows) 
     # cols = np.ascontiguousarray(cols) 
-    triu_counts = gradco.count(rows, cols, n, 2)
-    # print(triu_counts)
+    A_14_14_sparse = gradco.count(rows, cols, n, 2)
+    print(A_14_14_sparse.shape)
+
+
+    A = np.zeros((n, n))
+    A[A_14_14_sparse[0,:], A_14_14_sparse[1,:]] = A_14_14_sparse[2,:]
+    print(A)
     # print(np.sum(triu_counts/3))
     return
 

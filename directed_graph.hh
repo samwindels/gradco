@@ -1,7 +1,5 @@
-
-
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+/* #define PY_SSIZE_T_CLEAN */
+/* #include <Python.h> */
 
 #include <iostream>
 #include <vector>
@@ -34,7 +32,6 @@ class DirectedGraph
     private:
 	int n;
 	std::vector<std::vector<int> > adj_in;  
-	
 	std::vector<std::unordered_set<int> > adj_out_set; 
 	
     };

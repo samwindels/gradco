@@ -1,25 +1,32 @@
 /* #define PY_SSIZE_T_CLEAN */
 /* #include <Python.h> */
 
+#define NO_IMPORT_ARRAY
+#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
+#include <numpy/arrayobject.h>
+#include <numpy/ndarrayobject.h>
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-/* #include <utility> */
 
 
 class Matrix {
 
     private:
-	int n;
 	std::vector<std::unordered_map<int, int> > adj;
-	/* void increment_from_to(int a, int b); */
+	int n_entries;  // Track no. entreis in "adj".
+	void increment_from_to(int a, int b);
 
-	std::unordered_map<char, int>::iterator it;
 	
     public:
-	Matrix(int n){};
-	/* void increment_all_2_all(int a, int b, int c); */
+	Matrix(int n);
+	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
+	PyObject* to_numpy_arrays();
+	
+	std::unordered_map<int, int>::iterator it;
+
 
 };
 
