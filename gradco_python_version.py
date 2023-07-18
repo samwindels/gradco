@@ -1165,6 +1165,16 @@ def count(G, adj_type):
             else:
                 return np.zeros((n, n))
 
+
+        case 'A4_4':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As_sparse = gradco.count(rows, cols, n, 2)
+                A = As_sparse[3]
+                return format_gradco_output(A, n)
+            else:
+                return np.zeros((n, n))
+
         case 'A6_6':
             return compute_A6_6(G)
 
