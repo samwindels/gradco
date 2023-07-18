@@ -742,22 +742,38 @@ def compute_AG3_digraph(G):
                 # out out wedge
                 if not G.has_edge(a, c):
                     for d in G_digraph.successors(c):
-                        if not G.has_edge(d, a) and not G.has_edge(d, b):
+                        if not G_digraph.has_edge(a, d) and not G_digraph.has_edge(b, d):
                             # print('loop (1 and 8) ', a, b, c)
                             A = __add_count(A, (a, b, c, d))
 
+                    # for d in G_digraph.predecessors(c):
+                    #     if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
+                    #         # print('loop (2 and 4) ', a, b, c)
+                    #         A = __add_count(A, (a, b, c, d))
                     for d in G_digraph.predecessors(c):
-                        if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
-                            # print('loop (2 and 4) ', a, b, c)
+                        if d < a and not G_digraph.has_edge(d, b) and not G_digraph.has_edge(d, a):
+                            # print('loop (2 and 4), d<a ', a, b, c)
                             A = __add_count(A, (a, b, c, d))
+                        elif d >a and d < b and not G_digraph.has_edge(d, b) and not G_digraph.has_edge(a, d):
+                            # print('loop (2 and 4), a<d<b ', a, b, c)
+                            A = __add_count(A, (a, b, c, d))
+
+                        elif d > b and not G_digraph.has_edge(b, d) and not G_digraph.has_edge(a, d):
+                            # print('loop (2 and 4), a<b<d ', a, b, c)
+                            A = __add_count(A, (a, b, c, d))
+                    
                     for d in G_digraph.successors(a):
                         if d < b and not G.has_edge(b, d) and not G.has_edge(c, d):
-                            print('loop (5b) ', a, b, c)
+                            # print('loop (5b) ', a, b, c)
                             A = __add_count(A, (a, b, c, d))
                     for d in G_digraph.successors(a):
                         if d > b and not G.has_edge(b, d) and not G.has_edge(c, d):
-                            print('loop (7a) ', a, b, c)
+                            # print('loop (7a) ', a, b, c)
                             A = __add_count(A, (a, b, c, d))
+                    # for d in G_digraph.successors(a):
+                    #     if d != b and not G.has_edge(b, d) and not G.has_edge(c, d):
+                    #         print('loop (5b and 7a) ', a, b, c)
+                    #         A = __add_count(A, (a, b, c, d))
                         
 
     print('in out')
@@ -765,7 +781,7 @@ def compute_AG3_digraph(G):
         for b in G_digraph.successors(a):
             for c in G_digraph.successors(a):
                 # in out wedge
-                if b < c and not G.has_edge(b, c):
+                if b < c and not G_digraph.has_edge(b, c):
 
                     for d in G_digraph.predecessors(c):
                         if d != b and d != a and not G.has_edge(d, b) and not G.has_edge(d, a):
@@ -1482,11 +1498,12 @@ def main():
    
     # G = nx.scale_free_graph(5)
     G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    # format_gradco_input(G)
+    # # format_gradco_input(G)
+    # # return
+    # compute_AG3_digraph(G)
     # return
-    compute_AG3_digraph(G)
-    return
-    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     rows, cols, n = format_gradco_input(G)
     As_sparse = gradco.count(rows, cols, n, 2)
     return
