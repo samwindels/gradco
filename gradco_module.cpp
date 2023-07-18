@@ -44,11 +44,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 
 	// BRUTE FORCE
-	Matrix A14_14 = Matrix(n);  // 4-node clique
-	Matrix A3_3   = Matrix(n);  // 3-node triangle
-	
 	Matrix A1_1   = Matrix(n);  // 3-node path, outside orbits
 	Matrix A1_2   = Matrix(n);  // 3-node path, outside and midle orbits
+	Matrix A3_3   = Matrix(n);  // 3-node triangle
+	Matrix A14_14 = Matrix(n);  // 4-node clique
+	
 
 	int b, c, d;
 
@@ -102,41 +102,37 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
-			/* for (int j=G.adj_in[b].size()-1; j>-1; j--){ */
-			/* 	// in-out wedge */
-			/* 	// a -> b <- c */
-			/* 	c = G.adj_in[b][j]; */
-			/* 	if (c <= a){ break; } */
-			/* 	if (! G.has_out_edge(a, c)){ */
-			/* 		/1* std::cout<<"out-in "<<a<<' '<<b<<' '<<c<<std::endl; *1/ */
-			/* 		A1_1.increment_all_2_all(a, c); */
-			/* 		A1_2.increment_from_to(a, b); */
-			/* 		A1_2.increment_from_to(c, b); */
-			/* 	} */
-			/* } */
-				/* std::cout<<"out-in "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-			for (int j=0; j<G.adj_in[b].size(); j++){
+			for (int j=G.adj_in[b].size()-1; j>-1; j--){
+				// in-out wedge
+				// a -> b <- c
 				c = G.adj_in[b][j];
-				if (c > a){
-					if (! G.has_out_edge(a, c)){
-						/* std::cout<<"out-in"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-						A1_1.increment_all_2_all(a, c);
-						A1_2.increment_from_to(a, b);
-						A1_2.increment_from_to(c, b);
-					}
+				if (c <= a){ break; }
+				if (! G.has_out_edge(a, c)){
+					/* std::cout<<"out-in "<<a<<' '<<b<<' '<<c<<std::endl; */
+					A1_1.increment_all_2_all(a, c);
+					A1_2.increment_from_to(a, b);
+					A1_2.increment_from_to(c, b);
 				}
 			}
+				/* std::cout<<"out-in "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
+			/* for (int j=0; j<G.adj_in[b].size(); j++){ */
+			/* 	c = G.adj_in[b][j]; */
+			/* 	if (c > a){ */
+			/* 		if (! G.has_out_edge(a, c)){ */
+			/* 			/1* std::cout<<"out-in"<<a<<' '<<b<<' '<<' '<<c<<std::endl; *1/ */
+			/* 			A1_1.increment_all_2_all(a, c); */
+			/* 			A1_2.increment_from_to(a, b); */
+			/* 			A1_2.increment_from_to(c, b); */
+			/* 		} */
+			/* 	} */
+			/* } */
 		}
 	}
+	//INFERED  
+	
 
-	// 
-	/* Py_DECREF(rows); */
-	/* Py_DECREF(cols); */
-	/* Py_INCREF(A14_14_numpy); */
-
-	// Finish the Python Interpreter
-	/* Py_Finalize(); */
-	std::cout<<"translating to numpy"<<std::endl;
+	//FORMAT RESULTS
+	std::cout<<"Translating c to numpy arrays"<<std::endl;
 	PyObject* A1_1_numpy = A1_1.to_numpy_arrays();
 	PyObject* A1_2_numpy = A1_2.to_numpy_arrays();
 	PyObject* A3_3_numpy = A3_3.to_numpy_arrays();

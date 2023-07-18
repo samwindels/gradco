@@ -1106,6 +1106,14 @@ def format_gradco_input(G):
     A = nx.to_numpy_array(G, dtype=int)
     A = A+A.transpose()
     A[A>0]=1
+
+    rowsum = np.sum(A, axis=1)
+    order = np.argsort(rowsum)
+
+    A = A[:, order]
+    A = A[order, :]
+
+
     n = A.shape[0]
     rows, cols = np.nonzero(A)
     return rows, cols, n
@@ -1456,10 +1464,15 @@ def main():
 
    
     # G = nx.scale_free_graph(5)
-    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    # format_gradco_input(G)
+    # return
     # compute_AG3_digraph(G)
     # return
-    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    rows, cols, n = format_gradco_input(G)
+    As_sparse = gradco.count(rows, cols, n, 2)
+    return
     # G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
     # compute_A8_8_digraph(G)
     # compute_AG7_digraph(G)
