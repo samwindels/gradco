@@ -88,6 +88,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							// b <- a -> c <- d, with b < c
 							/* std::cout<<"G3 6, d<a : "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(b, d);
+							A4_5.increment_from_to(b, a);
+							A4_5.increment_from_to(d, c);
+							A4_5_bis.increment_from_to(b, c);
+							A4_5_bis.increment_from_to(d, a);
+							A5_5.increment_all_2_all(a, c);
 						}
 					}
 					
@@ -98,6 +103,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							// d -> b <- a -> c, with b < c
 							/* std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(c, d);
+							A4_5.increment_from_to(d, b);
+							A4_5.increment_from_to(c, a);
+							A4_5_bis.increment_from_to(d, a);
+							A4_5_bis.increment_from_to(c, b);
+							A5_5.increment_all_2_all(b, a);
 						}
 					}
 				}
@@ -123,9 +133,13 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						// sucessors of c
 						d = G.adj_out[c][k];
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
-							/* std::cout<<"G3 1 & 8: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c -> d
 							A4_4.increment_all_2_all(a, d);
+							A4_5.increment_from_to(a, b);
+							A4_5.increment_from_to(d, c);
+							A4_5_bis.increment_from_to(a, c);
+							A4_5_bis.increment_from_to(d, b);
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 
@@ -136,6 +150,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
+							A4_5.increment_from_to(a, b);
+							A4_5.increment_from_to(d, c);
+							A4_5_bis.increment_from_to(a, c);
+							A4_5_bis.increment_from_to(d, b);
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 					for (int k=0; k<G.adj_out[a].size(); k++){
@@ -146,6 +165,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 							// c <- b <- a -> d 
 							/* std::cout<<"G3 5b, 7a: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(d, c);
+							A4_5.increment_from_to(d, a);
+							A4_5.increment_from_to(c, b);
+							A4_5_bis.increment_from_to(d, b);
+							A4_5_bis.increment_from_to(c, a);
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
@@ -170,6 +194,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}
+
 	//INFERED  
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
@@ -234,14 +259,14 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
-	PyObject* tuple = Py_BuildValue("(OOOO)",A1_1_numpy,     // 0
-						 A1_2_numpy,     // 1
-						 A3_3_numpy,     // 2
-						 A4_4_numpy,     // 3
-						 A4_5_numpy,     // 4
-						 A4_5_bis_numpy, // 5
-						 A5_5_numpy,     // 6      
-						 A14_14_numpy);  // 7
+	PyObject* tuple = Py_BuildValue("(OOOOOOO)", A1_1_numpy,     // 0
+						     A1_2_numpy,     // 1
+						     A3_3_numpy,     // 2
+						     A4_4_numpy,     // 3
+						     A4_5_numpy,     // 4
+						     A4_5_bis_numpy, // 5
+						     A5_5_numpy,     // 6      
+						     A14_14_numpy);  // 7
 	//  Py_BuildValue increases reference count
 	Py_DECREF(A1_1_numpy);	   
 	Py_DECREF(A1_2_numpy);	   

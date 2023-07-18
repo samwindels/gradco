@@ -1525,13 +1525,13 @@ def main():
 
    
     # G = nx.scale_free_graph(5)
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # # format_gradco_input(G)
     # # return
     # compute_AG3_digraph(G)
     # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     rows, cols, n = format_gradco_input(G)
     As_sparse = gradco.count(rows, cols, n, 2)
     return
