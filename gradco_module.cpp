@@ -152,7 +152,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}
-	std::cout<<"OUT-IN WEDGES"<<std::endl;
+	std::cout<<"out-in wedges"<<std::endl;
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -234,23 +234,23 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
-	PyObject* tuple = Py_BuildValue("(OOOO)",A1_1_numpy,
-						 A1_2_numpy,
-						 A3_3_numpy,
-						 A4_4_numpy,
-						 A4_5_numpy,
-						 A4_5_bis_numpy,
-						 A5_5_numpy,
-						 A14_14_numpy);
+	PyObject* tuple = Py_BuildValue("(OOOO)",A1_1_numpy,     // 0
+						 A1_2_numpy,     // 1
+						 A3_3_numpy,     // 2
+						 A4_4_numpy,     // 3
+						 A4_5_numpy,     // 4
+						 A4_5_bis_numpy, // 5
+						 A5_5_numpy,     // 6      
+						 A14_14_numpy);  // 7
 	//  Py_BuildValue increases reference count
-	Py_DECREF(A1_1_numpy);
-	Py_DECREF(A1_2_numpy);
-	Py_DECREF(A3_3_numpy);
-	Py_DECREF(A4_4_numpy);
-	Py_DECREF(A4_5_numpy);
-	Py_DECREF(A4_5_bis_numpy);
+	Py_DECREF(A1_1_numpy);	   
+	Py_DECREF(A1_2_numpy);	   
+	Py_DECREF(A3_3_numpy);     
+	Py_DECREF(A4_4_numpy);	   
+	Py_DECREF(A4_5_numpy);     
+	Py_DECREF(A4_5_bis_numpy); 
 	Py_DECREF(A5_5_numpy);
-	Py_DECREF(A14_14_numpy);
+	Py_DECREF(A14_14_numpy);   
 
 	return tuple;
 	

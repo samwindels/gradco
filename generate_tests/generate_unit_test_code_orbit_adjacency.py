@@ -75,6 +75,9 @@ def write_tests_A_orbits(orbit_1, orbit_2):
                              (2, 1): 2,
                              (3, 3): 2,
                              (4, 4): 1,
+                             (4, 5): 1,
+                             (5, 4): 1,
+                             (5, 5): 1,
                              (6, 6): 2,
                              (6, 7): 1,
                              (7, 6): 3,
@@ -114,8 +117,11 @@ def main():
     # write_tests_A_orbits(1, 1)
     # write_tests_A_orbits(1, 2)
     # write_tests_A_orbits(2, 1)
-    write_tests_A_orbits(3, 3)
+    # write_tests_A_orbits(3, 3)
     # write_tests_A_orbits(4, 4)
+    write_tests_A_orbits(4, 5)
+    write_tests_A_orbits(5, 4)
+    write_tests_A_orbits(5, 5)
     # write_tests_A_orbits(6, 7)
     # write_tests_A_orbits(6, 6)
     # write_tests_A_orbits(7, 6)

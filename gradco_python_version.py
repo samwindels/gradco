@@ -1184,6 +1184,23 @@ def count(G, adj_type):
                 return format_gradco_output(A, n)
             else:
                 return np.zeros((n, n))
+        case 'A4_5':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As_sparse = gradco.count(rows, cols, n, 2)
+                A = As_sparse[4]
+                return format_gradco_output(A, n)
+            else:
+                return np.zeros((n, n))
+        
+        case 'A5_5':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As_sparse = gradco.count(rows, cols, n, 2)
+                A = As_sparse[6]
+                return format_gradco_output(A, n)
+            else:
+                return np.zeros((n, n))
         
 
 
@@ -1508,13 +1525,13 @@ def main():
 
    
     # G = nx.scale_free_graph(5)
-    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # # format_gradco_input(G)
     # # return
     # compute_AG3_digraph(G)
     # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     rows, cols, n = format_gradco_input(G)
     As_sparse = gradco.count(rows, cols, n, 2)
     return
