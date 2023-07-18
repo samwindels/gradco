@@ -44,10 +44,14 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 
 	// BRUTE FORCE
-	Matrix A1_1   = Matrix(n);  // 3-node path, outside orbits
-	Matrix A1_2   = Matrix(n);  // 3-node path, outside and midle orbits
-	Matrix A3_3   = Matrix(n);  // 3-node triangle
-	Matrix A14_14 = Matrix(n);  // 4-node clique
+	Matrix A1_1     = Matrix(n);  // 3-node path, outside orbits
+	Matrix A1_2     = Matrix(n);  // 3-node path, outside and middle orbits
+	Matrix A3_3     = Matrix(n);  // 3-node triangle
+	Matrix A4_4     = Matrix(n);  // 4-node path, outside orbits
+	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
+	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
+	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
+	Matrix A14_14   = Matrix(n);  // 4-node clique
 	
 
 	int b, c, d;
@@ -170,21 +174,34 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	
 
 	//FORMAT RESULTS
-	std::cout<<"Translating c to numpy arrays"<<std::endl;
-	PyObject* A1_1_numpy = A1_1.to_numpy_arrays();
-	PyObject* A1_2_numpy = A1_2.to_numpy_arrays();
-	PyObject* A3_3_numpy = A3_3.to_numpy_arrays();
-	PyObject* A14_14_numpy = A14_14.to_numpy_arrays();
-
+	std::cout<<"Translating c arrays to numpy arrays"<<std::endl;
+	PyObject* A1_1_numpy     = A1_1.to_numpy();
+	PyObject* A1_2_numpy     = A1_2.to_numpy();
+	PyObject* A3_3_numpy     = A3_3.to_numpy();
+	PyObject* A4_4_numpy     = A4_4.to_numpy();
+	PyObject* A4_5_numpy     = A4_5.to_numpy();
+	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
+	PyObject* A5_5_numpy     = A5_5.to_numpy();
+	PyObject* A14_14_numpy   = A14_14.to_numpy();
+	
 	PyObject* tuple = Py_BuildValue("(OOOO)",A1_1_numpy,
 						 A1_2_numpy,
 						 A3_3_numpy,
+						 A4_4_numpy,
+						 A4_5_numpy,
+						 A4_5_bis_numpy,
+						 A5_5_numpy,
 						 A14_14_numpy);
 	//  Py_BuildValue increases reference count
 	Py_DECREF(A1_1_numpy);
 	Py_DECREF(A1_2_numpy);
 	Py_DECREF(A3_3_numpy);
+	Py_DECREF(A4_4_numpy);
+	Py_DECREF(A4_5_numpy);
+	Py_DECREF(A4_5_bis_numpy);
+	Py_DECREF(A5_5_numpy);
 	Py_DECREF(A14_14_numpy);
+
 	return tuple;
 	
 }

@@ -59,7 +59,7 @@ void Matrix::increment_all_2_all(int a, int b, int c, int d){
 
 }
 
-PyObject* Matrix::to_numpy_arrays(){
+PyObject* Matrix::to_numpy(){
 
 	// contigues c, interpretted "3 rows, n_entries collumns"-array
 	int* array = new int[3*n_entries];
