@@ -114,21 +114,59 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A1_2.increment_from_to(c, b);
 				}
 			}
-				/* std::cout<<"out-in "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-			/* for (int j=0; j<G.adj_in[b].size(); j++){ */
-			/* 	c = G.adj_in[b][j]; */
-			/* 	if (c > a){ */
-			/* 		if (! G.has_out_edge(a, c)){ */
-			/* 			/1* std::cout<<"out-in"<<a<<' '<<b<<' '<<' '<<c<<std::endl; *1/ */
-			/* 			A1_1.increment_all_2_all(a, c); */
-			/* 			A1_2.increment_from_to(a, b); */
-			/* 			A1_2.increment_from_to(c, b); */
-			/* 		} */
-			/* 	} */
-			/* } */
 		}
 	}
 	//INFERED  
+	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
+	std::cout<<"IN-OUT WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		if (G.adj_out[a].size() >= 2){
+			for (int i=0; i<G.adj_out[a].size(); i++){
+				b = G.adj_out[a][i];
+				for (int j=i+1; j<G.adj_out[a].size(); j++){
+					// in-out wedge
+					// b <- a -> c
+					c = G.adj_out[a][j];
+					if (G.has_out_edge(b, c)){
+						// triangle
+
+					}else{
+						// three node path
+					
+					}
+				}
+			}
+		}
+	}	
+	std::cout<<"OUT-OUT WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=0; j<G.adj_out[b].size(); j++){
+				// in-out wedge
+				// a -> b -> c
+				c = G.adj_out[b][j];
+				if (! G.has_out_edge(a, c)){
+					// TODO
+				}
+			}
+		}
+	}
+	std::cout<<"OUT-IN WEDGES"<<std::endl;
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=G.adj_in[b].size()-1; j>-1; j--){
+				// in-out wedge
+				// a -> b <- c
+				c = G.adj_in[b][j];
+				if (c <= a){ break; }
+				if (! G.has_out_edge(a, c)){
+					//TODO
+				}
+			}
+		}
+	}
 	
 
 	//FORMAT RESULTS
