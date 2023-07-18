@@ -1135,8 +1135,8 @@ def format_gradco_input(G):
     rowsum = np.sum(A, axis=1)
     order = np.argsort(rowsum)
 
-    A = A[:, order]
-    A = A[order, :]
+    # A = A[:, order]
+    # A = A[order, :]
 
 
     n = A.shape[0]
@@ -1149,25 +1149,44 @@ def count(G, adj_type):
         case 'A1_1':
             rows, cols, n = format_gradco_input(G)
             if len(rows)>0:
-                A_sparse = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(A_sparse, n)
+                As = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(As[0], n)
             else:
                 return np.zeros((n, n))
-            # return compute_A1_1(G)
-            # return count_all(G)['A1_1']
         case 'A1_2':
-            # return compute_A2_1(G).transpose()
-            # return count_all(G)['A1_2']
-            # return compute_A1_2(G)
             rows, cols, n = format_gradco_input(G)
             if len(rows)>0:
-                A_sparse = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(A_sparse, n)
+                As = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(As[1], n)
             else:
                 return np.zeros((n, n))
         case 'A2_1':
-            # return compute_A2_1(G)
-            return count_all(G)['A1_2'].transpose()
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(As[1], n).transpose()
+            else:
+                return np.zeros((n, n))
+        
+        case 'A3_3':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As = gradco.count(rows, cols, n, 2)
+                return format_gradco_output(As[2], n)
+            else:
+                return np.zeros((n, n))
+        
+        case 'A4_4':
+            rows, cols, n = format_gradco_input(G)
+            if len(rows)>0:
+                As_sparse = gradco.count(rows, cols, n, 2)
+                A = As_sparse[3]
+                return format_gradco_output(A, n)
+            else:
+                return np.zeros((n, n))
+        
+
+
         case 1:
             # return compute_AG1_orbit_sum(G)
             return compute_AG1_digraph(G)
@@ -1182,14 +1201,6 @@ def count(G, adj_type):
                 return np.zeros((n, n))
 
 
-        case 'A4_4':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As_sparse = gradco.count(rows, cols, n, 2)
-                A = As_sparse[3]
-                return format_gradco_output(A, n)
-            else:
-                return np.zeros((n, n))
 
         case 'A6_6':
             return compute_A6_6(G)

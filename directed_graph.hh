@@ -25,6 +25,7 @@ class DirectedGraph
 	std::vector<int>* get_predecessors(int node);
 	bool has_out_edge(int a, int b);
 	bool has_in_edge(int a, int b);
+	bool has_edge(int a, int b);
 
 	int get_n();
 

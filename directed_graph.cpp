@@ -108,6 +108,18 @@ bool DirectedGraph::has_in_edge(int a, int b){
 	return adj_out_set[b].find(a) != adj_out_set[b].end();
 }
 
+bool DirectedGraph::has_edge(int a, int b){
+	if (a < b){
+		return has_out_edge(a, b); 
+	}
+	else{
+		return has_out_edge(b, a); 
+	}
+
+}
+
+
+
 int DirectedGraph::get_n(){
 	return n;
 }

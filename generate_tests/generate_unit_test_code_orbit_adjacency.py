@@ -73,6 +73,7 @@ def write_tests_A_orbits(orbit_1, orbit_2):
     orbitcombo2correction = {(1, 1): 1,
                              (1, 2): 1,
                              (2, 1): 2,
+                             (3, 3): 2,
                              (4, 4): 1,
                              (6, 6): 2,
                              (6, 7): 1,
@@ -113,7 +114,8 @@ def main():
     # write_tests_A_orbits(1, 1)
     # write_tests_A_orbits(1, 2)
     # write_tests_A_orbits(2, 1)
-    write_tests_A_orbits(4, 4)
+    write_tests_A_orbits(3, 3)
+    # write_tests_A_orbits(4, 4)
     # write_tests_A_orbits(6, 7)
     # write_tests_A_orbits(6, 6)
     # write_tests_A_orbits(7, 6)

@@ -84,35 +84,22 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					for (int k=0; k<G.adj_in[c].size(); k++){
 						// predecessors of c
 						d = G.adj_in[c][k];
-						// if else are statements to avoid checking both 
-						// hast_out_edge as well as has_in_edge
-						if(d < a && !G.has_out_edge(d, a) && !G.has_out_edge(d, b)){
-							/* std::cout<<"G3 6, d<a : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-
-							A4_4.increment_all_2_all(a, d);
-						}else if (a<d && d<b && !G.has_out_edge(a, d) && !G.has_out_edge(d, b)){
-							/* std::cout<<"G3 6, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-							A4_4.increment_all_2_all(a, d);
-						}
-						else if (d>b && !G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
-							/* std::cout<<"G3 6, a<b<d : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-							A4_4.increment_all_2_all(a, d);
+						if(!G.has_edge(a, d) && !G.has_edge(b, d)){
+							// b <- a -> c <- d, with b < c
+							/* std::cout<<"G3 6, d<a : "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
+							A4_4.increment_all_2_all(b, d);
 						}
 					}
 					
 					for (int k=0; k<G.adj_in[b].size(); k++){
-						// predecessors of c
+						// predecessors of b
 						d = G.adj_in[b][k];
-						if (d < a && !G.has_out_edge(d, a)){
-							/* std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-							A4_4.increment_all_2_all(a, d);
-						}
-						else if (d>a && !G.has_out_edge(a, d)){
-							/* std::cout<<"G3 3, a<b<d : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-							A4_4.increment_all_2_all(a, d);
+						if (d!=a && !G.has_edge(a, d) && !G.has_edge(c,d)){
+							// d -> b <- a -> c, with b < c
+							/* std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
+							A4_4.increment_all_2_all(c, d);
 						}
 					}
-
 				}
 			}
 		}
@@ -136,7 +123,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						// sucessors of c
 						d = G.adj_out[c][k];
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
-						/* std::cout<<"G3 1 & 8: "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
+						/* std::cout<<"G3 1 & 8: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(a, d);
 						}
 					}
@@ -144,36 +131,19 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					for (int k=0; k<G.adj_in[c].size(); k++){
 						// predecessors of c
 						d = G.adj_in[c][k];
-						/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-						
-						// if else are statements to avoid checking both 
-						// hast_out_edge as well as has_in_edge
-						if(d < a && !G.has_out_edge(d, a) && !G.has_out_edge(d, b)){
-							/* std::cout<<"G3 2 & 4, d<a : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-
-							A4_4.increment_all_2_all(a, d);
-						}else if (a<d && d<b && !G.has_out_edge(a, d) && !G.has_out_edge(d, b)){
-							/* std::cout<<"G3 2 & 4, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-							A4_4.increment_all_2_all(a, d);
-						}
-						else if (d>b && !G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
-							/* std::cout<<"G3 2 & 4, a<b<d : "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
+						if(d!= b && d != a && !G.has_edge(a, d) && !G.has_edge(b, d)){
+							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(a, d);
 						}
 					}
-					for (int k=0; k<G.adj_in[a].size(); k++){
-						// predecessors of c
-						d = G.adj_in[a][k];
-						if( d < b && ! G.has_out_edge(d, b)){
-							if ((c < d && ! G.has_out_edge(c, d)) || (d > c && ! G.has_out_edge(d, c))){
-								/* std::cout<<"G3 5b: "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-								A4_4.increment_all_2_all(a, d);
-							}
-						} else if (d > b && ! G.has_out_edge(b, d)){
-							if ((c < d && ! G.has_out_edge(c, d)) || (d > c && ! G.has_out_edge(d, c))){
-								/* std::cout<<"G3 7a: "<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-								A4_4.increment_all_2_all(a, d);
-							}
+					for (int k=0; k<G.adj_out[a].size(); k++){
+						// successor of a
+						d = G.adj_out[a][k];
+						if (d!= b && !G.has_edge(b, d) && !G.has_edge(c, d))
+						{	// d <- a -> b -> c
+							// c <- b <- a -> d 
+							/* std::cout<<"G3 5b, 7a: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
+							A4_4.increment_all_2_all(d, c);
 						}
 					}
 				}
@@ -190,7 +160,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					/* std::cout<<"out-in "<<a<<' '<<b<<' '<<c<<std::endl; */
+					/* std::cout<<"out-in "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 					A1_1.increment_all_2_all(a, c);
 					A1_2.increment_from_to(a, b);
 					A1_2.increment_from_to(c, b);
