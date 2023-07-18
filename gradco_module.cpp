@@ -57,7 +57,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	int b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
-	std::cout<<"IN-OUT WEDGES"<<std::endl;
+	std::cout<<"in-out wedges"<<std::endl;
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -104,13 +104,13 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}	
-	std::cout<<"OUT-OUT WEDGES"<<std::endl;
+	std::cout<<"out-out wedges"<<std::endl;
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=0; j<G.adj_out[b].size(); j++){
 				c = G.adj_out[b][j];
-				// in-out wedge
+				// out-out wedge
 				// a -> b -> c
 				if (! G.has_out_edge(a, c)){
 					// 3-node path
@@ -123,7 +123,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						// sucessors of c
 						d = G.adj_out[c][k];
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
-						/* std::cout<<"G3 1 & 8: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
+							/* std::cout<<"G3 1 & 8: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
+							// a -> b -> c -> d
 							A4_4.increment_all_2_all(a, d);
 						}
 					}
@@ -133,6 +134,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						d = G.adj_in[c][k];
 						if(d!= b && d != a && !G.has_edge(a, d) && !G.has_edge(b, d)){
 							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
+							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
 						}
 					}
