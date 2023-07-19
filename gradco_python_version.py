@@ -1524,8 +1524,8 @@ def count_all(G):
 def main():
 
    
-    # G = nx.scale_free_graph(5)
-    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.scale_free_graph(5000)
+    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # # format_gradco_input(G)
     # # return
     # compute_AG3_digraph(G)

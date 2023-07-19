@@ -41,8 +41,8 @@ def main():
                               include_dirs=[ np.get_include()],
                               language='c++',
                               # extra_compile_args=['-std=c++20', "-O3", "-march=native"]
-                              # extra_compile_args=['-std=c++20']
-                              extra_compile_args=['-std=c++20', "-O2"]
+                              extra_compile_args=['-std=c++20', '-g', '-O0']
+                              # extra_compile_args=['-std=c++20', "-O2"]
                               )
 
     # c++20 

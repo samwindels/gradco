@@ -51,6 +51,16 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
 	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
 	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
+	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
+	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
+	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
+	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
+	Matrix A9_10    = Matrix(n);  // 4-node paw,  
+	Matrix A9_11    = Matrix(n);  // 4-node paw,
+	Matrix A10_10   = Matrix(n);  // 4-node paw,
+	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A14_14   = Matrix(n);  // 4-node clique
 	
 
@@ -257,17 +267,39 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A4_5_numpy     = A4_5.to_numpy();
 	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
+	PyObject* A6_6_numpy     = A6_6.to_numpy();
+	PyObject* A6_7_numpy     = A6_7.to_numpy();   
+	PyObject* A8_8_numpy     = A8_8.to_numpy();
+	PyObject* A8_8_bis_numpy = A8_8_bis.to_numpy();
+	PyObject* A9_10_numpy    = A9_10.to_numpy();
+	PyObject* A9_11_numpy    = A9_11.to_numpy();
+	PyObject* A10_10_numpy   = A10_10.to_numpy();
+	PyObject* A12_12_numpy   = A12_12.to_numpy();
+	PyObject* A12_13_numpy   = A12_12.to_numpy();
+	PyObject* A13_13_numpy   = A13_13.to_numpy();
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
-	PyObject* tuple = Py_BuildValue("(OOOOOOO)", A1_1_numpy,     // 0
-						     A1_2_numpy,     // 1
-						     A3_3_numpy,     // 2
-						     A4_4_numpy,     // 3
-						     A4_5_numpy,     // 4
-						     A4_5_bis_numpy, // 5
-						     A5_5_numpy,     // 6      
-						     A14_14_numpy);  // 7
-	//  Py_BuildValue increases reference count
+	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOO)", 
+					A1_1_numpy,     // 0
+					A1_2_numpy,     // 1
+					A3_3_numpy,     // 2
+					A4_4_numpy,     // 3
+					A4_5_numpy,     // 4
+					A4_5_bis_numpy, // 5
+					A5_5_numpy,     // 6      
+					A6_6_numpy,     // 7
+					A6_7_numpy,     // 8
+					A8_8_numpy,     // 9
+					A8_8_bis_numpy, // 10
+					A9_10_numpy,    // 11
+					A9_11_numpy,    // 12
+					A10_10_numpy,   // 13
+					A12_12_numpy,   // 14
+					A12_13_numpy,   // 15
+					A13_13_numpy,   // 16
+					A14_14_numpy);  // 7
+	
+	//  Py_BuildValue increases reference count, need to deref
 	Py_DECREF(A1_1_numpy);	   
 	Py_DECREF(A1_2_numpy);	   
 	Py_DECREF(A3_3_numpy);     
@@ -275,7 +307,17 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Py_DECREF(A4_5_numpy);     
 	Py_DECREF(A4_5_bis_numpy); 
 	Py_DECREF(A5_5_numpy);
-	Py_DECREF(A14_14_numpy);   
+	Py_DECREF(A6_6_numpy);
+	Py_DECREF(A6_7_numpy);
+	Py_DECREF(A8_8_numpy);
+	Py_DECREF(A8_8_bis_numpy);
+	Py_DECREF(A9_10_numpy);
+	Py_DECREF(A9_11_numpy);
+	Py_DECREF(A10_10_numpy);  
+	Py_DECREF(A12_12_numpy);  
+	Py_DECREF(A12_13_numpy); 	   
+	Py_DECREF(A13_13_numpy);
+	Py_DECREF(A14_14_numpy);
 
 	return tuple;
 	
