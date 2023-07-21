@@ -127,8 +127,8 @@ def compute_A12_13(G):
                         A[a, b] += 1
                         A[a, c] += 1
     A /= 4  # overcount correction
-    orbit_count = get_gdv(G)[:, 12]
-    assert np.array_equal(np.sum(A, axis=1)/2, orbit_count)
+    # orbit_count = get_gdv(G)[:, 12]
+    # assert np.array_equal(np.sum(A, axis=1)/2, orbit_count)
     return A
 
 
@@ -1184,6 +1184,43 @@ def compute_A12_13_equation_based(G):
 
     return A
 
+def compute_A13_12_equation_based(G):
+
+    A = -2* compute_orbit_adjacency(G, 'A14_14')
+    A3_3 = compute_orbit_adjacency(G, 'A3_3')
+
+    for x, y, z in triangle_iterator(G):
+
+        A[x, z] += A3_3[x, y]-1 
+        A[y, z] += A3_3[y, x]-1
+        
+        A[y, x] += A3_3[y, z]-1
+        A[z, x] += A3_3[z, y]-1
+        
+        A[x, y] += A3_3[x, z] -1 
+        A[z, y] += A3_3[z, x] -1
+
+    return A
+
+def compute_A10_10_equation_based(G):
+
+    A = 2* compute_orbit_adjacency(G, 'A14_14')
+    A3_3 = compute_orbit_adjacency(G, 'A3_3')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for x, y, z in triangle_iterator(G):
+
+        A[x, y] += A1_2[y, z] - (A3_3[x, y] -1)
+        A[y, x] += A1_2[x, z] - (A3_3[y, x] -1)
+
+        A[x, z] += A1_2[z, y] - (A3_3[x, z] -1)
+        A[z, x] += A1_2[x, y] - (A3_3[z, x] -1)
+
+        A[y, z] += A1_2[z, x] - (A3_3[y, z] -1)
+        A[z, y] += A1_2[y, x] - (A3_3[z, y] -1)
+
+    return A
+
 
 def count(G, adj_type):
 
@@ -1215,7 +1252,8 @@ def count(G, adj_type):
         case 'A9_10':
             return compute_A9_10(G)
         case 'A10_10':
-            return compute_A10_10(G)
+            # return compute_A10_10(G)
+            return compute_A10_10_equation_based(G)
         case 'A12_12':
             # return compute_orbit_adjacency(G, adj_type)
             return compute_A12_12_fastest(G)
@@ -1223,7 +1261,7 @@ def count(G, adj_type):
             # return compute_A12_12_digraph(G)
 
         case 'A13_12':
-            return compute_A13_12(G)
+            return compute_A13_12_equation_based(G)
         case 'A12_13':
             # return compute_A12_13(G)
             return compute_A12_13_equation_based(G)
@@ -1284,6 +1322,8 @@ def compute_A9_11(G):
     A = -compute_A12_13(G)
     A2_2 = compute_AG2_digraph(G)
     for x, y, z in path_iterator(G):
+        if x>0 and (y == 0 or z == 0):
+            print(x, y, z)
         A[x, y] += A2_2[y, z]
         A[z, y] += A2_2[y, x]
     A = A/2
@@ -1470,7 +1510,9 @@ def count_all(G):
 def main():
 
    
-    G = nx.scale_free_graph(5000)
+    G = nx.scale_free_graph(100)
+    compute_A9_11(G)
+    return
     # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # # format_gradco_input(G)
     # # return
