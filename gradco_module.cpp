@@ -303,7 +303,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	for (int i=0; i<18; i++){
 		Py_DECREF(PyTuple_GetItem(tuple,i));
 	}
-
+	
 	return tuple;
 	
 }

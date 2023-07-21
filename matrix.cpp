@@ -85,4 +85,19 @@ PyObject* Matrix::to_numpy(){
 	return PyArray_SimpleNewFromData(2, dims, NPY_INT, array);
 
 }
+int Matrix::get(int a, int b){
+
+        it = adj[a].find(b);
+ 
+        // key found
+        if (it != adj[a].end()) {
+            	return it->second;
+        }
+        // key not found
+        else {
+		return 0;
+        }
+}
+
+
 

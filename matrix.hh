@@ -24,6 +24,7 @@ class Matrix {
 	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
 	void increment_from_to(int a, int b);
+	int get(int a, int b);
 	PyObject* to_numpy();
 	
 	std::unordered_map<int, int>::iterator it;
