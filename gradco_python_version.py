@@ -9,6 +9,18 @@ import pandas as pd
 import gradco
 from itertools import combinations
 
+adj2index = {
+
+            'A1_1': 0,
+            'A1_2': 1,
+            'A3_3': 2,
+            'A4_4': 3,
+            'A4_5': 4,
+            'A4_5_bis': 5,
+            'A5_5': 6,
+            'A14_14': 17
+        }
+
 
 def get_gdv(G):
 
@@ -1143,150 +1155,64 @@ def format_gradco_input(G):
     rows, cols = np.nonzero(A)
     return rows, cols, n
 
+def compute_orbit_adjacency(G, adj_type):
+        global adj2index
+        rows, cols, n = format_gradco_input(G)
+        tuple_index = adj2index[adj_type]
+        if len(rows)>0:
+            As_sparse = gradco.count(rows, cols, n, 2)
+            A = As_sparse[tuple_index]
+            return format_gradco_output(A, n)
+        else:
+            return np.zeros((n, n))
+
 def count(G, adj_type):
 
     match adj_type:
         case 'A1_1':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(As[0], n)
-            else:
-                return np.zeros((n, n))
+            return compute_orbit_adjacency(G, adj_type)
         case 'A1_2':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(As[1], n)
-            else:
-                return np.zeros((n, n))
+            return compute_orbit_adjacency(G, adj_type)
         case 'A2_1':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(As[1], n).transpose()
-            else:
-                return np.zeros((n, n))
-        
+            return compute_orbit_adjacency(G, adj_type)
         case 'A3_3':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(As[2], n)
-            else:
-                return np.zeros((n, n))
-        
+            return compute_orbit_adjacency(G, adj_type)
         case 'A4_4':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As_sparse = gradco.count(rows, cols, n, 2)
-                A = As_sparse[3]
-                return format_gradco_output(A, n)
-            else:
-                return np.zeros((n, n))
+            return compute_orbit_adjacency(G, adj_type)
         case 'A4_5':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As_sparse = gradco.count(rows, cols, n, 2)
-                A = As_sparse[4]
-                return format_gradco_output(A, n)
-            else:
-                return np.zeros((n, n))
-        
+            return compute_orbit_adjacency(G, adj_type)
         case 'A5_5':
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                As_sparse = gradco.count(rows, cols, n, 2)
-                A = As_sparse[6]
-                return format_gradco_output(A, n)
-            else:
-                return np.zeros((n, n))
-        
-
-
-        case 1:
-            # return compute_AG1_orbit_sum(G)
-            return compute_AG1_digraph(G)
-        case 2:
-            # return compute_AG2_digraph(G)
-            # return count_all(G)['A3_3']
-            rows, cols, n = format_gradco_input(G)
-            if len(rows)>0:
-                A_sparse = gradco.count(rows, cols, n, 2)
-                return format_gradco_output(A_sparse, n)
-            else:
-                return np.zeros((n, n))
-
-
-
-        case 'A6_6':
-            return compute_A6_6(G)
-
-        case 'A6_7':
-            return compute_A6_7(G)
-
-        case 'A7_6':
-            return compute_A7_6(G)
-        case 3:
-            # return compute_AG3(G)
-            return compute_AG3_digraph(G)
-
-        case 4:
-            return compute_AG4_orbit_sum(G)
-        case 5:
-            return compute_AG5_orbit_sum(G)
-        case 6:
-            return compute_AG6_orbit_sum(G)
-
+            return compute_orbit_adjacency(G, adj_type)
         case 'A11_10':
             return compute_A11_10(G)
         case 'A10_11':
             return compute_A10_11(G)  # implemented as transpose
-
         case 'A11_9':
             return compute_A11_9(G)
         case 'A9_11':
             return compute_A9_11(G)  # implemented as transpose
-
         case 'A10_9':
             return compute_A10_9(G)
-
         case 'A9_10':
             return compute_A9_10(G)
-
         case 'A10_10':
             return compute_A10_10(G)
-
-
         case 'A12_12':
+            # return compute_orbit_adjacency(G, adj_type)
             return compute_A12_12_fastest(G)
             # return compute_A12_12_c(G)
             # return compute_A12_12_digraph(G)
+
         case 'A13_12':
             return compute_A13_12(G)
-        case 7:
-            return compute_AG7_digraph_two(G)
-            # return compute_AG7_digraph(G)
-            # return compute_AG7(G)
         case 'A12_13':
             return compute_A12_13(G)
         case 'A13_13':
             return compute_A13_13(G)
         case 'A14_14':
+            return compute_orbit_adjacency(G, adj_type)
             # return compute_A14_14_oriented_in_out(G)
             # return compute_A14_14_oriented_out_out(G)
-            A = nx.to_numpy_array(G, dtype=int)
-            A = A+A.transpose()
-            A[A>0]=1
-            n = A.shape[0]
-            rows, cols = np.nonzero(A)
-            if len(rows)>0:
-                # print(rows, cols)
-                A_14_14_sparse = gradco.count(rows, cols, n, 2)
-                A = np.zeros((n, n))
-                if A.shape[1] >0:
-                    A[A_14_14_sparse[0,:], A_14_14_sparse[1,:]] = A_14_14_sparse[2,:]
-            return A
             # return count_all(G)['A14_14']
         case _:
             ValueError('invalid adjacency type')

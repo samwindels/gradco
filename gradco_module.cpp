@@ -279,7 +279,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A13_13_numpy   = A13_13.to_numpy();
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
-	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOO)", 
+	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOO)", 
 					A1_1_numpy,     // 0
 					A1_2_numpy,     // 1
 					A3_3_numpy,     // 2
@@ -297,7 +297,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A12_12_numpy,   // 14
 					A12_13_numpy,   // 15
 					A13_13_numpy,   // 16
-					A14_14_numpy);  // 7
+					A14_14_numpy);  // 17
 	
 	//  Py_BuildValue increases reference count, need to deref
 	Py_DECREF(A1_1_numpy);	   
