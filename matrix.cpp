@@ -7,6 +7,16 @@ Matrix::Matrix(int n){
 }
 
 
+Matrix::Matrix(const Matrix& m){
+	n_entries=m.n_entries;
+	adj.resize(m.adj.size(), std::unordered_map<int, int>());
+
+	for(int i=0; i<adj.size(); i++){
+		adj[i] = m.adj[i];
+	}
+}
+
+
 void Matrix::increment_from_to(int a, int b){
 	// check if key `b` exists in the map or not
         it = adj[a].find(b);

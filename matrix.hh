@@ -20,6 +20,7 @@ class Matrix {
 	
     public:
 	Matrix(int n);
+	Matrix(const Matrix& m);
 	void increment_all_2_all(int a, int b);
 	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
