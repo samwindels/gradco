@@ -26,6 +26,34 @@ void Matrix::add_matrix_multiple(const Matrix& m, int scalar){
 	}
 }
 
+void Matrix::subtract_matrix_multiple(const Matrix& m, int scalar){
+	for (int a=0; a<m.adj.size(); a++)
+	{
+		for(auto b : m.adj[a]) {
+			substract_scalar(a, b.first, b.second * scalar);
+		}
+	}
+}
+
+
+void Matrix::substract_scalar(int a, int b, int v){
+        it = adj[a].find(b);
+ 
+        // key found
+        if (it != adj[a].end()) {
+            	it->second-=v;    // increment map's value for key `b`
+		if (it->second == 0){
+			z_entries++;
+		}
+        }
+        // key not found
+        else {
+            	adj[a].insert(std::make_pair(b, 1));
+		n_entries++;
+        }
+
+}
+
 void Matrix::add_scalar(int a, int b, int v){
         it = adj[a].find(b);
  

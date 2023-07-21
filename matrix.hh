@@ -32,6 +32,8 @@ class Matrix {
 	std::unordered_map<int, int>::iterator it;
 	void add_matrix_multiple(const Matrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
+	void substract_matrix_multiple(const Matrix& m, int scalar);
+	void substract_scalar(int a, int b, int v);
 
 
 };
