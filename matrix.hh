@@ -14,11 +14,12 @@
 class Matrix {
 
     private:
-	std::vector<std::unordered_map<int, int> > adj;
-	int n_entries;  // Track no. entreis in "adj".
+	int n_entries;  // Track no. entries in "adj".
+	int z_entries;  // Track no. zero entries in "adj".
 
 	
     public:
+	std::vector<std::unordered_map<int, int> > adj;
 	Matrix(int n);
 	Matrix(const Matrix& m);
 	void increment_all_2_all(int a, int b);
@@ -29,6 +30,8 @@ class Matrix {
 	PyObject* to_numpy();
 	
 	std::unordered_map<int, int>::iterator it;
+	void add_matrix_multiple(const Matrix& m, int scalar);
+	void add_scalar(int a, int b, int v);
 
 
 };

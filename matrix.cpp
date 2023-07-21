@@ -2,7 +2,8 @@
 #include "matrix.hh"
 
 Matrix::Matrix(int n){
-	n_entries=0;
+	n_entries = 0;
+	z_entries = 0;  //zero entries. Skipped when mapping to numpy sparse
     	adj.resize(n, std::unordered_map<int, int>());	
 }
 
@@ -16,6 +17,29 @@ Matrix::Matrix(const Matrix& m){
 	}
 }
 
+void Matrix::add_matrix_multiple(const Matrix& m, int scalar){
+	for (int a=0; a<m.adj.size(); a++)
+	{
+		for(auto b : m.adj[a]) {
+			add_scalar(a, b.first, b.second * scalar);
+		}
+	}
+}
+
+void Matrix::add_scalar(int a, int b, int v){
+        it = adj[a].find(b);
+ 
+        // key found
+        if (it != adj[a].end()) {
+            	it->second+=v;    // increment map's value for key `b`
+        }
+        // key not found
+        else {
+            	adj[a].insert(std::make_pair(b, 1));
+		n_entries++;
+        }
+
+}
 
 void Matrix::increment_from_to(int a, int b){
 	// check if key `b` exists in the map or not
