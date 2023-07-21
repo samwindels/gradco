@@ -300,24 +300,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A14_14_numpy);  // 17
 	
 	//  Py_BuildValue increases reference count, need to deref
-	Py_DECREF(A1_1_numpy);	   
-	Py_DECREF(A1_2_numpy);	   
-	Py_DECREF(A3_3_numpy);     
-	Py_DECREF(A4_4_numpy);	   
-	Py_DECREF(A4_5_numpy);     
-	Py_DECREF(A4_5_bis_numpy); 
-	Py_DECREF(A5_5_numpy);
-	Py_DECREF(A6_6_numpy);
-	Py_DECREF(A6_7_numpy);
-	Py_DECREF(A8_8_numpy);
-	Py_DECREF(A8_8_bis_numpy);
-	Py_DECREF(A9_10_numpy);
-	Py_DECREF(A9_11_numpy);
-	Py_DECREF(A10_10_numpy);  
-	Py_DECREF(A12_12_numpy);  
-	Py_DECREF(A12_13_numpy); 	   
-	Py_DECREF(A13_13_numpy);
-	Py_DECREF(A14_14_numpy);
+	for (int i=0; i<18; i++){
+		Py_DECREF(PyTuple_GetItem(tuple,i));
+	}
 
 	return tuple;
 	
