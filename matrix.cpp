@@ -55,7 +55,9 @@ void Matrix::subtract_scalar(int a, int b, int v){
 }
 
 void Matrix::add_scalar(int a, int b, int v){
-        it = adj[a].find(b);
+	if (!v){ return; }
+        
+	it = adj[a].find(b);
  
         // key found
         if (it != adj[a].end()) {

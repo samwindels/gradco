@@ -208,7 +208,10 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	//INFERED  
 	
 	int f12_13_ab, f12_13_ac, f12_13_bc;
-	int f10_10_ab, f10_10_ac, f10_10_bc;
+	int f10_10_ab, f10_10_ba, f10_10_ac, f10_10_ca, f10_10_bc, f10_10_cb;
+
+
+	A10_10.add_matrix_multiple(A14_14, 2);
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
@@ -224,21 +227,27 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						f12_13_ab = A3_3.get(a,b) - 1;
 						f12_13_ac = A3_3.get(a,c) - 1;
 						f12_13_bc = A3_3.get(b,c) - 1;
-						
-						if (f12_13_bc){					
-							A12_13.add_scalar(a, b, f12_13_bc);
-							A12_13.add_scalar(a, c, f12_13_bc);
-						}
-						
-						if (f12_13_ac){					
-							A12_13.add_scalar(b, a, f12_13_ac);
-							A12_13.add_scalar(b, c, f12_13_ac);
-						}
-						if (f12_13_ab){					
-							A12_13.add_scalar(c, a, f12_13_ab);
-							A12_13.add_scalar(c, b, f12_13_ab);
-						}
 
+						A12_13.add_scalar(a, b, f12_13_bc);
+						A12_13.add_scalar(a, c, f12_13_bc);
+						A12_13.add_scalar(b, a, f12_13_ac);
+						A12_13.add_scalar(b, c, f12_13_ac);
+						A12_13.add_scalar(c, a, f12_13_ab);
+						A12_13.add_scalar(c, b, f12_13_ab);
+
+						f10_10_ab = A1_2.get(b, c) - f12_13_ab; 
+						f10_10_ba = A1_2.get(a, c) - f12_13_ab; 
+						f10_10_ac = A1_2.get(c, b) - f12_13_ac; 
+						f10_10_ca = A1_2.get(a, b) - f12_13_ac; 
+						f10_10_bc = A1_2.get(c, a) - f12_13_bc; 
+						f10_10_cb = A1_2.get(b, a) - f12_13_bc; 
+
+						A10_10.add_scalar(a, b, f10_10_ab);
+						A10_10.add_scalar(b, a, f10_10_ba);
+						A10_10.add_scalar(a, c, f10_10_ac);
+						A10_10.add_scalar(c, a, f10_10_ca);
+						A10_10.add_scalar(b, c, f10_10_bc);
+						A10_10.add_scalar(c, b, f10_10_cb);
 
 					}else{
 						// three node path
