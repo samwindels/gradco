@@ -1460,23 +1460,23 @@ def compute_A8_8_double_hop_equation_based(G):
     return A
 
 
-# def compute_A8_8_single_hop_equation_based(G):
-#     # equation 10
-#     A = - 1 * compute_A12_13(G)
-#     A1_1 = compute_A1_1(G)
-#     for x, y, z in path_iterator(G):
-#         A[x, y] += A1_1[x, z] - 1
-#         A[z, y] += A1_1[z, x] - 1
-#     return A
 def compute_A8_8_single_hop_equation_based(G):
-    # equation 9
-    A = - 1 * compute_orbit_adjacency(G, 'A4_5')
-    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+    # equation 10
+    A = - 1 * compute_A12_13(G)
+    A1_1 = compute_A1_1(G)
     for x, y, z in path_iterator(G):
-        if x < z:
-            A[x, y] += A1_2[y, z] 
-            A[z, y] += A1_2[y, x] 
+        A[x, y] += A1_1[x, z] - 1
+        A[z, y] += A1_1[z, x] - 1
     return A
+# def compute_A8_8_single_hop_equation_based(G):
+#     # equation 9
+#     A = - 1 * compute_orbit_adjacency(G, 'A4_5')
+#     A1_2 = compute_orbit_adjacency(G, 'A1_2')
+#     for x, y, z in path_iterator(G):
+#         if x < z:
+#             A[x, y] += A1_2[y, z] 
+#             A[z, y] += A1_2[y, x] 
+#     return A
 
 
 def compute_AG5_orbit_sum(G):
