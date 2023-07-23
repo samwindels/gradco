@@ -58,6 +58,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Matrix A9_10    = Matrix(n);  // 4-node paw,  
 	Matrix A9_11    = Matrix(n);  // 4-node paw,
 	Matrix A10_10   = Matrix(n);  // 4-node paw,
+	Matrix A10_11   = Matrix(n);  // 4-node paw,
 	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
@@ -255,18 +256,30 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A13_13.add_scalar(b, c, f12_13_bc);
 						A13_13.add_scalar(c, a, f12_13_ac);
 						A13_13.add_scalar(c, b, f12_13_bc);
+						
+						A10_11.add_scalar(a, b, A1_2.get(a, b)); 
+						A10_11.add_scalar(b, a, A1_2.get(b, a)); 
+						A10_11.add_scalar(a, c, A1_2.get(a, c)); 
+						A10_11.add_scalar(c, a, A1_2.get(c, a)); 
+						A10_11.add_scalar(b, c,	A1_2.get(b, c)); 
+						A10_11.add_scalar(c, b, A1_2.get(c, b)); 
+
 
 					}else{
 						// three node path
-        /* A[x, y] += A3_3[x, y] -1 */ 
-        /* A[x, z] += A3_3[x, z] -1 */
-        
-        /* A[y, x] += A3_3[y, x] -1 */
-        /* A[y, z] += A3_3[y, z] -1 */
-        
-        /* A[z, x] += A3_3[z, x] -1 */ 
-        /* A[z, y] += A3_3[z, y] -1 */
-					
+    /* A1_2 = compute_A1_2(G) */
+    /* A = - compute_A12_13(G) */
+    /* for x, y, z in triangle_iterator(G): */
+
+    /*     A[x, y] += A1_2[x, y] */
+    /*     A[x, z] += A1_2[x, z] */
+
+    /*     A[y, x] += A1_2[y, x] */
+    /*     A[y, z] += A1_2[y, z] */
+
+    /*     A[z, x] += A1_2[z, x] */
+    /*     A[z, y] += A1_2[z, y] */
+    				
 					}
 				}
 			}
@@ -304,6 +317,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
+	A10_11.subtract_matrix_multiple(A12_13, 1);
 	
 
 	//FORMAT RESULTS
@@ -322,9 +336,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A9_10_numpy    = A9_10.to_numpy();
 	PyObject* A9_11_numpy    = A9_11.to_numpy();
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
+	PyObject* A10_11_numpy   = A10_10.to_numpy();
 	PyObject* A12_12_numpy   = A12_12.to_numpy();
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
-	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);
+	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
+	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOO)", 
@@ -342,10 +358,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A9_10_numpy,    // 11
 					A9_11_numpy,    // 12
 					A10_10_numpy,   // 13
-					A12_12_numpy,   // 14
-					A12_13_numpy,   // 15
-					A13_13_numpy,   // 16
-					A14_14_numpy);  // 17
+					A10_11_numpy,   // 14
+					A12_12_numpy,   // 15
+					A12_13_numpy,   // 16
+					A13_13_numpy,   // 17
+					A14_14_numpy);  // 18
 	
 	//  Py_BuildValue increases reference count, need to deref
 	for (int i=0; i<18; i++){

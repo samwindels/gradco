@@ -19,9 +19,10 @@ adj2index = {
             'A4_5_bis': 5,
             'A5_5': 6,
             'A10_10': 13,
-            'A12_13': 15,
-            'A13_13': 16,
-            'A14_14': 17
+            'A10_11': 14,
+            'A12_13': 16,
+            'A13_13': 17,
+            'A14_14': 18
         }
 
 
@@ -1248,6 +1249,25 @@ def compute_A13_13_equation_based(G):
     # A = A - A14_14
     return A
 
+
+def compute_A10_11_equation_based(G):
+
+    A1_2 = compute_A1_2(G)
+    A = - compute_A12_13(G)
+    for x, y, z in triangle_iterator(G):
+
+        A[x, y] += A1_2[x, y]
+        A[x, z] += A1_2[x, z]
+
+        A[y, x] += A1_2[y, x]
+        A[y, z] += A1_2[y, z]
+
+        A[z, x] += A1_2[z, x]
+        A[z, y] += A1_2[z, y]
+
+    return A
+
+
 def count(G, adj_type):
 
     match adj_type:
@@ -1267,8 +1287,6 @@ def count(G, adj_type):
             return compute_orbit_adjacency(G, adj_type)
         case 'A11_10':
             return compute_A11_10(G)
-        case 'A10_11':
-            return compute_A10_11(G)  # implemented as transpose
         case 'A11_9':
             return compute_A11_9(G)
         case 'A9_11':
@@ -1282,6 +1300,9 @@ def count(G, adj_type):
             # return compute_A10_10(G)
             # return compute_A10_10_equation_based(G)
             return compute_orbit_adjacency(G, 'A10_10')
+        case 'A10_11':
+            # return compute_A10_11_equation_based(G)
+            return compute_orbit_adjacency(G, 'A10_11')
         case 'A12_12':
             # return compute_orbit_adjacency(G, adj_type)
             return compute_A12_12_fastest(G)
@@ -1323,6 +1344,7 @@ def compute_A11_10(G):
         A[z, y] += A2_1[z, y]
 
     return A
+
 
 
 def compute_A10_10(G):
