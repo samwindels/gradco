@@ -244,19 +244,12 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A12_13.add_scalar(c, a, A3_3_ab);
 						A12_13.add_scalar(c, b, A3_3_ab);
 
-						f10_10_ab = A1_2_bc - A3_3_ab; 
-						f10_10_ba = A1_2_ac - A3_3_ab; 
-						f10_10_ac = A1_2_cb - A3_3_ac; 
-						f10_10_ca = A1_2_ab - A3_3_ac; 
-						f10_10_bc = A1_2_ca - A3_3_bc; 
-						f10_10_cb = A1_2_ba - A3_3_bc; 
-
-						A10_10.add_scalar(a, b, f10_10_ab);
-						A10_10.add_scalar(b, a, f10_10_ba);
-						A10_10.add_scalar(a, c, f10_10_ac);
-						A10_10.add_scalar(c, a, f10_10_ca);
-						A10_10.add_scalar(b, c, f10_10_bc);
-						A10_10.add_scalar(c, b, f10_10_cb);
+						A10_10.add_scalar(a, b, A1_2_bc - A3_3_ab);
+						A10_10.add_scalar(b, a, A1_2_ac - A3_3_ab);
+						A10_10.add_scalar(a, c, A1_2_cb - A3_3_ac);
+						A10_10.add_scalar(c, a, A1_2_ab - A3_3_ac);
+						A10_10.add_scalar(b, c, A1_2_ca - A3_3_bc);
+						A10_10.add_scalar(c, b, A1_2_ba - A3_3_bc);
 						
 						A13_13.add_scalar(a, b, A3_3_ab);
 						A13_13.add_scalar(a, c, A3_3_ac);
