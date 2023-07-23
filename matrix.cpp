@@ -48,14 +48,14 @@ void Matrix::subtract_scalar(int a, int b, int v){
         }
         // key not found
         else {
-            	adj[a].insert(std::make_pair(b, 1));
+            	adj[a].insert(std::make_pair(b, -v));
 		n_entries++;
         }
 
 }
 
 void Matrix::add_scalar(int a, int b, int v){
-	if (!v){ return; }
+	if (v==0){ return; }
         
 	it = adj[a].find(b);
  

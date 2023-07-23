@@ -19,6 +19,7 @@ adj2index = {
             'A4_5_bis': 5,
             'A5_5': 6,
             'A6_7': 8,
+            'A8_8': 9,
             'A9_11': 12,
             'A10_10': 13,
             'A10_11': 14,
@@ -1290,6 +1291,9 @@ def count(G, adj_type):
         case 'A6_7':
             # return compute_A6_7(G)
             return compute_orbit_adjacency(G, adj_type)
+        case 'A8_8':
+            # return compute_A8_8_single_hop_equation_based(G)
+            return compute_orbit_adjacency(G, adj_type)
         case 'A11_10':
             return compute_A11_10(G)
         case 'A11_9':
@@ -1456,12 +1460,22 @@ def compute_A8_8_double_hop_equation_based(G):
     return A
 
 
+# def compute_A8_8_single_hop_equation_based(G):
+#     # equation 10
+#     A = - 1 * compute_A12_13(G)
+#     A1_1 = compute_A1_1(G)
+#     for x, y, z in path_iterator(G):
+#         A[x, y] += A1_1[x, z] - 1
+#         A[z, y] += A1_1[z, x] - 1
+#     return A
 def compute_A8_8_single_hop_equation_based(G):
-    A = - 1 * compute_A12_13(G)
-    A1_1 = compute_A1_1(G)
+    # equation 9
+    A = - 1 * compute_orbit_adjacency(G, 'A4_5')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
     for x, y, z in path_iterator(G):
-        A[x, y] += A1_1[x, z] - 1
-        A[z, y] += A1_1[z, x] - 1
+        if x < z:
+            A[x, y] += A1_2[y, z] 
+            A[z, y] += A1_2[y, x] 
     return A
 
 

@@ -275,6 +275,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 						A6_7.add_scalar(a, b, A1_2.get(a, b) -1);
 						A6_7.add_scalar(c, b, A1_2.get(c, b) -1);
+						
+						A1_2_bc = A1_2.get(b, c);
+						A1_2_ba = A1_2.get(b, a);
+						A8_8.add_scalar(a, b, A1_2_bc);
+						A8_8.add_scalar(c, b, A1_2_ba);
 
 					}
 				}
@@ -296,6 +301,11 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A9_11.add_scalar(c, b, A3_3_ab);
 					A6_7.add_scalar(a, b, A1_2.get(a, b) -1);
 					A6_7.add_scalar(c, b, A1_2.get(c, b) -1);
+					
+					A1_2_bc = A1_2.get(b, c);
+					A1_2_ba = A1_2.get(b, a);
+					A8_8.add_scalar(a, b, A1_2_bc);
+					A8_8.add_scalar(c, b, A1_2_ba);
 				}
 			}
 		}
@@ -316,16 +326,24 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A9_11.add_scalar(c, b, A3_3_ab);
 					A6_7.add_scalar(a, b, A1_2.get(a, b) -1);
 					A6_7.add_scalar(c, b, A1_2.get(c, b) -1);
+					
+					A1_2_bc = A1_2.get(b, c);
+					A1_2_ba = A1_2.get(b, a);
+					A8_8.add_scalar(a, b, A1_2_bc);
+					A8_8.add_scalar(c, b, A1_2_ba);
 				}
 			}
 		}
 	}
 
-	// ordering matters !!!
+	// ordering matters !!!  (first 1., then 2.)
+	// 1. dependend on brute force matrices
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
+	A8_8.subtract_matrix_multiple(A4_5, 1);
 	
+	// 2. dependend on infered matrices
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // 9_11 is already times 2
 	
@@ -356,16 +374,16 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
-					A1_1_numpy,     // 0 Brute force
-					A1_2_numpy,     // 1 Brute force
-					A3_3_numpy,     // 2 Brute force
-					A4_4_numpy,     // 3 Brute force
-					A4_5_numpy,     // 4 Brute force
-					A4_5_bis_numpy, // 5 -> TODO update to infer 
-					A5_5_numpy,     // 6 -> TODO update to infer    
+					A1_1_numpy,     // 0  Brute force
+					A1_2_numpy,     // 1  Brute force
+					A3_3_numpy,     // 2  Brute force
+					A4_4_numpy,     // 3  Brute force
+					A4_5_numpy,     // 4  Brute force
+					A4_5_bis_numpy, // 5  Brute Force -> TODO update to infer 
+					A5_5_numpy,     // 6  Brute Force -> TODO update to infer    
 					A6_6_numpy,     // 7 
-					A6_7_numpy,     // 8 Inf. (1-hop)
-					A8_8_numpy,     // 9
+					A6_7_numpy,     // 8  Inf. (1-hop)
+					A8_8_numpy,     // 9  Inf. (1-hop)
 					A8_8_bis_numpy, // 10
 					A9_10_numpy,    // 11
 					A9_11_numpy,    // 12 Inf. (1-hop)
