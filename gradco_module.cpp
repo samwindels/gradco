@@ -206,6 +206,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	}
 
 	//INFERED  
+	
+	int f12_13_xy, f12_13_xz, f12_13_yz;
+
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
 	for (int a = 0; a < n; a++){
@@ -217,7 +220,32 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					// b <- a -> c
 					c = G.adj_out[a][j];
 					if (G.has_out_edge(b, c)){
-						// triangle
+						f12_13_xy = A3_3.get(a,b) - 1;
+						f12_13_xz = A3_3.get(a,c) - 1;
+						f12_13_yz = A3_3.get(b,c) - 1;
+						
+						if (f12_13_yz){					
+							A12_13.add_scalar(a, b, f12_13_yz);
+							A12_13.add_scalar(a, c, f12_13_yz);
+						}
+						
+						if (f12_13_xz){					
+							A12_13.add_scalar(b, a, f12_13_xz);
+							A12_13.add_scalar(b, c, f12_13_xz);
+						}
+						if (f12_13_xy){					
+							A12_13.add_scalar(c, a, f12_13_xy);
+							A12_13.add_scalar(c, b, f12_13_xy);
+						}
+
+        /* A[a, b] += A3_3[b, c] -1 */ 
+        /* A[a, c] += A3_3[c, b] -1 */
+        
+        /* A[y, x] += A3_3[x, z] -1 */
+        /* A[y, z] += A3_3[z, x] -1 */
+        
+        /* A[z, x] += A3_3[x, y] -1 */ 
+        /* A[z, y] += A3_3[y, x] -1 */
 
 					}else{
 						// three node path
@@ -256,6 +284,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}
+
+	A12_13.subtract_matrix_multiple(A14_14, 2);
 	
 
 	//FORMAT RESULTS
@@ -275,7 +305,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A9_11_numpy    = A9_11.to_numpy();
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A12_12_numpy   = A12_12.to_numpy();
-	PyObject* A12_13_numpy   = A12_12.to_numpy();
+	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	PyObject* A13_13_numpy   = A13_13.to_numpy();
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	

@@ -26,14 +26,18 @@ class Matrix {
 	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
 	void increment_from_to(int a, int b);
+
+	/* void add_scalar_all_2_all(int a, int b, int c, int scalar); */
+	
 	int get(int a, int b);
+	
 	PyObject* to_numpy();
 	
 	std::unordered_map<int, int>::iterator it;
 	void add_matrix_multiple(const Matrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
-	void substract_matrix_multiple(const Matrix& m, int scalar);
-	void substract_scalar(int a, int b, int v);
+	void subtract_matrix_multiple(const Matrix& m, int scalar);
+	void subtract_scalar(int a, int b, int v);
 
 
 };

@@ -18,6 +18,7 @@ adj2index = {
             'A4_5': 4,
             'A4_5_bis': 5,
             'A5_5': 6,
+            'A12_13': 15,
             'A14_14': 17
         }
 
@@ -1169,15 +1170,17 @@ def compute_orbit_adjacency(G, adj_type):
 def compute_A12_13_equation_based(G):
 
     A = -2* compute_orbit_adjacency(G, 'A14_14')
+    # A = init_adjacency(G)
+    # A14_14 = compute_orbit_adjacency(G, 'A14_14')
     A3_3 = compute_orbit_adjacency(G, 'A3_3')
 
     for x, y, z in triangle_iterator(G):
 
-        A[x, y] += A3_3[y, z]-1 
-        A[x, z] += A3_3[z, y]-1
+        A[x, y] += A3_3[y, z] -1 
+        A[x, z] += A3_3[z, y] -1
         
-        A[y, x] += A3_3[x, z]-1
-        A[y, z] += A3_3[z, x]-1
+        A[y, x] += A3_3[x, z] -1
+        A[y, z] += A3_3[z, x] -1
         
         A[z, x] += A3_3[x, y] -1 
         A[z, y] += A3_3[y, x] -1
@@ -1251,6 +1254,7 @@ def count(G, adj_type):
             return compute_A10_9(G)
         case 'A9_10':
             return compute_A9_10(G)
+            # return compute_orbit_adjacency(G, 'A9_10')
         case 'A10_10':
             # return compute_A10_10(G)
             return compute_A10_10_equation_based(G)
@@ -1264,7 +1268,8 @@ def count(G, adj_type):
             return compute_A13_12_equation_based(G)
         case 'A12_13':
             # return compute_A12_13(G)
-            return compute_A12_13_equation_based(G)
+            # return compute_A12_13_equation_based(G)
+            return compute_orbit_adjacency(G, 'A12_13')
         case 'A13_13':
             return compute_A13_13(G)
         case 'A14_14':
