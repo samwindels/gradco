@@ -32,6 +32,7 @@ class Matrix {
 	int get(int a, int b);
 	
 	PyObject* to_numpy();
+	PyObject* division_to_numpy(int scalar);
 	
 	std::unordered_map<int, int>::iterator it;
 	void add_matrix_multiple(const Matrix& m, int scalar);

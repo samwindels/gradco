@@ -20,6 +20,7 @@ adj2index = {
             'A5_5': 6,
             'A10_10': 13,
             'A12_13': 15,
+            'A13_13': 16,
             'A14_14': 17
         }
 
@@ -1225,6 +1226,27 @@ def compute_A10_10_equation_based(G):
 
     return A
 
+def compute_A13_13_equation_based(G):
+
+    A = -2* compute_orbit_adjacency(G, 'A14_14')
+    # A14_14 = compute_orbit_adjacency(G, 'A14_14')
+    # A = init_adjacency(G)
+    # A14_14 = compute_orbit_adjacency(G, 'A14_14')
+    A3_3 = compute_orbit_adjacency(G, 'A3_3')
+
+    for x, y, z in triangle_iterator(G):
+
+            A[x, y] += (A3_3[x, y] -1)  
+            A[x, z] += (A3_3[x, z] -1) 
+            
+            A[y, x] += (A3_3[y, x] -1) 
+            A[y, z] += (A3_3[y, z] -1) 
+            
+            A[z, x] += (A3_3[z, x] -1)  
+            A[z, y] += (A3_3[z, y] -1) 
+    A = A/2
+    # A = A - A14_14
+    return A
 
 def count(G, adj_type):
 
@@ -1273,7 +1295,9 @@ def count(G, adj_type):
             # return compute_A12_13_equation_based(G)
             return compute_orbit_adjacency(G, 'A12_13')
         case 'A13_13':
-            return compute_A13_13(G)
+            # return compute_A13_13(G)
+            return compute_orbit_adjacency(G, 'A13_13')
+            # return compute_A13_13_equation_based(G)
         case 'A14_14':
             return compute_orbit_adjacency(G, adj_type)
             # return compute_A14_14_oriented_in_out(G)
@@ -1517,12 +1541,11 @@ def count_all(G):
 def main():
 
    
-    G = nx.scale_free_graph(100)
-    compute_A9_11(G)
-    return
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    # # format_gradco_input(G)
-    # # return
+    # G = nx.scale_free_graph(100)
+    # compute_A9_11(G)
+    # return
+    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    format_gradco_input(G)
     # compute_AG3_digraph(G)
     # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')

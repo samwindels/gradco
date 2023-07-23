@@ -248,9 +248,24 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A10_10.add_scalar(c, a, f10_10_ca);
 						A10_10.add_scalar(b, c, f10_10_bc);
 						A10_10.add_scalar(c, b, f10_10_cb);
+						
+						A13_13.add_scalar(a, b, f12_13_ab);
+						A13_13.add_scalar(a, c, f12_13_ac);
+						A13_13.add_scalar(b, a, f12_13_ab);
+						A13_13.add_scalar(b, c, f12_13_bc);
+						A13_13.add_scalar(c, a, f12_13_ac);
+						A13_13.add_scalar(c, b, f12_13_bc);
 
 					}else{
 						// three node path
+        /* A[x, y] += A3_3[x, y] -1 */ 
+        /* A[x, z] += A3_3[x, z] -1 */
+        
+        /* A[y, x] += A3_3[y, x] -1 */
+        /* A[y, z] += A3_3[y, z] -1 */
+        
+        /* A[z, x] += A3_3[z, x] -1 */ 
+        /* A[z, y] += A3_3[z, y] -1 */
 					
 					}
 				}
@@ -288,6 +303,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	}
 
 	A12_13.subtract_matrix_multiple(A14_14, 2);
+	A13_13.subtract_matrix_multiple(A14_14, 2);
 	
 
 	//FORMAT RESULTS
@@ -308,7 +324,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A12_12_numpy   = A12_12.to_numpy();
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
-	PyObject* A13_13_numpy   = A13_13.to_numpy();
+	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOO)", 

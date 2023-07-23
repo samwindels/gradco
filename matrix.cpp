@@ -144,7 +144,32 @@ PyObject* Matrix::to_numpy(){
 			array[i] = row;
 			array[j] = col;
 			array[k] = data;
+			i++;
+			j++;
+			k++;
+		}
+		row++;
+	}
 
+	return PyArray_SimpleNewFromData(2, dims, NPY_INT, array);
+}
+
+
+PyObject* Matrix::division_to_numpy(int scalar){
+
+	// contigues c, interpretted "3 rows, n_entries collumns"-array
+	int* array = new int[3*n_entries];
+	const npy_intp dims[2] = {3, n_entries};
+	
+	int i=0, j=n_entries, k=2*n_entries;
+
+	int row = 0;
+	for (auto & col_map : adj) {
+		for (auto& [col, data]: col_map){
+			
+			array[i] = row;
+			array[j] = col;
+			array[k] = data/scalar;
 			i++;
 			j++;
 			k++;
