@@ -209,7 +209,6 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	//INFERED  
 	
 	int A3_3_ab, A3_3_ac, A3_3_bc; 
-	int f10_10_ab, f10_10_ba, f10_10_ac, f10_10_ca, f10_10_bc, f10_10_cb;
 	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
 
 	A10_10.add_matrix_multiple(A14_14, 2);
