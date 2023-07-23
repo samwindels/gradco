@@ -208,9 +208,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	//INFERED  
 	
-	int f12_13_ab, f12_13_ac, f12_13_bc;
+	int A3_3_ab, A3_3_ac, A3_3_bc; 
 	int f10_10_ab, f10_10_ba, f10_10_ac, f10_10_ca, f10_10_bc, f10_10_cb;
-
+	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
 
 	A10_10.add_matrix_multiple(A14_14, 2);
 
@@ -225,23 +225,31 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					// b <- a -> c
 					c = G.adj_out[a][j];
 					if (G.has_out_edge(b, c)){
-						f12_13_ab = A3_3.get(a,b) - 1;
-						f12_13_ac = A3_3.get(a,c) - 1;
-						f12_13_bc = A3_3.get(b,c) - 1;
+						
+						A3_3_ab = A3_3.get(a,b) - 1;
+						A3_3_ac = A3_3.get(a,c) - 1;
+						A3_3_bc = A3_3.get(b,c) - 1;
 
-						A12_13.add_scalar(a, b, f12_13_bc);
-						A12_13.add_scalar(a, c, f12_13_bc);
-						A12_13.add_scalar(b, a, f12_13_ac);
-						A12_13.add_scalar(b, c, f12_13_ac);
-						A12_13.add_scalar(c, a, f12_13_ab);
-						A12_13.add_scalar(c, b, f12_13_ab);
+						A1_2_ab = A1_2.get(a, b);
+						A1_2_bc = A1_2.get(b, c);
+						A1_2_ac = A1_2.get(a, c);
+						A1_2_cb = A1_2.get(c, b);
+						A1_2_ca = A1_2.get(c, a);
+						A1_2_ba = A1_2.get(b, a);
 
-						f10_10_ab = A1_2.get(b, c) - f12_13_ab; 
-						f10_10_ba = A1_2.get(a, c) - f12_13_ab; 
-						f10_10_ac = A1_2.get(c, b) - f12_13_ac; 
-						f10_10_ca = A1_2.get(a, b) - f12_13_ac; 
-						f10_10_bc = A1_2.get(c, a) - f12_13_bc; 
-						f10_10_cb = A1_2.get(b, a) - f12_13_bc; 
+						A12_13.add_scalar(a, b, A3_3_bc);
+						A12_13.add_scalar(a, c, A3_3_bc);
+						A12_13.add_scalar(b, a, A3_3_ac);
+						A12_13.add_scalar(b, c, A3_3_ac);
+						A12_13.add_scalar(c, a, A3_3_ab);
+						A12_13.add_scalar(c, b, A3_3_ab);
+
+						f10_10_ab = A1_2_bc - A3_3_ab; 
+						f10_10_ba = A1_2_ac - A3_3_ab; 
+						f10_10_ac = A1_2_cb - A3_3_ac; 
+						f10_10_ca = A1_2_ab - A3_3_ac; 
+						f10_10_bc = A1_2_ca - A3_3_bc; 
+						f10_10_cb = A1_2_ba - A3_3_bc; 
 
 						A10_10.add_scalar(a, b, f10_10_ab);
 						A10_10.add_scalar(b, a, f10_10_ba);
@@ -250,35 +258,22 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A10_10.add_scalar(b, c, f10_10_bc);
 						A10_10.add_scalar(c, b, f10_10_cb);
 						
-						A13_13.add_scalar(a, b, f12_13_ab);
-						A13_13.add_scalar(a, c, f12_13_ac);
-						A13_13.add_scalar(b, a, f12_13_ab);
-						A13_13.add_scalar(b, c, f12_13_bc);
-						A13_13.add_scalar(c, a, f12_13_ac);
-						A13_13.add_scalar(c, b, f12_13_bc);
+						A13_13.add_scalar(a, b, A3_3_ab);
+						A13_13.add_scalar(a, c, A3_3_ac);
+						A13_13.add_scalar(b, a, A3_3_ab);
+						A13_13.add_scalar(b, c, A3_3_bc);
+						A13_13.add_scalar(c, a, A3_3_ac);
+						A13_13.add_scalar(c, b, A3_3_bc);
 						
-						A10_11.add_scalar(a, b, A1_2.get(a, b)); 
-						A10_11.add_scalar(b, a, A1_2.get(b, a)); 
-						A10_11.add_scalar(a, c, A1_2.get(a, c)); 
-						A10_11.add_scalar(c, a, A1_2.get(c, a)); 
-						A10_11.add_scalar(b, c,	A1_2.get(b, c)); 
-						A10_11.add_scalar(c, b, A1_2.get(c, b)); 
-
+						A10_11.add_scalar(a, b, A1_2_ab); 
+						A10_11.add_scalar(b, a, A1_2_ba); 
+						A10_11.add_scalar(a, c, A1_2_ac); 
+						A10_11.add_scalar(c, a, A1_2_ca); 
+						A10_11.add_scalar(b, c,	A1_2_bc); 
+						A10_11.add_scalar(c, b, A1_2_cb); 
 
 					}else{
 						// three node path
-    /* A1_2 = compute_A1_2(G) */
-    /* A = - compute_A12_13(G) */
-    /* for x, y, z in triangle_iterator(G): */
-
-    /*     A[x, y] += A1_2[x, y] */
-    /*     A[x, z] += A1_2[x, z] */
-
-    /*     A[y, x] += A1_2[y, x] */
-    /*     A[y, z] += A1_2[y, z] */
-
-    /*     A[z, x] += A1_2[z, x] */
-    /*     A[z, y] += A1_2[z, y] */
     				
 					}
 				}
