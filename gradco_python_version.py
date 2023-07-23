@@ -18,6 +18,8 @@ adj2index = {
             'A4_5': 4,
             'A4_5_bis': 5,
             'A5_5': 6,
+            'A6_7': 8,
+            'A9_11': 12,
             'A10_10': 13,
             'A10_11': 14,
             'A12_13': 16,
@@ -1285,12 +1287,16 @@ def count(G, adj_type):
             return compute_orbit_adjacency(G, adj_type)
         case 'A5_5':
             return compute_orbit_adjacency(G, adj_type)
+        case 'A6_7':
+            # return compute_A6_7(G)
+            return compute_orbit_adjacency(G, adj_type)
         case 'A11_10':
             return compute_A11_10(G)
         case 'A11_9':
             return compute_A11_9(G)
         case 'A9_11':
-            return compute_A9_11(G)  # implemented as transpose
+            # return compute_A9_11(G)  # implemented as transpose
+            return compute_orbit_adjacency(G, adj_type)
         case 'A10_9':
             return compute_A10_9(G)
         case 'A9_10':
