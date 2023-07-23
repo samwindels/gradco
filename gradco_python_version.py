@@ -1211,16 +1211,16 @@ def compute_A10_10_equation_based(G):
     A3_3 = compute_orbit_adjacency(G, 'A3_3')
     A1_2 = compute_orbit_adjacency(G, 'A1_2')
 
-    for x, y, z in triangle_iterator(G):
+    for a, b, c in triangle_iterator(G):
 
-        A[x, y] += A1_2[y, z] - (A3_3[x, y] -1)
-        A[y, x] += A1_2[x, z] - (A3_3[y, x] -1)
+        A[a, b] += A1_2[b, c] - (A3_3[a, b] -1)
+        A[b, a] += A1_2[a, c] - (A3_3[b, a] -1)
 
-        A[x, z] += A1_2[z, y] - (A3_3[x, z] -1)
-        A[z, x] += A1_2[x, y] - (A3_3[z, x] -1)
+        A[a, c] += A1_2[c, b] - (A3_3[a, c] -1)
+        A[c, a] += A1_2[a, b] - (A3_3[c, a] -1)
 
-        A[y, z] += A1_2[z, x] - (A3_3[y, z] -1)
-        A[z, y] += A1_2[y, x] - (A3_3[z, y] -1)
+        A[b, c] += A1_2[c, a] - (A3_3[b, c] -1)
+        A[c, b] += A1_2[b, a] - (A3_3[c, b] -1)
 
     return A
 
