@@ -1375,8 +1375,6 @@ def compute_A9_11(G):
     A = -compute_A12_13(G)
     A2_2 = compute_AG2_digraph(G)
     for x, y, z in path_iterator(G):
-        if x>0 and (y == 0 or z == 0):
-            print(x, y, z)
         A[x, y] += A2_2[y, z]
         A[z, y] += A2_2[y, x]
     A = A/2

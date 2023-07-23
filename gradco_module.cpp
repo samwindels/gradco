@@ -210,20 +210,22 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	
 	int A3_3_ab, A3_3_ac, A3_3_bc; 
 	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
+	int A2_2_ab, A2_2_ac, A2_2_bc; 
 
 	A10_10.add_matrix_multiple(A14_14, 2);
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
-	for (int a = 0; a < n; a++){
-		if (G.adj_out[a].size() >= 2){
-			for (int i=0; i<G.adj_out[a].size(); i++){
-				b = G.adj_out[a][i];
-				for (int j=i+1; j<G.adj_out[a].size(); j++){
+	int a;
+	for (int b = 0; b < n; b++){
+		if (G.adj_out[b].size() >= 2){
+			for (int i=0; i<G.adj_out[b].size(); i++){
+				a = G.adj_out[b][i];
+				for (int j=i+1; j<G.adj_out[b].size(); j++){
 					// in-out wedge
-					// b <- a -> c
-					c = G.adj_out[a][j];
-					if (G.has_out_edge(b, c)){
+					// a <- b -> c
+					c = G.adj_out[b][j];
+					if (G.has_out_edge(a, c)){
 						
 						A3_3_ab = A3_3.get(a,b) - 1;
 						A3_3_ac = A3_3.get(a,c) - 1;
@@ -265,8 +267,10 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A10_11.add_scalar(c, b, A1_2_cb); 
 
 					}else{
-						// three node path
-    				
+						/* // three node path */
+					/* // b <- a -> c */
+						/* A9_11.add_scalar(a, b, A2_2_bc); */
+						/* A9_11.add_scalar(a, b, A2_2_ba); */
 					}
 				}
 			}
@@ -281,7 +285,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				// a -> b -> c
 				c = G.adj_out[b][j];
 				if (! G.has_out_edge(a, c)){
-					// TODO
+					A9_11.add_scalar(a, b, A2_2_bc);
+					A9_11.add_scalar(a, b, A2_2_ab);
 				}
 			}
 		}
@@ -296,12 +301,14 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					//TODO
+					A9_11.add_scalar(a, b, A2_2_bc);
+					A9_11.add_scalar(a, b, A2_2_ab);
 				}
 			}
 		}
 	}
 
+	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
@@ -321,7 +328,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A8_8_numpy     = A8_8.to_numpy();
 	PyObject* A8_8_bis_numpy = A8_8_bis.to_numpy();
 	PyObject* A9_10_numpy    = A9_10.to_numpy();
-	PyObject* A9_11_numpy    = A9_11.to_numpy();
+	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
+	PyObject* A9_11_numpy    = A9_11.division_to_numpy(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A10_11_numpy   = A10_10.to_numpy();
 	PyObject* A12_12_numpy   = A12_12.to_numpy();
@@ -329,27 +337,28 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
 	PyObject* A14_14_numpy   = A14_14.to_numpy();
+
 	
-	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOO)", 
-					A1_1_numpy,     // 0
-					A1_2_numpy,     // 1
-					A3_3_numpy,     // 2
-					A4_4_numpy,     // 3
-					A4_5_numpy,     // 4
-					A4_5_bis_numpy, // 5
+	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
+					A1_1_numpy,     // 0 B
+					A1_2_numpy,     // 1 B
+					A3_3_numpy,     // 2 B
+					A4_4_numpy,     // 3 B
+					A4_5_numpy,     // 4 B
+					A4_5_bis_numpy, // 5 
 					A5_5_numpy,     // 6      
-					A6_6_numpy,     // 7
-					A6_7_numpy,     // 8
+					A6_6_numpy,     // 7 
+					A6_7_numpy,     // 8 
 					A8_8_numpy,     // 9
 					A8_8_bis_numpy, // 10
 					A9_10_numpy,    // 11
-					A9_11_numpy,    // 12
-					A10_10_numpy,   // 13
-					A10_11_numpy,   // 14
-					A12_12_numpy,   // 15
-					A12_13_numpy,   // 16
-					A13_13_numpy,   // 17
-					A14_14_numpy);  // 18
+					A9_11_numpy,    // 12 
+					A10_10_numpy,   // 13 I
+					A10_11_numpy,   // 14 I
+					A12_12_numpy,   // 15 I
+					A12_13_numpy,   // 16 I
+					A13_13_numpy,   // 17 I
+					A14_14_numpy);  // 18 B
 	
 	//  Py_BuildValue increases reference count, need to deref
 	for (int i=0; i<18; i++){
