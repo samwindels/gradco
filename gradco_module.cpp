@@ -403,7 +403,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A6_6_numpy,     // 7 
 					A6_7_numpy,     // 8  Inf. (1-hop)
 					A8_8_numpy,     // 9  Inf. (1-hop)
-					A8_8_bis_numpy, // 10
+					A8_8_bis_numpy, // 10 Inf. (2-hop)
 					A9_10_numpy,    // 11
 					A9_11_numpy,    // 12 Inf. (1-hop)
 					A10_10_numpy,   // 13 Inf. (1-hop)
