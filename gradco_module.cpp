@@ -283,6 +283,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A1_1_ac = A1_1.get(a, c)-1;
 						A8_8.add_scalar(a, b, A1_1_ac);
 						A8_8.add_scalar(c, b, A1_1_ac);
+						
+						A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
+						A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
 
 					}
 				}
@@ -312,6 +315,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A1_1_ac = A1_1.get(a, c)-1;
 					A8_8.add_scalar(a, b, A1_1_ac);
 					A8_8.add_scalar(c, b, A1_1_ac);
+					
+					A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
+					A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
 				}
 			}
 		}
@@ -340,6 +346,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A1_1_ac = A1_1.get(a, c)-1;
 					A8_8.add_scalar(a, b, A1_1_ac);
 					A8_8.add_scalar(c, b, A1_1_ac);
+					
+					A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
+					A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
 				}
 			}
 		}
@@ -351,6 +360,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	A13_13.subtract_matrix_multiple(A14_14, 2);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
 	A8_8.subtract_matrix_multiple(A12_13, 1);
+	A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1);
 	
 	// 2. dependend on infered matrices
 	A9_11.subtract_matrix_multiple(A12_13, 1);
@@ -369,7 +379,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A6_6_numpy     = A6_6.to_numpy();
 	PyObject* A6_7_numpy     = A6_7.division_to_numpy(2);   
 	PyObject* A8_8_numpy     = A8_8.to_numpy();
-	PyObject* A8_8_bis_numpy = A8_8_bis.to_numpy();
+	PyObject* A8_8_bis_numpy = A8_8_bis.division_to_numpy(2);
 	PyObject* A9_10_numpy    = A9_10.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A9_11_numpy    = A9_11.division_to_numpy(2);
