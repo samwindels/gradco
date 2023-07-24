@@ -88,9 +88,11 @@ def compute_graphlet_adjacency_3(G):
         A += compute_orbit_adjacency(G, 'A5_5')
         return A
 
-def compute_graphlet_adjacency_8(G):
+def compute_graphlet_adjacency_4(G):
 
-        A = compute_orbit_adjacency(G, 'A14_14')
+        A = compute_orbit_adjacency(G, 'A6_7')
+        A += A.transpose()  # A7_6
+        A += compute_orbit_adjacency(G, 'A6_6')
         return A
 
 def compute_graphlet_adjacency_5(G):
@@ -99,18 +101,10 @@ def compute_graphlet_adjacency_5(G):
         A += compute_orbit_adjacency(G, 'A8_8_bis')
         return A
 
-def compute_A12_12_equation_based(G):
+def compute_graphlet_adjacency_8(G):
 
-    A = -2* compute_orbit_adjacency(G, 'A8_8_bis')
-    A1_1 = compute_orbit_adjacency(G, 'A1_1')
-
-    for a, b, c in path_iterator(G):
-
-        A[a, c] += A1_1[a, c] - 1
-        A[c, a] += A1_1[c, a] - 1
-
-    A /= 2
-    return A
+        A = compute_orbit_adjacency(G, 'A14_14')
+        return A
 
 
 def count(G, adj_type):
@@ -178,6 +172,8 @@ def count(G, adj_type):
         case 2:
             return compute_graphlet_adjacency_2(G)
         case 3:
+            return compute_graphlet_adjacency_3(G)
+        case 4:
             return compute_graphlet_adjacency_3(G)
         case 5:
             return compute_graphlet_adjacency_5(G)
