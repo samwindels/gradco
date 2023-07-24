@@ -88,37 +88,39 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 				}else{
 					// 3-node path
 					/* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-					A1_1.increment_all_2_all(b, c);
-					A1_2.increment_from_to(b, a);
-					A1_2.increment_from_to(c, a);
+					A1_1.increment_all_2_all(a, c);
+					A1_2.increment_from_to(a, b);
+					A1_2.increment_from_to(c, b);
 
 					for (int k=0; k<G.adj_in[c].size(); k++){
 						// predecessors of c
 						d = G.adj_in[c][k];
 						if(!G.has_edge(a, d) && !G.has_edge(b, d)){
-							// b <- a -> c <- d, with b < c
+							// a <- b -> c <- d, with b < c
 							/* std::cout<<"G3 6, d<a : "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
-							A4_4.increment_all_2_all(b, d);
-							A4_5.increment_from_to(b, a);
+							
+							A4_4.increment_all_2_all(a, d);
+							A4_5.increment_from_to(a, b);
 							A4_5.increment_from_to(d, c);
-							A4_5_bis.increment_from_to(b, c);
-							A4_5_bis.increment_from_to(d, a);
-							A5_5.increment_all_2_all(a, c);
+							A4_5_bis.increment_from_to(a, c);
+							A4_5_bis.increment_from_to(d, b);
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 					
-					for (int k=0; k<G.adj_in[b].size(); k++){
-						// predecessors of b
-						d = G.adj_in[b][k];
-						if (d!=a && !G.has_edge(a, d) && !G.has_edge(c,d)){
-							// d -> b <- a -> c, with b < c
+					for (int k=0; k<G.adj_in[a].size(); k++){
+						// predecessors of a
+						d = G.adj_in[a][k];
+						if (d!=c && !G.has_edge(b, d) && !G.has_edge(c,d)){
+							// d -> a <- b -> c, with a < c
 							/* std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
+							
 							A4_4.increment_all_2_all(c, d);
-							A4_5.increment_from_to(d, b);
-							A4_5.increment_from_to(c, a);
-							A4_5_bis.increment_from_to(d, a);
-							A4_5_bis.increment_from_to(c, b);
-							A5_5.increment_all_2_all(b, a);
+							A4_5.increment_from_to(d, a);
+							A4_5.increment_from_to(c, b);
+							A4_5_bis.increment_from_to(d, b);
+							A4_5_bis.increment_from_to(c, a);
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
