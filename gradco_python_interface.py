@@ -132,6 +132,8 @@ def count(G, adj_type):
         case 'A6_7':
             # return compute_A6_7(G)
             return compute_orbit_adjacency(G, adj_type)
+        case 'A6_6':
+            return compute_A6_6(G)
         case 'A8_8':
             # return compute_A8_8_single_hop_equation_based(G)
             return compute_orbit_adjacency(G, adj_type)
