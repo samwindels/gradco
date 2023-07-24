@@ -101,11 +101,38 @@ def compute_graphlet_adjacency_5(G):
         A += compute_orbit_adjacency(G, 'A8_8_bis')
         return A
 
+def compute_graphlet_adjacency_6(G):
+
+        A = compute_orbit_adjacency(G, 'A9_10')
+        A += compute_orbit_adjacency(G, 'A9_11')
+        A += compute_orbit_adjacency(G, 'A10_11')
+        return A
+
+def compute_graphlet_adjacency_7(G):
+
+        A = compute_orbit_adjacency(G, 'A12_13')
+        A += A.transpose()
+        A += compute_orbit_adjacency(G, 'A12_12')
+        A += compute_orbit_adjacency(G, 'A13_13')
+        return A
+
 def compute_graphlet_adjacency_8(G):
 
         A = compute_orbit_adjacency(G, 'A14_14')
         return A
 
+
+def compute_A4_5_equation_based(G):
+
+    A = - compute_orbit_adjacency(G, 'A8_8')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for a, b, c in path_iterator(G):
+
+        A[a, c] += A1_2[b, c] 
+        A[c, a] += A1_2[b, a]
+
+    return A
 
 def count(G, adj_type):
 
@@ -121,6 +148,7 @@ def count(G, adj_type):
         case 'A4_4':
             return compute_orbit_adjacency(G, adj_type)
         case 'A4_5':
+            # return compute_A4_5_equation_based(G)
             return compute_orbit_adjacency(G, adj_type)
         case 'A5_5':
             return compute_orbit_adjacency(G, adj_type)
@@ -131,6 +159,8 @@ def count(G, adj_type):
         case 'A8_8':
             return compute_orbit_adjacency(G, adj_type)
         case 'A9_10':
+            return compute_orbit_adjacency(G, adj_type)
+        case 'A9_11':
             return compute_orbit_adjacency(G, adj_type)
         case 'A10_10':
             return compute_orbit_adjacency(G, adj_type)
@@ -154,6 +184,10 @@ def count(G, adj_type):
             return compute_graphlet_adjacency_4(G)
         case 5:
             return compute_graphlet_adjacency_5(G)
+        case 6:
+            return compute_graphlet_adjacency_6(G)
+        case 7:
+            return compute_graphlet_adjacency_7(G)
         case 8:
             return compute_graphlet_adjacency_8(G)
         case _:

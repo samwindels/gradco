@@ -439,7 +439,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A4_5_numpy,     // 4  Brute force
 					A4_5_bis_numpy, // 5  Brute Force -> TODO update to infer 
 					A5_5_numpy,     // 6  Brute Force -> TODO update to infer    
-					A6_6_numpy,     // 7 
+					A6_6_numpy,     // 7  Inf. (2-hop)
 					A6_7_numpy,     // 8  Inf. (1-hop)
 					A8_8_numpy,     // 9  Inf. (1-hop)
 					A8_8_bis_numpy, // 10 Inf. (2-hop)
