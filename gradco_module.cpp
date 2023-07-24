@@ -65,23 +65,23 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Matrix A14_14   = Matrix(n);  // 4-node clique
 	
 
-	int b, c, d;
+	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
 	std::cout<<"in-out wedges"<<std::endl;
-	for (int a = 0; a < n; a++){
-		for (int i=0; i<G.adj_out[a].size(); i++){
-			b = G.adj_out[a][i];
-			for (int j=i+1; j<G.adj_out[a].size(); j++){
+	for (int b = 0; b < n; b++){
+		for (int i=0; i<G.adj_out[b].size(); i++){
+			a = G.adj_out[b][i];
+			for (int j=i+1; j<G.adj_out[b].size(); j++){
 				// in-out wedge
-				// b <- a -> c, with b < c
-				c = G.adj_out[a][j];
-				if (G.has_out_edge(b, c)){
+				// a <- b -> c, with b < c
+				c = G.adj_out[b][j];
+				if (G.has_out_edge(a, c)){
 					// triangle
 					A3_3.increment_all_2_all(a, b, c);
-					for (int k=j+1; k<G.adj_out[a].size(); k++){
-						d = G.adj_out[a][k];
-						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
+					for (int k=j+1; k<G.adj_out[b].size(); k++){
+						d = G.adj_out[b][k];
+						if (G.has_out_edge(a, d) && G.has_out_edge(c, d)){
 							A14_14.increment_all_2_all(a, b, c, d);
 						}
 					}
@@ -216,7 +216,6 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
-	int a;
 	for (int b = 0; b < n; b++){
 		if (G.adj_out[b].size() >= 2){
 			for (int i=0; i<G.adj_out[b].size(); i++){
