@@ -151,7 +151,7 @@ def count(G, adj_type):
         case 3:
             return compute_graphlet_adjacency_3(G)
         case 4:
-            return compute_graphlet_adjacency_3(G)
+            return compute_graphlet_adjacency_4(G)
         case 5:
             return compute_graphlet_adjacency_5(G)
         case 8:
