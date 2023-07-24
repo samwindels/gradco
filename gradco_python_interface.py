@@ -25,6 +25,7 @@ adj2index = {
             'A9_11': 12,
             'A10_10': 13,
             'A10_11': 14,
+            'A12_12': 15,
             'A12_13': 16,
             'A13_13': 17,
             'A14_14': 18
@@ -93,26 +94,22 @@ def compute_graphlet_adjacency_8(G):
 def compute_graphlet_adjacency_5(G):
 
         A = compute_orbit_adjacency(G, 'A8_8')
-        # A += A.transpose()
-        # A += compute_A8_8_bis(G)
-        # A += compute_A8_8_bis(G).transpose()
         A += compute_orbit_adjacency(G, 'A8_8_bis')
         return A
 
-def compute_A8_8_bis(G):
-    # print(G.edges())
-    # return np.zeros((5,5))
-    A = - 1 * compute_orbit_adjacency(G, 'A4_5_bis')
-    # A += - 2 * compute_orbit_adjacency(G, 'A4_5_bis').transpose()
-    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+def compute_A12_12_equation_based(G):
+
+    A = -2* compute_orbit_adjacency(G, 'A8_8_bis')
+    A1_1 = compute_orbit_adjacency(G, 'A1_1')
+
     for a, b, c in path_iterator(G):
-        # A[a, c] += A1_1[a, c] - 1 
-        # A[c, a] += A1_1[a, c] - 1
-        A[a, c] += A1_2[b, c] 
-        A[c, a] += A1_2[b, a] 
-    A/=2
-    # print(A)
+
+        A[a, c] += A1_1[a, c] - 1
+        A[c, a] += A1_1[c, a] - 1
+
+    A /= 2
     return A
+
 
 def count(G, adj_type):
 
@@ -157,10 +154,8 @@ def count(G, adj_type):
             # return compute_A10_11_equation_based(G)
             return compute_orbit_adjacency(G, 'A10_11')
         case 'A12_12':
-            # return compute_orbit_adjacency(G, adj_type)
-            return compute_A12_12_fastest(G)
-            # return compute_A12_12_c(G)
-            # return compute_A12_12_digraph(G)
+            # return compute_A12_12_equation_based(G)
+            return compute_orbit_adjacency(G, adj_type)
 
         case 'A13_12':
             return compute_A13_12_equation_based(G)

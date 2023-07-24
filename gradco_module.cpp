@@ -287,6 +287,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
 						A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
 
+						A12_12.add_scalar(a, c, A1_1_ac);
+						A12_12.add_scalar(c, a, A1_1_ac);
+
 					}
 				}
 			}
@@ -318,6 +321,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					
 					A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
 					A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
+					
+					A12_12.add_scalar(a, c, A1_1_ac);
+					A12_12.add_scalar(c, a, A1_1_ac);
 				}
 			}
 		}
@@ -349,6 +355,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					
 					A8_8_bis.add_scalar(a, c, A1_2.get(b, c));
 					A8_8_bis.add_scalar(c, a, A1_2.get(b, a));
+					
+					A12_12.add_scalar(a, c, A1_1_ac);
+					A12_12.add_scalar(c, a, A1_1_ac);
 				}
 			}
 		}
@@ -364,7 +373,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	
 	// 2. dependend on infered matrices
 	A9_11.subtract_matrix_multiple(A12_13, 1);
-	A6_7.subtract_matrix_multiple(A9_11, 1);  // 9_11 is already times 2 
+	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
+	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
 	
 
 	//FORMAT RESULTS
@@ -385,7 +395,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyObject* A9_11_numpy    = A9_11.division_to_numpy(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A10_11_numpy   = A10_10.to_numpy();
-	PyObject* A12_12_numpy   = A12_12.to_numpy();
+	PyObject* A12_12_numpy   = A12_12.division_to_numpy(2);
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
@@ -408,7 +418,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A9_11_numpy,    // 12 Inf. (1-hop)
 					A10_10_numpy,   // 13 Inf. (1-hop)
 					A10_11_numpy,   // 14 Inf. (1-hop)
-					A12_12_numpy,   // 15 Inf. (1-hop)
+					A12_12_numpy,   // 15 Inf. (2-hop)
 					A12_13_numpy,   // 16 Inf. (1-hop)
 					A13_13_numpy,   // 17 Inf. (1-hop)
 					A14_14_numpy);  // 18 Brute force
