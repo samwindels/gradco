@@ -22,6 +22,7 @@ adj2index = {
             'A6_7': 8,
             'A8_8': 9,
             'A8_8_bis': 10,
+            'A9_10': 11,
             'A9_11': 12,
             'A10_10': 13,
             'A10_11': 14,
@@ -144,17 +145,13 @@ def count(G, adj_type):
         case 'A10_9':
             return compute_A10_9(G)
         case 'A9_10':
-            return compute_A9_10(G)
-            # return compute_orbit_adjacency(G, 'A9_10')
+            return compute_orbit_adjacency(G, 'A9_10')
         case 'A10_10':
-            # return compute_A10_10(G)
-            # return compute_A10_10_equation_based(G)
             return compute_orbit_adjacency(G, 'A10_10')
         case 'A10_11':
             # return compute_A10_11_equation_based(G)
             return compute_orbit_adjacency(G, 'A10_11')
         case 'A12_12':
-            # return compute_A12_12_equation_based(G)
             return compute_orbit_adjacency(G, adj_type)
 
         case 'A13_12':
@@ -226,8 +223,8 @@ def main():
     # print(np.sum(triu_counts/3))
     return
 
-    for A, integer, str_bit_array in generate_subgraph_permutations(5):
-        G = nx.from_numpy_array(A)
+    # for A, integer, str_bit_array in generate_subgraph_permutations(5):
+    #     G = nx.from_numpy_array(A)
         # compute_A8_8_digraph(G)
         # compute_A12_12_digraph(G)
         # compute_A4_4_G(G)
