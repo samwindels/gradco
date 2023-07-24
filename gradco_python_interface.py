@@ -227,57 +227,6 @@ def main():
     # print(np.sum(triu_counts/3))
     return
 
-    # for A, integer, str_bit_array in generate_subgraph_permutations(5):
-    #     G = nx.from_numpy_array(A)
-        # compute_A8_8_digraph(G)
-        # compute_A12_12_digraph(G)
-        # compute_A4_4_G(G)
-        # compute_A4_3_double_hop(G)
-        # compute_A4_3_single_hop(G)
-        # compute_A4_4_G(G)
-        # compute_A5_5(G)
-        # compute_A5_4_double_hop(G)
-        # compute_A5_4_single_hop(G)
-        # A12_13 = compute_A12_13(G)
-        # A12_12 = compute_A12_12(G)
-        # A13_12 = compute_A13_12(G)
-        # A12_12 = compute_A12_12_faster(G)
-        # A13_13 = compute_A13_13(G)
-        # A14_14 = compute_A14_14(G)
-        # A12_12 = compute_A12_12_fast(G)
-        # A12_12 = compute_A12_12_fastest(G)
-        # A8_8_single = compute_A8_8_single_hop(G)
-        # AG7 = compute_AG7(G)
-        # AG5 = compute_AG5(G)
-        # compute_AG7_digraph(G)
-
-"""
-TODO:
-
-- sanity checks
-    - no self edges
-    - no duplicate edges
-- input: edelist of ints
-    alternatives:
-        leda, which is too much hastle
-        mapping in gradco, but then we also have to return the mapping, to much hastle. have the user do it
-- (to undirected graph)
-- get node ordering nodes
-    - degree based : arg sort on the degree  list 
-        (reading twice can be avoided by storing the edges in a queue)
-    - k core: 
-        - argsort on the core numbers
-- network to c data structure
-    - multi/doubly linked list (https://stackoverflow.com/questions/22808713/doubly-linked-list-vs-multi-linked-list-in-c-c ,
-    https://webdocs.cs.ualberta.ca/~holte/T26/mlinked-lists.html#sparse-matrices)
-- triangle iterator
-- path iterator
-- G3
-- (G4)
-- G7
-- G8
-
-"""
 
 if __name__ == "__main__":
     main()
