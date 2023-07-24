@@ -125,48 +125,25 @@ def count(G, adj_type):
         case 'A5_5':
             return compute_orbit_adjacency(G, adj_type)
         case 'A6_7':
-            # return compute_A6_7(G)
             return compute_orbit_adjacency(G, adj_type)
         case 'A6_6':
-            # return compute_A6_6(G)
             return compute_orbit_adjacency(G, adj_type)
         case 'A8_8':
-            # return compute_A8_8_single_hop_equation_based(G)
             return compute_orbit_adjacency(G, adj_type)
-        case 'A11_10':
-            return compute_A11_10(G)
-        case 'A11_9':
-            return compute_A11_9(G)
-        case 'A9_11':
-            # return compute_A9_11(G)  # implemented as transpose
-            return compute_orbit_adjacency(G, adj_type)
-        case 'A10_9':
-            return compute_A10_9(G)
         case 'A9_10':
-            return compute_orbit_adjacency(G, 'A9_10')
+            return compute_orbit_adjacency(G, adj_type)
         case 'A10_10':
-            return compute_orbit_adjacency(G, 'A10_10')
+            return compute_orbit_adjacency(G, adj_type)
         case 'A10_11':
-            # return compute_A10_11_equation_based(G)
-            return compute_orbit_adjacency(G, 'A10_11')
+            return compute_orbit_adjacency(G, adj_type)
         case 'A12_12':
             return compute_orbit_adjacency(G, adj_type)
-
-        case 'A13_12':
-            return compute_A13_12_equation_based(G)
         case 'A12_13':
-            # return compute_A12_13(G)
-            # return compute_A12_13_equation_based(G)
-            return compute_orbit_adjacency(G, 'A12_13')
+            return compute_orbit_adjacency(G, adj_type)
         case 'A13_13':
-            # return compute_A13_13(G)
-            return compute_orbit_adjacency(G, 'A13_13')
-            # return compute_A13_13_equation_based(G)
+            return compute_orbit_adjacency(G, adj_type)
         case 'A14_14':
             return compute_orbit_adjacency(G, adj_type)
-            # return compute_A14_14_oriented_in_out(G)
-            # return compute_A14_14_oriented_out_out(G)
-            # return count_all(G)['A14_14']
         case 1:
             return compute_graphlet_adjacency_1(G)
         case 2:
