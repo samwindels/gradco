@@ -4,7 +4,7 @@ import networkx as nx
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import inspect
-from gradco_python_version import count
+from gradco_python_interface import count
 
 DEBUG = True
 # DEBUG = False

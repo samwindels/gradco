@@ -354,7 +354,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	
 	// 2. dependend on infered matrices
 	A9_11.subtract_matrix_multiple(A12_13, 1);
-	A6_7.subtract_matrix_multiple(A9_11, 1);  // 9_11 is already times 2
+	A6_7.subtract_matrix_multiple(A9_11, 1);  // 9_11 is already times 2 
 	
 
 	//FORMAT RESULTS

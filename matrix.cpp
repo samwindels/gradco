@@ -181,17 +181,18 @@ PyObject* Matrix::division_to_numpy(int scalar){
 
 }
 int Matrix::get(int a, int b){
+	return 0;
 
-        it = adj[a].find(b);
+        /* it = adj[a].find(b); */
  
-        // key found
-        if (it != adj[a].end()) {
-            	return it->second;
-        }
-        // key not found
-        else {
-		return 0;
-        }
+        /* // key found */
+        /* if (it != adj[a].end()) { */
+        /*     	return it->second; */
+        /* } */
+        /* // key not found */
+        /* else { */
+		/* return 0; */
+        /* } */
 }
 
 
