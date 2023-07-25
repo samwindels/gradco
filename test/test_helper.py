@@ -27,6 +27,9 @@ def matches_count_windels(triu, graphlet, expected_counts):
     # triu_counts = gradco.count(A, n, graphlet)
     # print(triu_counts)
     outcome = np.array_equal(triu_counts, expected_counts)
+    if outcome:
+        if np.sum(triu_counts<0)>0:
+            outcome = False
 
     if DEBUG and outcome is False:
         print(inspect.stack()[1].function)  # print name of the test
@@ -89,8 +92,13 @@ def matches_orca(triu, adj_type, expected_counts):
     A_orbit = count(G, adj_type)
     counts = np.sum(A_orbit, axis=1)
     outcome = np.array_equal(counts, expected_counts)
+    if outcome:
+        if np.sum(np.asarray(A_orbit)<0)>0:
+            print('CONTAINS NEGATIVES')
+            outcome = False
 
     if DEBUG and outcome is False:
+    # if True:
         print(f"\n failed test_G{adj_type}: {inspect.stack()[1][3]}")
         print(f"\n{A=}")
         print(f"\n{A_orbit=}")
