@@ -214,7 +214,6 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
 	int A1_1_ac;
 
-	A10_10.add_matrix_multiple(A14_14, 2);
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	std::cout<<"IN-OUT WEDGES"<<std::endl;
@@ -246,12 +245,12 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A12_13.add_scalar(c, a, A3_3_ab);
 						A12_13.add_scalar(c, b, A3_3_ab);
 
-						A10_10.add_scalar(a, b, A1_2_bc - A3_3_ab);
-						A10_10.add_scalar(b, a, A1_2_ac - A3_3_ab);
-						A10_10.add_scalar(a, c, A1_2_cb - A3_3_ac);
-						A10_10.add_scalar(c, a, A1_2_ab - A3_3_ac);
-						A10_10.add_scalar(b, c, A1_2_ca - A3_3_bc);
-						A10_10.add_scalar(c, b, A1_2_ba - A3_3_bc);
+						A10_10.add_scalar(a, b, A1_2_ac);
+						A10_10.add_scalar(b, a, A1_2_bc);
+						A10_10.add_scalar(a, c, A1_2_ab);
+						A10_10.add_scalar(c, a, A1_2_cb);
+						A10_10.add_scalar(b, c, A1_2_ba);
+						A10_10.add_scalar(c, b, A1_2_ca);
 						
 						A13_13.add_scalar(a, b, A3_3_ab);
 						A13_13.add_scalar(a, c, A3_3_ac);
@@ -422,6 +421,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
 	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
 	A6_6.subtract_matrix_multiple(A9_10, 1);
+	A10_10.subtract_matrix_multiple(A12_13, 1);
 	
 
 	//FORMAT RESULTS
