@@ -259,11 +259,22 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A13_13.add_scalar(c, a, A3_3_ac);
 						A13_13.add_scalar(c, b, A3_3_bc);
 						
+        /* A[a, b] += A1_2[a, b] */
+        /* A[a, c] += A1_2[a, c] */
+
+        /* A[b, a] += A1_2[b, a] */
+        /* A[b, c] += A1_2[b, c] */
+
+        /* A[c, a] += A1_2[c, a] */
+        /* A[c, b] += A1_2[c, b] */
+
 						A10_11.add_scalar(a, b, A1_2_ab); 
-						A10_11.add_scalar(b, a, A1_2_ba); 
 						A10_11.add_scalar(a, c, A1_2_ac); 
-						A10_11.add_scalar(c, a, A1_2_ca); 
+						
+						A10_11.add_scalar(b, a, A1_2_ba); 
 						A10_11.add_scalar(b, c,	A1_2_bc); 
+						
+						A10_11.add_scalar(c, a, A1_2_ca); 
 						A10_11.add_scalar(c, b, A1_2_cb); 
 
 					}else{
@@ -409,19 +420,25 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	// 1. dependend on brute force matrices
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
-	A10_11.subtract_matrix_multiple(A12_13, 1);
-	A8_8.subtract_matrix_multiple(A12_13, 1);
-	A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1);
 	
 	// 2. dependend on infered matrices
+	A8_8.subtract_matrix_multiple(A12_13, 1);
+	A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1);
+	A9_11.subtract_matrix_multiple(A12_13, 1);
+	A10_10.subtract_matrix_multiple(A12_13, 1);
+	A10_11.subtract_matrix_multiple(A12_13, 1);
+
+	//3. depend on infered infered matrices
 	A4_5.subtract_matrix_multiple(A8_8, 1);
 	A5_5.subtract_matrix_multiple(A8_8, 1);
-	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
 	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
+	
+	// 4. depends on infered infered matrices
 	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
+	
+	// 5. depends on infered infered matrices
 	A6_6.subtract_matrix_multiple(A9_10, 1);
-	A10_10.subtract_matrix_multiple(A12_13, 1);
 	
 
 	//FORMAT RESULTS
@@ -441,7 +458,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A9_11_numpy    = A9_11.division_to_numpy(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
-	PyObject* A10_11_numpy   = A10_10.to_numpy();
+	PyObject* A10_11_numpy   = A10_11.to_numpy();
 	PyObject* A12_12_numpy   = A12_12.division_to_numpy(2);
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
