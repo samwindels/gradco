@@ -24,7 +24,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	PyArrayObject* rows = NULL;
 	PyArrayObject* cols = NULL;
 	
-	if (!PyArg_ParseTuple(args, "O!O!ii", &PyArray_Type, &rows, &PyArray_Type, &cols, &n, &graphlet))
+	if (!PyArg_ParseTuple(args, "O!O!i", &PyArray_Type, &rows, &PyArray_Type, &cols, &n))
 		return NULL;
 
 	// SANITY CHECKS NUMPY ARRAYS
