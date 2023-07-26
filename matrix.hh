@@ -21,7 +21,8 @@ class Matrix {
 
 	
     public:
-	std::vector<std::unordered_map<int, int> > adj;
+	/* std::vector<std::unordered_map<int, int> > adj; */
+	std::vector<ankerl::unordered_dense<int, int> > adj;
 	Matrix(int n);
 	Matrix(const Matrix& m);
 	void increment_all_2_all(int a, int b);
