@@ -98,7 +98,6 @@ def matches_orca(triu, adj_type, expected_counts):
             outcome = False
 
     if DEBUG and outcome is False:
-    # if True:
         print(f"\n failed test_G{adj_type}: {inspect.stack()[1][3]}")
         print(f"\n{A=}")
         print(f"\n{A_orbit=}")

@@ -34,10 +34,17 @@ adj2index = {
         }
 
 
-def format_gradco_output(A_sparse, n):
+def format_gradco_output(A_sparse, n, order):
     A = np.zeros((n, n))
     if A.shape[1] >0:
         A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+
+    reverse_order = np.ones(n)
+    reverse_order = reverse_order[order]
+
+    # A = A[order, :]
+    # A = A[:, order]
+
     return A
 
 def format_gradco_input(G):
@@ -55,16 +62,16 @@ def format_gradco_input(G):
 
     n = A.shape[0]
     rows, cols = np.nonzero(A)
-    return rows, cols, n
+    return rows, cols, n, order
 
 def compute_orbit_adjacency(G, adj_type):
         global adj2index
-        rows, cols, n = format_gradco_input(G)
+        rows, cols, n, order = format_gradco_input(G)
         tuple_index = adj2index[adj_type]
         if len(rows)>0:
             As_sparse = gradco.count(rows, cols, n, 2)
             A = As_sparse[tuple_index]
-            return format_gradco_output(A, n)
+            return format_gradco_output(A, n, order)
         else:
             return np.zeros((n, n))
 
@@ -195,7 +202,6 @@ def count(G, adj_type):
         case 'A10_10':
             return compute_orbit_adjacency(G, adj_type)
         case 'A10_11':
-            # return compute_A10_11_equation_based(G)
             return compute_orbit_adjacency(G, adj_type)
         case 'A12_12':
             return compute_orbit_adjacency(G, adj_type)
@@ -240,9 +246,8 @@ def main():
     # compute_AG3_digraph(G)
     # return
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    format_gradco_input(G)
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    rows, cols, n = format_gradco_input(G)
+    rows, cols, n, order = format_gradco_input(G)
     As_sparse = gradco.count(rows, cols, n, 2)
     return
     # G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
