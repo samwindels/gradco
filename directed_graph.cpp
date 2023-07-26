@@ -7,7 +7,8 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols) : 
 	adj_in.resize(n, std::vector<int>());	
 	adj_out.resize(n, std::vector<int>());	
 	
-	adj_out_set.resize(n, std::unordered_set<int>());	
+	/* adj_out_set.resize(n, std::unordered_set<int>()); */	
+	adj_out_set.resize(n, ankerl::unordered_dense::set<int>());	
 
 	// FOR LOOP OVER THE ROWS/COLS TO FILL ADJACENCY LISTS
 	// Array iterator

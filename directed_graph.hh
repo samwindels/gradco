@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include <unordered_set>
-#include <coroutine>
+/* #include <unordered_set> */
+#include "unordered_dense.h"
 
 // For explanation on NO_IMPORT_ARRAT and PY_ARRAY_UNIQUE_SYMBOL, see: 
 // 	https://numpy.org/doc/1.13/reference/c-api.array.html: miscelaneous, importing the api
@@ -34,6 +34,7 @@ class DirectedGraph
 
     private:
 	int n;
-	std::vector<std::unordered_set<int> > adj_out_set; 
+	/* std::vector<std::unordered_set<int> > adj_out_set; */ 
+	std::vector<ankerl::unordered_dense::set<int> > adj_out_set; 
 	
     };

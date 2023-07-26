@@ -5,12 +5,11 @@
 #define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
 #include <numpy/arrayobject.h>
 #include <numpy/ndarrayobject.h>
-/* #include <unordered_dense.h> */
 #include "unordered_dense.h"
 
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+/* #include <unordered_map> */
 
 
 class Matrix {
