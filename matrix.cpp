@@ -4,6 +4,7 @@
 Matrix::Matrix(int n){
 	n_entries = 0;
 	z_entries = 0;  //zero entries. Skipped when mapping to numpy sparse
+	auto map = ankerl::unordered_dense::map<int, std::string>();
     	adj.resize(n, std::unordered_map<int, int>());	
 }
 

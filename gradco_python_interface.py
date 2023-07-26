@@ -46,11 +46,12 @@ def format_gradco_input(G):
     A[A>0]=1
 
     rowsum = np.sum(A, axis=1)
-    order = np.argsort(rowsum)
+    order = np.argsort(-rowsum)
 
-    # A = A[:, order]
     # A = A[order, :]
-
+    # A = A[:, order]
+    # A = np.ascontiguousarray(A)
+    
 
     n = A.shape[0]
     rows, cols = np.nonzero(A)
@@ -234,11 +235,11 @@ def main():
     # G = nx.scale_free_graph(100)
     # compute_A9_11(G)
     # return
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
+    G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
     # format_gradco_input(G)
     # compute_AG3_digraph(G)
     # return
-    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     format_gradco_input(G)
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     rows, cols, n = format_gradco_input(G)
