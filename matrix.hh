@@ -22,7 +22,7 @@ class Matrix {
 	
     public:
 	/* std::vector<std::unordered_map<int, int> > adj; */
-	std::vector<ankerl::unordered_dense<int, int> > adj;
+	std::vector<ankerl::unordered_dense::map<int, int> > adj;
 	Matrix(int n);
 	Matrix(const Matrix& m);
 	void increment_all_2_all(int a, int b);
@@ -37,7 +37,8 @@ class Matrix {
 	PyObject* to_numpy();
 	PyObject* division_to_numpy(int scalar);
 	
-	std::unordered_map<int, int>::iterator it;
+	/* std::unordered_map<int, int>::iterator it; */
+	ankerl::unordered_dense::map<int, int>::iterator it;
 	void add_matrix_multiple(const Matrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
 	void subtract_matrix_multiple(const Matrix& m, int scalar);

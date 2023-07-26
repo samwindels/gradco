@@ -7,10 +7,8 @@
 #include <numpy/arrayobject.h>
 #include <numpy/ndarrayobject.h>
 
-// uncomment to disable assert()
-// #define NDEBUG
+// #define NDEBUG  // uncomment to disable assert()
 #include <cassert>
-
 #include <iostream>
 
 #include "directed_graph.hh"
@@ -55,7 +53,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
 	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
 	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
-	Matrix A9_10    = Matrix(n);  // 4-node paw,  
+	Matrix A9_10    = Matrix(n);  // 4-node paw, 
 	Matrix A9_11    = Matrix(n);  // 4-node paw,
 	Matrix A10_10   = Matrix(n);  // 4-node paw,
 	Matrix A10_11   = Matrix(n);  // 4-node paw,
