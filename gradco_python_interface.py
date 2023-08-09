@@ -87,35 +87,61 @@ def compute_graphlet_adjacency_2(G):
         A = compute_orbit_adjacency(G, 'A3_3')
         return A
 
+def compute_A5_5_equation_based(G):
+
+    A = - compute_orbit_adjacency(G, 'A8_8')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for a, b, c in path_iterator(G):
+
+        # A[b, a] += A1_2[b, c] 
+        # A[b, c] += A1_2[b, a]
+        A[b, c] += A1_2[b, c] 
+        A[b, a] += A1_2[b, a] 
+
+    return A
+
+def compute_A4_5_equation_based(G):
+
+    A = - compute_orbit_adjacency(G, 'A8_8')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for a, b, c in path_iterator(G):
+
+        A[a, b] += A1_2[b, c] 
+        A[c, b] += A1_2[b, a] 
+    return A
+
 def compute_graphlet_adjacency_3(G):
         
-        A = compute_orbit_adjacency(G, 'A4_5')
+        # A = compute_orbit_adjacency(G, 'A4_5')
         # A = compute_A4_5_equation_based(G)
         # assert np.sum(A<0)==0
         # return np.zeros((5, 5))
-        A += compute_orbit_adjacency(G, 'A4_5_bis') 
+        # A += compute_orbit_adjacency(G, 'A4_5_bis') 
 
-        A_4_5_bis = compute_orbit_adjacency(G, 'A4_5_bis') 
-        if np.sum(A_4_5_bis<0)!=0:
-            print(f"{A_4_5_bis=}")
+        # A_4_5_bis = compute_orbit_adjacency(G, 'A4_5_bis') 
+        # if np.sum(A_4_5_bis<0)!=0:
+        #     print(f"{A_4_5_bis=}")
         
         # A_4_5 = compute_A4_5_equation_based(G)
-        A_4_5 = compute_orbit_adjacency(G, 'A4_5') 
-        if np.sum(A_4_5<0)!=0:
-            # print(A_4_5)
-            print(f"{A_4_5=}")
+        # # A_4_5 = compute_orbit_adjacency(G, 'A4_5') 
+        # if np.sum(A_4_5<0)!=0:
+        #     # print(A_4_5)
+        #     print(f"{A_4_5=}")
         
-        A_5_5 = compute_orbit_adjacency(G, 'A5_5') 
-        if np.sum(A_5_5<0)!=0:
-            # print(A_5_5)
-            print(f"{A_5_5=}")
+        # # A_5_5 = compute_orbit_adjacency(G, 'A5_5') 
+        # A_5_5 = compute_A5_5_equation_based(G)
+        # if np.sum(A_5_5<0)!=0:
+        #     # print(A_5_5)
+        #     print(f"{A_5_5=}")
         
-        A_4_4 = compute_orbit_adjacency(G, 'A4_4') 
-        if np.sum(A_4_4<0)!=0:
-            print(f"{A_4_4=}")
+
+        A = compute_orbit_adjacency(G, 'A4_5') 
+        A += compute_orbit_adjacency(G, 'A4_5_bis') 
         A += A.transpose()  # A5_4 and 5_4_bis
-        A += compute_orbit_adjacency(G, 'A4_4')
-        A += compute_orbit_adjacency(G, 'A5_5')
+        A += compute_orbit_adjacency(G, 'A5_5') 
+        A += compute_orbit_adjacency(G, 'A4_4') 
         return A
 
 def compute_graphlet_adjacency_4(G):
@@ -187,6 +213,8 @@ def count(G, adj_type):
             return compute_orbit_adjacency(G, adj_type)
         case 'A4_5':
             return compute_orbit_adjacency(G, adj_type)
+        case 'A4_5_bis':
+            return compute_orbit_adjacency(G, adj_type)
         case 'A5_5':
             return compute_orbit_adjacency(G, adj_type)
         case 'A6_7':
@@ -231,7 +259,6 @@ def count(G, adj_type):
             return compute_graphlet_adjacency_8(G)
         case _:
             ValueError('invalid adjacency type')
-
 
 
 

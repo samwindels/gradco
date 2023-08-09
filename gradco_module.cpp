@@ -303,8 +303,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 						A8_8_bis.add_scalar(c, a, A1_2_ba);
 						A4_5.add_scalar(a, b, A1_2_bc);
 						A4_5.add_scalar(c, b, A1_2_ba);
-						A5_5.add_scalar(b, a, A1_2_bc);
-						A5_5.add_scalar(b, c, A1_2_ba);
+						A5_5.add_scalar(b, c, A1_2_bc);
+						A5_5.add_scalar(b, a, A1_2_ba);
 
 						A12_12.add_scalar(a, c, A1_1_ac);
 						A12_12.add_scalar(c, a, A1_1_ac);
@@ -353,8 +353,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A8_8_bis.add_scalar(c, a, A1_2_ba);
 					A4_5.add_scalar(a, b, A1_2_bc);
 					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, a, A1_2_bc);
-					A5_5.add_scalar(b, c, A1_2_ba);
+					A5_5.add_scalar(b, c, A1_2_bc);
+					A5_5.add_scalar(b, a, A1_2_ba);
 					
 					A12_12.add_scalar(a, c, A1_1_ac);
 					A12_12.add_scalar(c, a, A1_1_ac);
@@ -401,8 +401,8 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A8_8_bis.add_scalar(c, a, A1_2_ba);
 					A4_5.add_scalar(a, b, A1_2_bc);
 					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, a, A1_2_bc);
-					A5_5.add_scalar(b, c, A1_2_ba);
+					A5_5.add_scalar(b, c, A1_2_bc);
+					A5_5.add_scalar(b, a, A1_2_ba);
 					
 					A12_12.add_scalar(a, c, A1_1_ac);
 					A12_12.add_scalar(c, a, A1_1_ac);

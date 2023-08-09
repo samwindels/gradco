@@ -1437,28 +1437,6 @@ def compute_A12_12_equation_based(G):
     return A
 
 
-# def compute_A5_5_equation_based(G):
-
-#     A = - compute_orbit_adjacency(G, 'A8_8')
-#     A1_2 = compute_orbit_adjacency(G, 'A1_2')
-
-#     for a, b, c in path_iterator(G):
-
-#         A[b, a] += A1_2[b, c] 
-#         A[b, c] += A1_2[b, a]
-
-#     return A
-
-def compute_A4_5_equation_based(G):
-
-    A = - compute_orbit_adjacency(G, 'A8_8')
-    A1_2 = compute_orbit_adjacency(G, 'A1_2')
-
-    for a, b, c in path_iterator(G):
-
-        A[a, b] += A1_2[b, c] 
-        A[c, b] += A1_2[b, a] 
-    return A
 
 
 
