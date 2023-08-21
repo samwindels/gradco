@@ -31,7 +31,7 @@ def main():
                               sources=["directed_graph.cpp", 
                                        "gradco_module.cpp",
                                        "matrix.cpp"],
-                              depends=["unordered_dense.h", 'matrix.hh'],
+                              depends=["unordered_dense.h", 'matrix.hh', "directed_graph.hh"],
                               # headers=["unordered_dense.h", 'matrix.hh'],
                               # library_dirs=['/opt/local/lib/boost'],
                               # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
