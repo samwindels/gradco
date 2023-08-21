@@ -1,2 +1,18 @@
 [build-system]
 requires = ["setuptools>=61.0", "wheel", "Cython", "numpy==1.25.1"]
+
+
+[project]
+name = "Gradco"
+version = "0.0.1"
+authors = [
+  { name="Sam F. L. Windels", email="sam.windels@gmail.com" },
+]
+description = "Counts Graphlet Adjacency matrices"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
