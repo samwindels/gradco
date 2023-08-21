@@ -39,12 +39,15 @@ def format_gradco_output(A_sparse, n, order):
     if A.shape[1] >0:
         A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
 
-    reverse_order = np.ones(n)
-    reverse_order = reverse_order[order]
+    # reverse_order = np.arange(n, dtype=int)
+    # print(reverse_order)
+    # for i in order:
+    #     print(i, reverse_order[i])
+    # reverse_order = reverse_order[order]
+    reverse_order = np.argsort(order)
 
     A = A[reverse_order, :]
     A = A[:, reverse_order]
-
     return A
 
 def format_gradco_input(G):
@@ -265,7 +268,7 @@ def count(G, adj_type):
 def main():
 
    
-    # G = nx.scale_free_graph(100)
+    # G = nx.scale_free_graph(1000)
     # compute_A9_11(G)
     # return
     # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
@@ -275,7 +278,11 @@ def main():
     # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
     rows, cols, n, order = format_gradco_input(G)
-    As_sparse = gradco.count(rows, cols, n)
+    As_sparse = gradco.count(rows, cols, n, 2)
+    global adj2index
+    nz_1_1 = np.count_nonzero(As_sparse[adj2index['A1_1']])
+    nz_4_5_bis = np.count_nonzero(As_sparse[adj2index['A4_5_bis']])
+    print(nz_4_5_bis/nz_1_1)
     return
     # G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
     # compute_A8_8_digraph(G)
