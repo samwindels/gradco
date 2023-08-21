@@ -32,74 +32,71 @@ adj2index = {
             'A14_14': 18
         }
 
-def compute_graphlet_adjacency_1(G):
+def compute_graphlet_adjacency_1(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A1_2')
+        A = format_gradco_output(As_sparse, 'A1_2', n, order)
         A += A.transpose()  # A2_1
-        A += compute_orbit_adjacency(G, 'A1_1')
+        A += format_gradco_output(As_sparse, 'A1_1', n, order)
         return A
 
-def compute_graphlet_adjacency_2(G):
+def compute_graphlet_adjacency_2(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A3_3')
+        A = format_gradco_output(As_sparse, 'A3_3', n, order)
         return A
 
-def compute_graphlet_adjacency_3(G):
+def compute_graphlet_adjacency_3(As_sparse, n, order):
         
-        A = compute_orbit_adjacency(G, 'A4_5') 
-        A += compute_orbit_adjacency(G, 'A4_5_bis') 
+        A = format_gradco_output(As_sparse, 'A4_5', n, order)
+        A += format_gradco_output(As_sparse, 'A4_5_bis', n, order)
         A += A.transpose()  # A5_4 and 5_4_bis
-        A += compute_orbit_adjacency(G, 'A5_5') 
-        A += compute_orbit_adjacency(G, 'A4_4') 
+        A += format_gradco_output(As_sparse, 'A5_5', n, order)
+        A += format_gradco_output(As_sparse, 'A4_4', n, order)
         return A
 
-def compute_graphlet_adjacency_4(G):
+def compute_graphlet_adjacency_4(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A6_7')
+        A = format_gradco_output(As_sparse, 'A6_7', n, order)
         A += A.transpose()  # A7_6
-        A += compute_orbit_adjacency(G, 'A6_6')
+        A += format_gradco_output(As_sparse, 'A6_6', n, order)
         return A
 
-def compute_graphlet_adjacency_5(G):
+def compute_graphlet_adjacency_5(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A8_8')
-        A += compute_orbit_adjacency(G, 'A8_8_bis')
+        A = format_gradco_output(As_sparse, 'A8_8', n, order)
+        A += format_gradco_output(As_sparse, 'A8_8_bis', n, order)
         return A
 
-def compute_graphlet_adjacency_6(G):
+def compute_graphlet_adjacency_6(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A9_10')
-        A += compute_orbit_adjacency(G, 'A9_11')
-        A += compute_orbit_adjacency(G, 'A10_11')
-        # A += compute_A10_11_equation_based(G)
+        A = format_gradco_output(As_sparse, 'A9_10', n, order)
+        A += format_gradco_output(As_sparse, 'A9_11', n, order)
+        A += format_gradco_output(As_sparse, 'A10_11', n, order)
         A += A.transpose()
-        A += compute_orbit_adjacency(G, 'A10_10')
+        A += format_gradco_output(As_sparse, 'A10_10', n, order)
         return A
 
-def compute_graphlet_adjacency_7(G):
+def compute_graphlet_adjacency_7(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A12_13')
+        A = format_gradco_output(As_sparse, 'A12_13', n, order)
         A += A.transpose()
-        A += compute_orbit_adjacency(G, 'A12_12')
-        A += compute_orbit_adjacency(G, 'A13_13')
+        A += format_gradco_output(As_sparse, 'A12_12', n, order)
+        A += format_gradco_output(As_sparse, 'A13_13', n, order)
         return A
 
-def compute_graphlet_adjacency_8(G):
+def compute_graphlet_adjacency_8(As_sparse, n, order):
 
-        A = compute_orbit_adjacency(G, 'A14_14')
+        A = format_gradco_output(As_sparse, 'A14_14', n, order)
         return A
 
-
-
-def format_gradco_output(A_sparse, n, order):
+def format_gradco_output(As_sparse, adj_type, n, order):
+    global adj2index
     A = np.zeros((n, n))
     if A.shape[1] >0:
+        A_sparse = As_sparse[adj2index[adj_type]]
         A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
-
-    reverse_order = np.argsort(order)
-
-    A = A[reverse_order, :]
-    A = A[:, reverse_order]
+        reverse_order = np.argsort(order)
+        A = A[reverse_order, :]
+        A = A[:, reverse_order]
     return A
 
 def format_gradco_input(G):
@@ -117,78 +114,68 @@ def format_gradco_input(G):
     rows, cols = np.nonzero(A)
     return rows, cols, n, order
 
-def compute_orbit_adjacency(G, adj_type):
-        global adj2index
-        rows, cols, n, order = format_gradco_input(G)
-        tuple_index = adj2index[adj_type]
-        if len(rows)>0:
-            As_sparse = gradco.count(rows, cols, n)
-            A = As_sparse[tuple_index]
-            return format_gradco_output(A, n, order)
-        else:
-            return np.zeros((n, n))
-
-
-
 def count(G, adj_type):
+
+    rows, cols, n, order = format_gradco_input(G)
+    if len(rows) == 0:
+        return np.zeros((n, n))
+    As_sparse = gradco.count(rows, cols, n)
 
     match adj_type:
         case 'A1_1':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A1_2':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A2_1':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A3_3':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A4_4':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A4_5':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A4_5_bis':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A5_5':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A6_7':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A6_6':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A8_8':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A9_10':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A9_11':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A10_10':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A10_11':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A12_12':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A12_13':
-            return compute_orbit_adjacency(G, adj_type)
-        case 'A13_12':
-            return compute_orbit_adjacency(G, 'A12_13').transpose()
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A13_13':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 'A14_14':
-            return compute_orbit_adjacency(G, adj_type)
+            return format_gradco_output(As_sparse, adj_type, n, order)
         case 1:
-            return compute_graphlet_adjacency_1(G)
+            return compute_graphlet_adjacency_1(As_sparse, n, order)
         case 2:
-            return compute_graphlet_adjacency_2(G)
+            return compute_graphlet_adjacency_2(As_sparse, n, order)
         case 3:
-            return compute_graphlet_adjacency_3(G)
+            return compute_graphlet_adjacency_3(As_sparse, n, order)
         case 4:
-            return compute_graphlet_adjacency_4(G)
+            return compute_graphlet_adjacency_4(As_sparse, n, order)
         case 5:
-            return compute_graphlet_adjacency_5(G)
+            return compute_graphlet_adjacency_5(As_sparse, n, order)
         case 6:
-            return compute_graphlet_adjacency_6(G)
+            return compute_graphlet_adjacency_6(As_sparse, n, order)
         case 7:
-            return compute_graphlet_adjacency_7(G)
+            return compute_graphlet_adjacency_7(As_sparse, n, order)
         case 8:
-            return compute_graphlet_adjacency_8(G)
+            return compute_graphlet_adjacency_8(As_sparse, n, order)
         case _:
             ValueError('invalid adjacency type')
 
@@ -197,43 +184,21 @@ def count(G, adj_type):
 def main():
 
    
-    # G = nx.scale_free_graph(1000)
-    # compute_A9_11(G)
-    # return
-    # G = nx.read_edgelist('PPI_biogrid_yeast.edgelist')
-    # format_gradco_input(G)
-    # compute_AG3_digraph(G)
-    # return
-    # G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
-    G = nx.read_edgelist('COEX7_human_0.01_LCM.edgelist')
+    G = nx.scale_free_graph(5000)
     rows, cols, n, order = format_gradco_input(G)
-    As_sparse = gradco.count(rows, cols, n, 2)
-    global adj2index
-    nz_1_1 = np.count_nonzero(As_sparse[adj2index['A1_1']])
-    nz_4_5_bis = np.count_nonzero(As_sparse[adj2index['A4_5_bis']])
-    print(nz_4_5_bis/nz_1_1)
-    return
-    # G = nx.read_edgelist('orientation/nets/COEX_human_degenerate.edgelist')
-    # compute_A8_8_digraph(G)
-    # compute_AG7_digraph(G)
-    # compute_AG7_digraph_two(G)
-    # G = nx.read_edgelist('degenerate_tests/nets/PPI_yeast_degenerate.edgelist')
-    A = nx.to_numpy_array(G, dtype=int)
-    n = A.shape[0]
-    rows, cols = np.nonzero(A)
-    # print(rows)
-    # print(cols)
-    # rows = np.ascontiguousarray(rows) 
-    # cols = np.ascontiguousarray(cols) 
-    As = gradco.count(rows, cols, n, 2)
-    print(As[2])
-    return
+    if len(rows) == 0:
+        # input graph is empty, edge case not yet taken care of properly
+        return np.zeros((n, n))
+    
+    #As_sparse is a list of all the orbit adjacency matrix in sparse matrix form
+    As_sparse = gradco.count(rows, cols, n)  
+    
+    # example orbit adjacency matrix (dense numpy 2d array)
+    # not to be used in graph fusion, or anywhere else for that matter, until published
+    A1_2 = format_gradco_output(As_sparse, 'A1_2', n, order)
 
-    A = np.zeros((n, n))
-    A[A_14_14_sparse[0,:], A_14_14_sparse[1,:]] = A_14_14_sparse[2,:]
-    print(A)
-    # print(np.sum(triu_counts/3))
-    return
+    # example graphlet adjacency matrix (dense numpy 2d array)
+    AG1 = compute_graphlet_adjacency_1(As_sparse, n, order)
 
 
 if __name__ == "__main__":
