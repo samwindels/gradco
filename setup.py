@@ -42,8 +42,10 @@ def main():
                               # include_dirs=['/opt/local/include/boost/', np.get_include()],
                               include_dirs=[ np.get_include(), "."],
                               language='c++',
-                              # extra_compile_args=['-std=c++17', "-O3", "-march=native"]
-                              extra_compile_args=['-std=c++20', "-O3", "-march=native"]
+                              extra_compile_args=['-std=c++17', "-O2"]
+                              # extra_compile_args=['-std=c++17', "-O2", "-march=native"]
+                              # extra_compile_args=["-O2", "-march=native"]
+                              # extra_compile_args=['-std=c++20', "-O3", "-march=native"]
                               # extra_compile_args=['-std=c++20', '-g', '-O0']
                               # extra_compile_args=['-std=c++20', "-O2"]
                               )
