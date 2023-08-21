@@ -122,7 +122,7 @@ def compute_orbit_adjacency(G, adj_type):
         rows, cols, n, order = format_gradco_input(G)
         tuple_index = adj2index[adj_type]
         if len(rows)>0:
-            As_sparse = gradco.count(rows, cols, n, 2)
+            As_sparse = gradco.count(rows, cols, n)
             A = As_sparse[tuple_index]
             return format_gradco_output(A, n, order)
         else:
