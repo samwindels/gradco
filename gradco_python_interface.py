@@ -8,7 +8,6 @@ from scipy.spatial.distance import squareform
 import pandas as pd
 import gradco
 from itertools import combinations
-from python_count_functions import *
 
 adj2index = {
 
@@ -33,51 +32,6 @@ adj2index = {
             'A14_14': 18
         }
 
-
-def format_gradco_output(A_sparse, n, order):
-    A = np.zeros((n, n))
-    if A.shape[1] >0:
-        A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
-
-    # reverse_order = np.arange(n, dtype=int)
-    # print(reverse_order)
-    # for i in order:
-    #     print(i, reverse_order[i])
-    # reverse_order = reverse_order[order]
-    reverse_order = np.argsort(order)
-
-    A = A[reverse_order, :]
-    A = A[:, reverse_order]
-    return A
-
-def format_gradco_input(G):
-    A = nx.to_numpy_array(G, dtype=int)
-    A = A+A.transpose()
-    A[A>0]=1
-
-    rowsum = np.sum(A, axis=1)
-    order = np.argsort(rowsum)
-
-    A = A[order, :]
-    A = A[:, order]
-    # A = np.ascontiguousarray(A)
-    
-
-    n = A.shape[0]
-    rows, cols = np.nonzero(A)
-    return rows, cols, n, order
-
-def compute_orbit_adjacency(G, adj_type):
-        global adj2index
-        rows, cols, n, order = format_gradco_input(G)
-        tuple_index = adj2index[adj_type]
-        if len(rows)>0:
-            As_sparse = gradco.count(rows, cols, n, 2)
-            A = As_sparse[tuple_index]
-            return format_gradco_output(A, n, order)
-        else:
-            return np.zeros((n, n))
-
 def compute_graphlet_adjacency_1(G):
 
         A = compute_orbit_adjacency(G, 'A1_2')
@@ -90,56 +44,8 @@ def compute_graphlet_adjacency_2(G):
         A = compute_orbit_adjacency(G, 'A3_3')
         return A
 
-def compute_A5_5_equation_based(G):
-
-    A = - compute_orbit_adjacency(G, 'A8_8')
-    A1_2 = compute_orbit_adjacency(G, 'A1_2')
-
-    for a, b, c in path_iterator(G):
-
-        # A[b, a] += A1_2[b, c] 
-        # A[b, c] += A1_2[b, a]
-        A[b, c] += A1_2[b, c] 
-        A[b, a] += A1_2[b, a] 
-
-    return A
-
-def compute_A4_5_equation_based(G):
-
-    A = - compute_orbit_adjacency(G, 'A8_8')
-    A1_2 = compute_orbit_adjacency(G, 'A1_2')
-
-    for a, b, c in path_iterator(G):
-
-        A[a, b] += A1_2[b, c] 
-        A[c, b] += A1_2[b, a] 
-    return A
-
 def compute_graphlet_adjacency_3(G):
         
-        # A = compute_orbit_adjacency(G, 'A4_5')
-        # A = compute_A4_5_equation_based(G)
-        # assert np.sum(A<0)==0
-        # return np.zeros((5, 5))
-        # A += compute_orbit_adjacency(G, 'A4_5_bis') 
-
-        # A_4_5_bis = compute_orbit_adjacency(G, 'A4_5_bis') 
-        # if np.sum(A_4_5_bis<0)!=0:
-        #     print(f"{A_4_5_bis=}")
-        
-        # A_4_5 = compute_A4_5_equation_based(G)
-        # # A_4_5 = compute_orbit_adjacency(G, 'A4_5') 
-        # if np.sum(A_4_5<0)!=0:
-        #     # print(A_4_5)
-        #     print(f"{A_4_5=}")
-        
-        # # A_5_5 = compute_orbit_adjacency(G, 'A5_5') 
-        # A_5_5 = compute_A5_5_equation_based(G)
-        # if np.sum(A_5_5<0)!=0:
-        #     # print(A_5_5)
-        #     print(f"{A_5_5=}")
-        
-
         A = compute_orbit_adjacency(G, 'A4_5') 
         A += compute_orbit_adjacency(G, 'A4_5_bis') 
         A += A.transpose()  # A5_4 and 5_4_bis
@@ -183,22 +89,45 @@ def compute_graphlet_adjacency_8(G):
         A = compute_orbit_adjacency(G, 'A14_14')
         return A
 
-def compute_A10_11_equation_based(G):
 
-    A1_2 = compute_A1_2(G)
-    A = - compute_A12_13(G)
-    for a, b, c in triangle_iterator(G):
 
-        A[a, b] += A1_2[a, b]
-        A[a, c] += A1_2[a, c]
+def format_gradco_output(A_sparse, n, order):
+    A = np.zeros((n, n))
+    if A.shape[1] >0:
+        A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
 
-        A[b, a] += A1_2[b, a]
-        A[b, c] += A1_2[b, c]
+    reverse_order = np.argsort(order)
 
-        A[c, a] += A1_2[c, a]
-        A[c, b] += A1_2[c, b]
-
+    A = A[reverse_order, :]
+    A = A[:, reverse_order]
     return A
+
+def format_gradco_input(G):
+    A = nx.to_numpy_array(G, dtype=int)
+    A = A+A.transpose()
+    A[A>0]=1
+
+    rowsum = np.sum(A, axis=1)
+    order = np.argsort(rowsum)
+
+    A = A[order, :]
+    A = A[:, order]
+    
+    n = A.shape[0]
+    rows, cols = np.nonzero(A)
+    return rows, cols, n, order
+
+def compute_orbit_adjacency(G, adj_type):
+        global adj2index
+        rows, cols, n, order = format_gradco_input(G)
+        tuple_index = adj2index[adj_type]
+        if len(rows)>0:
+            As_sparse = gradco.count(rows, cols, n, 2)
+            A = As_sparse[tuple_index]
+            return format_gradco_output(A, n, order)
+        else:
+            return np.zeros((n, n))
+
 
 
 def count(G, adj_type):

@@ -1457,3 +1457,45 @@ def compute_A12_12_equation_based(G):
 #         A[c, b] += A1_2[c, a] 
 
 #     return A
+def compute_A5_5_equation_based(G):
+
+    A = - compute_orbit_adjacency(G, 'A8_8')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for a, b, c in path_iterator(G):
+
+        # A[b, a] += A1_2[b, c] 
+        # A[b, c] += A1_2[b, a]
+        A[b, c] += A1_2[b, c] 
+        A[b, a] += A1_2[b, a] 
+
+    return A
+
+def compute_A4_5_equation_based(G):
+
+    A = - compute_orbit_adjacency(G, 'A8_8')
+    A1_2 = compute_orbit_adjacency(G, 'A1_2')
+
+    for a, b, c in path_iterator(G):
+
+        A[a, b] += A1_2[b, c] 
+        A[c, b] += A1_2[b, a] 
+    return A
+
+
+def compute_A10_11_equation_based(G):
+
+    A1_2 = compute_A1_2(G)
+    A = - compute_A12_13(G)
+    for a, b, c in triangle_iterator(G):
+
+        A[a, b] += A1_2[a, b]
+        A[a, c] += A1_2[a, c]
+
+        A[b, a] += A1_2[b, a]
+        A[b, c] += A1_2[b, c]
+
+        A[c, a] += A1_2[c, a]
+        A[c, b] += A1_2[c, b]
+
+    return A
