@@ -194,7 +194,8 @@ def normalize_symmetric(A):
 def power_iteration(matrix, num_iterations, convergence_threshold=1e-6):
     # Generate a random initial guess for the dominant eigenvector
     n = matrix.shape[0]
-    eigen_vector = np.random.rand(n)
+    # eigen_vector = np.random.rand(n)
+    eigen_vector = np.ones(n)
 
     for iteration in range(num_iterations):
         # Compute the matrix-vector product
@@ -232,7 +233,7 @@ def compute_eigencentrality(A):
     # eigenvector = eigenvectors[:, n-1]
     
     # get the dominant eigen vector via power iteration
-    _, eigenvector = power_iteration(A, 300, 1e-5)
+    _, eigenvector = power_iteration(A, 300, 1e-6)
 
     # eigenvector could be rotated, make sure it is non-negative
     if np.sum(eigenvector<=0.0) == n:
@@ -253,8 +254,10 @@ def compute_graphlet_eigencentralities(G):
     A[A>0]=1
 
     # standard symmetrically normalized eigencentrality (e.g., graphlet G0)
+    print(0)
     eigencentralities.append(compute_eigencentrality(A))
 
+    # compute orbit adjacencies
     rows, cols, n, order = format_gradco_input(G)
     As_sparse = gradco.count(rows, cols, n)  
 
