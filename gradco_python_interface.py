@@ -10,6 +10,32 @@ import pandas as pd
 import gradco
 from itertools import combinations
 
+def get_gdv(G):
+    
+    try:
+        unique_id = uuid.uuid1()
+        edgelist_file ='G_{}.txt'.format(unique_id)
+        gdv_file ='G_gdv_{}.txt'.format(unique_id)
+        H=nx.convert_node_labels_to_integers(G) #node ordering is same as G.nodes()
+        H.remove_edges_from(nx.selfloop_edges(H)) 
+   
+        with open(edgelist_file,'w') as o_stream:
+            o_stream.write("{} {}\n".format(H.number_of_nodes(), H.number_of_edges()))
+            for line in nx.generate_edgelist(H,data=False):
+               o_stream.write("{}\n".format(line))
+               print(line)
+        
+        command = ['./orca', 'node', str(4), edgelist_file, gdv_file]
+        # print(" ".join(command))
+        # subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.call(command)
+        return np.loadtxt(gdv_file)
+    
+    finally:
+        os.remove(gdv_file)
+        os.remove(edgelist_file)
+
+
 adj2index = {
 
             'A1_1': 0,
@@ -300,25 +326,33 @@ def compute_graphlet_eigencentralities(G):
 def main():
 
    
-    G = nx.scale_free_graph(5000)
+    # G = nx.scale_free_graph(5000)
+    G = nx.read_edgelist("PPI_biogrid_yeast.edgelist")
+    get_gdv(G)
+    return
+    # G.remove_edges_from(nx.selfloop_edges(G))
+    # G = nx.convert_node_labels_to_integers(G)
+    # nx.write_edgelist(G, "PPI_biogrid_yead_noselfloops.edgelist")
+    # return
+    # G = nx.read_edgelist("PPI_biogrid_yeast.edgelist")
+    rows, cols, n, order = format_gradco_input(G)
+    #centralities = compute_graphlet_eigencentralities(G)
+    #return 
 
-    centralities = compute_graphlet_eigencentralities(G)
-    return 
-
-    #rows, cols, n, order = format_gradco_input(G)
-    #if len(rows) == 0:
-    #    # input graph is empty, edge case not yet taken care of properly
-    #    return np.zeros((n, n))
+    ##rows, cols, n, order = format_gradco_input(G)
+    if len(rows) == 0:
+        # input graph is empty, edge case not yet taken care of properly
+        return np.zeros((n, n))
     
-    ##As_sparse is a list of all the orbit adjacency matrix in sparse matrix form
-    #As_sparse = gradco.count(rows, cols, n)  
+    ###As_sparse is a list of all the orbit adjacency matrix in sparse matrix form
+    As_sparse = gradco.count(rows, cols, n)  
     
-    ## example orbit adjacency matrix (dense numpy 2d array)
-    ## not to be used in graph fusion, or anywhere else for that matter, until published
-    #A1_2 = format_gradco_output(As_sparse, 'A1_2', n, order)
+    ### example orbit adjacency matrix (dense numpy 2d array)
+    ### not to be used in graph fusion, or anywhere else for that matter, until published
+    ##A1_2 = format_gradco_output(As_sparse, 'A1_2', n, order)
 
-    ## example graphlet adjacency matrix (dense numpy 2d array)
-    #AG1 = compute_graphlet_adjacency_1(As_sparse, n, order)
+    ### example graphlet adjacency matrix (dense numpy 2d array)
+    ##AG1 = compute_graphlet_adjacency_1(As_sparse, n, order)
 
 
 if __name__ == "__main__":
