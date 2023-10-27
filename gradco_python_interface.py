@@ -7,7 +7,7 @@ import os
 from scipy.spatial.distance import squareform
 from scipy.linalg import eigh
 import pandas as pd
-import gradco
+import gradco_c_routines as gradco
 from itertools import combinations
 
 def get_gdv(G):

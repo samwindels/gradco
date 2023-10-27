@@ -504,14 +504,14 @@ static PyMethodDef GradcoMethods[] = {
 /* Describes the module */
 static struct PyModuleDef gradco_module = {
     PyModuleDef_HEAD_INIT,
-    "gradco",
+    "gradco_c_routines",
     "graphlet adjacency counter",
     -1,
     GradcoMethods
 };
 
 /* Called at import */
-PyMODINIT_FUNC PyInit_gradco(void) {
+PyMODINIT_FUNC PyInit_gradco_c_routines(void) {
     import_array();
     return PyModule_Create(&gradco_module);
 }

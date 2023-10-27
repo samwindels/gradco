@@ -27,7 +27,7 @@ def main():
 
     # print(extra_compile_args)
     
-    gradco_module = Extension("gradco",
+    gradco_module = Extension("gradco_c_routines",
                               sources=["directed_graph.cpp", 
                                        "gradco_module.cpp",
                                        "matrix.cpp"],
