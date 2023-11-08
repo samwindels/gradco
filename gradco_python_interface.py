@@ -9,6 +9,7 @@ from scipy.linalg import eigh
 import pandas as pd
 import gradco_c_routines as gradco
 from itertools import combinations
+import gradco
 
 def get_gdv(G):
     
@@ -326,33 +327,23 @@ def compute_graphlet_eigencentralities(G):
 def main():
 
    
-    # G = nx.scale_free_graph(5000)
-    G = nx.read_edgelist("PPI_biogrid_yeast.edgelist")
-    get_gdv(G)
-    return
-    # G.remove_edges_from(nx.selfloop_edges(G))
-    # G = nx.convert_node_labels_to_integers(G)
-    # nx.write_edgelist(G, "PPI_biogrid_yead_noselfloops.edgelist")
-    # return
-    # G = nx.read_edgelist("PPI_biogrid_yeast.edgelist")
-    rows, cols, n, order = format_gradco_input(G)
-    #centralities = compute_graphlet_eigencentralities(G)
-    #return 
-
-    ##rows, cols, n, order = format_gradco_input(G)
-    if len(rows) == 0:
-        # input graph is empty, edge case not yet taken care of properly
-        return np.zeros((n, n))
+    G = nx.scale_free_graph(5000)
+    A = nx.to_numpy_array(G, dtype=int)
     
-    ###As_sparse is a list of all the orbit adjacency matrix in sparse matrix form
-    As_sparse = gradco.count(rows, cols, n)  
-    
-    ### example orbit adjacency matrix (dense numpy 2d array)
-    ### not to be used in graph fusion, or anywhere else for that matter, until published
-    ##A1_2 = format_gradco_output(As_sparse, 'A1_2', n, order)
 
-    ### example graphlet adjacency matrix (dense numpy 2d array)
-    ##AG1 = compute_graphlet_adjacency_1(As_sparse, n, order)
+    counter = gradco.Counter(A)
+    counter.count()
+    for A in counter.generate_graphlet_adjacencies():
+        print(A)
+
+    counter.get_graphlet_adjacency(1)
+    counter.get_graphlet_adjacency(2)
+    counter.get_graphlet_adjacency(3)
+    counter.get_graphlet_adjacency(4)
+    counter.get_graphlet_adjacency(5)
+    counter.get_graphlet_adjacency(6)
+    counter.get_graphlet_adjacency(7)
+    counter.get_graphlet_adjacency(8)
 
 
 if __name__ == "__main__":

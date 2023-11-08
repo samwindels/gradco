@@ -28,10 +28,12 @@ def main():
     # print(extra_compile_args)
     
     gradco_module = Extension("gradco_c_routines",
-                              sources=["directed_graph.cpp", 
-                                       "gradco_module.cpp",
-                                       "matrix.cpp"],
-                              depends=["unordered_dense.h", 'matrix.hh', "directed_graph.hh"],
+                              sources=["gradco_c_module/directed_graph.cpp", 
+                                       "gradco_c_module/gradco_module.cpp",
+                                       "gradco_c_module/matrix.cpp"],
+                              depends=["gradco_c_module/unordered_dense.h", 
+                                       'gradco_c_module/matrix.hh', 
+                                       "gradco_c_module/directed_graph.hh"],
                               # headers=["unordered_dense.h", 'matrix.hh'],
                               # library_dirs=['/opt/local/lib/boost'],
                               # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
