@@ -65,6 +65,7 @@ def main():
           author_email="sam.windels@gmail.com",
           # setup_requires=["numpy"],  # Just numpy here
           # install_requires=["numpy"],  # Add any of your other dependencies here
+          py_modules=["gradco"],
           ext_modules=[gradco_module]
           )
 
