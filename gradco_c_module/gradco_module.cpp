@@ -41,7 +41,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 
 
 
-	// BRUTE FORCE
+	// INITIALIZE MATRICES
 	Matrix A1_1     = Matrix(n);  // 3-node path, outside orbits
 	Matrix A1_2     = Matrix(n);  // 3-node path, outside and middle orbits
 	Matrix A3_3     = Matrix(n);  // 3-node triangle
@@ -224,6 +224,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					// a <- b -> c
 					c = G.adj_out[b][j];
 					if (G.has_out_edge(a, c)){
+						// triangle
 						
 						A3_3_ab = A3_3.get(a,b) - 1;
 						A3_3_ac = A3_3.get(a,c) - 1;
@@ -323,7 +324,7 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=0; j<G.adj_out[b].size(); j++){
-				// in-out wedge
+				// out-out wedge
 				// a -> b -> c
 				c = G.adj_out[b][j];
 				if (! G.has_out_edge(a, c)){
@@ -467,9 +468,9 @@ static PyObject *gradco_count(PyObject *self, PyObject *args) {
 					A1_2_numpy,     // 1  Brute force
 					A3_3_numpy,     // 2  Brute force
 					A4_4_numpy,     // 3  Brute force
-					A4_5_numpy,     // 4  Brute force
-					A4_5_bis_numpy, // 5  Brute Force -> TODO update to infer 
-					A5_5_numpy,     // 6  Brute Force -> TODO update to infer    
+					A4_5_numpy,     // 4  Inf. (1-hop) 
+					A4_5_bis_numpy, // 5  Brute Force 
+					A5_5_numpy,     // 6  Inf. (1-hop)
 					A6_6_numpy,     // 7  Inf. (2-hop)
 					A6_7_numpy,     // 8  Inf. (1-hop)
 					A8_8_numpy,     // 9  Inf. (1-hop)

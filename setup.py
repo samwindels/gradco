@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension
+from distutils.core import setup, Extension, find_packages
 import os
 import sysconfig
 import numpy as np
@@ -66,7 +66,8 @@ def main():
           # setup_requires=["numpy"],  # Just numpy here
           # install_requires=["numpy"],  # Add any of your other dependencies here
           py_modules=["gradco"],
-          ext_modules=[gradco_module]
+          ext_modules=[gradco_module],
+          # packages=find_packages('gradco.py')
           )
 
 
