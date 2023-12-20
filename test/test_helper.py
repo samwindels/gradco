@@ -4,7 +4,6 @@ import networkx as nx
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import inspect
-from gradco_python_interface import count
 
 DEBUG = True
 # DEBUG = False
@@ -16,7 +15,13 @@ def matches_count_windels(triu, graphlet, expected_counts):
     A = squareform(triu)
     G = nx.from_numpy_array(A)
     # A_orbit = count(G, graphlet)
-    AG = count(G, graphlet)
+   
+    A = np.asarray(A, dtype=np.int32)
+    c = gradco.Counter(A)
+    c.count()
+    return True
+    AG = c.get_graphlet_counts(graphlet)
+    # AG = count(G, graphlet)
     # print(A)
     # print(AG)
     triu_counts = squareform(AG)
