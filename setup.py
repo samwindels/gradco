@@ -64,7 +64,7 @@ def main():
     # gnu++2b => working draft with GNU extensions 
 
 
-    setup(name="test_gradco",
+    setup(name="gradco",  # Name of the package. Used e.g. by pip to install the package.
           version="0.0.2",
           description="Orbit adjacency counter.",
           author="Sam Windels",
@@ -78,7 +78,7 @@ def main():
           # py_modules=["gradco_pkg.gradco"],
           # packages = ["gradco_pkg"],
           # package_dir={"gradco_pkg": "src/gradco_pkg"},
-          py_modules=["gradco"],
+          py_modules=["gradco"],  # Refers to gradco.py. Name of the module.
           # packages = ["gradco_pkg"],
           # package_dir={"gradco_pkg": "."},
           )
