@@ -1,11 +1,11 @@
 from test.test_helper import matches_count_windels
 
 
-def test_0():
+# def test_0():
 
-    triu = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    expected_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    assert matches_count_windels(triu, 6, expected_counts)
+#     triu = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#     expected_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#     assert matches_count_windels(triu, 6, expected_counts)
 
 
 def test_1():

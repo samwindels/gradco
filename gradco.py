@@ -12,8 +12,14 @@ class Counter(object):
 
         """
 
+        self.__assert_has_entries(A)
+        self.__assert_equal_dims(A)
+        self.__assert_unweighted(A)
+        self.__assert_symmetric(A)
+        
         self.__A, self.__order, self.__reverse_order = self.__apply_degree_ordering(A)
-        assert A.shape[0] == A.shape[1]
+
+
         self.__n = A.shape[0]
         self.__orbit_adjacencies = None
         self.__adj2index = {
@@ -37,6 +43,22 @@ class Counter(object):
                             'A13_13': 17,
                             'A14_14': 18
                 }
+
+    def __assert_unweighted(self, A):
+        if not np.all(np.logical_or(A == 0, A == 1)):
+            raise ValueError('Adjacency matrix is not unweighted')
+
+    def __assert_has_entries(self, A):
+        if A.sum().sum() == 0:
+            raise ValueError('Adjacency matrix is empty')
+
+    def __assert_equal_dims(self, A):
+        if A.shape[0] != A.shape[1]:
+            raise ValueError('Adjacency matrix is not square')
+
+    def __assert_symmetric(self, A):
+        if not np.array_equal(A, A.T):
+            raise ValueError('Adjacency matrix is not symmetric')
 
     def __apply_degree_ordering(self, A):
         rowsum = np.sum(A, axis=1)

@@ -13,10 +13,10 @@ def matches_count_windels(triu, graphlet, expected_counts):
 
     print(inspect.stack()[1].function)  # print name of the test
     A = squareform(triu)
+    A = A.astype(np.float64)
     G = nx.from_numpy_array(A)
     # A_orbit = count(G, graphlet)
-   
-    A = np.asarray(A, dtype=np.int32)
+    # return True
     c = gradco.Counter(A)
     c.count()
     return True
