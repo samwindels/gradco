@@ -27,13 +27,19 @@ def main():
 
     # print(extra_compile_args)
     
-    gradco_c_module = Extension("gradco_c_routines",
-                              sources=["src/gradco_pkg/c_subpkg/directed_graph.cpp", 
-                                       "src/gradco_pkg/c_subpkg/gradco_module.cpp",
-                                       "src/gradco_pkg/c_subpkg/matrix.cpp"],
-                              depends=["src/gradco_pkg/c_subpkg/unordered_dense.h", 
-                                       'src/gradco_pkg/c_subpkg/matrix.hh', 
-                                       "src/gradco_pkg/c_subpkg/directed_graph.hh"],
+    c_module = Extension("gradco_c_routines",
+                              # sources=["src/gradco_pkg/c_subpkg/directed_graph.cpp", 
+                              #          "src/gradco_pkg/c_subpkg/gradco_module.cpp",
+                              #          "src/gradco_pkg/c_subpkg/matrix.cpp"],
+                              # depends=["src/gradco_pkg/c_subpkg/unordered_dense.h", 
+                              #          'src/gradco_pkg/c_subpkg/matrix.hh', 
+                              #          "src/gradco_pkg/c_subpkg/directed_graph.hh"],
+                              sources=["c_module/directed_graph.cpp", 
+                                       "c_module/gradco_module.cpp",
+                                       "c_module/matrix.cpp"],
+                              depends=["c_module/unordered_dense.h", 
+                                       'c_module/matrix.hh', 
+                                       "c_module/directed_graph.hh"],
                               # headers=["unordered_dense.h", 'matrix.hh'],
                               # library_dirs=['/opt/local/lib/boost'],
                               # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
@@ -66,12 +72,15 @@ def main():
           # setup_requires=["numpy"],  # Just numpy here
           # install_requires=["numpy"],  # Add any of your other dependencies here
           # py_modules=["src/gradco_pkg/gradco"],
-          ext_modules=[gradco_c_module],
+          ext_modules=[c_module],
           # package_dir={"": "src/gradco_pkg"},
           # packages=find_packages()
-          py_modules=["gradco_pkg.gradco"],
-          packages = ["gradco_pkg"],
-          package_dir={"gradco_pkg": "src/gradco_pkg"},
+          # py_modules=["gradco_pkg.gradco"],
+          # packages = ["gradco_pkg"],
+          # package_dir={"gradco_pkg": "src/gradco_pkg"},
+          py_modules=["gradco"],
+          # packages = ["gradco_pkg"],
+          # package_dir={"gradco_pkg": "."},
           )
 
 
