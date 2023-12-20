@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension, find_packages
+from setuptools import setup, Extension, find_packages
 import os
 import sysconfig
 import numpy as np
@@ -27,13 +27,13 @@ def main():
 
     # print(extra_compile_args)
     
-    gradco_module = Extension("gradco_c_routines",
-                              sources=["gradco_c_module/directed_graph.cpp", 
-                                       "gradco_c_module/gradco_module.cpp",
-                                       "gradco_c_module/matrix.cpp"],
-                              depends=["gradco_c_module/unordered_dense.h", 
-                                       'gradco_c_module/matrix.hh', 
-                                       "gradco_c_module/directed_graph.hh"],
+    gradco_c_module = Extension("gradco_c_routines",
+                              sources=["src/gradco_pkg/c_subpkg/directed_graph.cpp", 
+                                       "src/gradco_pkg/c_subpkg/gradco_module.cpp",
+                                       "src/gradco_pkg/c_subpkg/matrix.cpp"],
+                              depends=["src/gradco_pkg/c_subpkg/unordered_dense.h", 
+                                       'src/gradco_pkg/c_subpkg/matrix.hh', 
+                                       "src/gradco_pkg/c_subpkg/directed_graph.hh"],
                               # headers=["unordered_dense.h", 'matrix.hh'],
                               # library_dirs=['/opt/local/lib/boost'],
                               # library_dirs=['/opt/local/libexec/boost/1.76/lib/'],
@@ -58,16 +58,20 @@ def main():
     # gnu++2b => working draft with GNU extensions 
 
 
-    setup(name="gradco",
+    setup(name="test_gradco",
           version="0.0.2",
           description="Orbit adjacency counter.",
           author="Sam Windels",
           author_email="sam.windels@gmail.com",
           # setup_requires=["numpy"],  # Just numpy here
           # install_requires=["numpy"],  # Add any of your other dependencies here
-          py_modules=["gradco"],
-          ext_modules=[gradco_module],
-          # packages=find_packages('gradco.py')
+          # py_modules=["src/gradco_pkg/gradco"],
+          ext_modules=[gradco_c_module],
+          # package_dir={"": "src/gradco_pkg"},
+          # packages=find_packages()
+          py_modules=["gradco_pkg.gradco"],
+          packages = ["gradco_pkg"],
+          package_dir={"gradco_pkg": "src/gradco_pkg"},
           )
 
 
