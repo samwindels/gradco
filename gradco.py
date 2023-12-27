@@ -44,28 +44,7 @@ class Counter(object):
                                            (12, 12): 15}
         self.__orbits_tripplehop_2_c_index = {(4, 4): 3}
 
-        # self.__adj2index = {
-        #                     'A1_1': 0,
-        #                     'A1_2': 1,
-        #                     'A3_3': 2,
-        #                     'A4_4': 3,
-        #                     'A4_5': 4,
-        #                     'A4_5_bis': 5,
-        #                     'A5_5': 6,
-        #                     'A6_6': 7,
-        #                     'A6_7': 8,
-        #                     'A8_8': 9,
-        #                     'A8_8_bis': 10,
-        #                     'A9_10': 11,
-        #                     'A9_11': 12,
-        #                     'A10_10': 13,
-        #                     'A10_11': 14,
-        #                     'A12_12': 15,
-        #                     'A12_13': 16,
-        #                     'A13_13': 17,
-        #                     'A14_14': 18
-        #         }
-
+    """ SANITY CHECKS ON ADJACENCY MATRIX"""
     def __assert_unweighted(self, A):
         if not np.all(np.logical_or(A == 0, A == 1)):
             raise ValueError('Adjacency matrix is not unweighted')
@@ -82,6 +61,7 @@ class Counter(object):
         if not np.array_equal(A, A.T):
             raise ValueError('Adjacency matrix is not symmetric')
 
+    """ APPLY DEGREE ORDERING """
     def __apply_degree_ordering(self, A):
         rowsum = np.sum(A, axis=1)
         order = np.argsort(rowsum)
@@ -95,6 +75,7 @@ class Counter(object):
         A = A[:, self.__reverse_order]
         return A
 
+    """ COUNT """
     def count(self):
         rows, cols = np.nonzero(self.__A)
         self.__orbit_adjacencies = gradco_c_routines.gradco_c_count(rows, cols, self.__n)
@@ -150,6 +131,7 @@ class Counter(object):
         A = self.get_orbit_adjacency(3, 3, 1) # A3_3, single hop 
         return A
 
+
     def __get_graphlet_adjacency_3(self):
         
         A = self.get_orbit_adjacency(4, 5, 1) # A4_5, single hop
@@ -190,14 +172,11 @@ class Counter(object):
         return A
 
     """ ORBIT ADJACENCIES """
-
-    """ generators """
     def generate_orbit_adjacencies(self):
         for i in range(1,4):
             yield from self.generate_orbit_adjacencies_for_hop(i)
 
     def generate_orbit_adjacencies_for_hop(self, hop):
-        
         if hop == 1:
             yield 0, 0, self.__get_graphlet_adjacency_0()
 
