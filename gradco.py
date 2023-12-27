@@ -11,15 +11,17 @@ class Counter(object):
         :A: TODO
 
         """
-
+        
+        # assert A is a valid adjacency matrix
         self.__assert_has_entries(A)
         self.__assert_equal_dims(A)
         self.__assert_unweighted(A)
         self.__assert_symmetric(A)
-        
+       
+        # apply degree ordering
         self.__A, self.__order, self.__reverse_order = self.__apply_degree_ordering(A)
 
-
+        # book keeping
         self.__n = A.shape[0]
         self.__orbit_adjacencies = None
         self.__orbits_singlehop_2_c_index = {
@@ -173,8 +175,9 @@ class Counter(object):
 
     """ ORBIT ADJACENCIES """
     def generate_orbit_adjacencies(self):
-        for i in range(1,4):
-            yield from self.generate_orbit_adjacencies_for_hop(i)
+        for hop in range(1,4):
+            for o1, o2, A in self.generate_orbit_adjacencies_for_hop(hop):
+                yield o1, o2, hop, A 
 
     def generate_orbit_adjacencies_for_hop(self, hop):
         if hop == 1:
@@ -231,3 +234,40 @@ class Counter(object):
                 return A.T
             else:
                 raise ValueError(f"Orbits {o1} and {o2} are not a valid '{hop}'-hop pair")
+
+    """ IO """
+    def save_graphlet_adjacencies(self, prefix):
+        for i, A in enumerate(self.generate_graphlet_adjacencies()):
+            np.save(f'{prefix}graphlet_adjacency_{i}.npy', A)
+    
+    def save_orbit_adjacencies(self, prefix):
+        for o1, o2, hop, A in self.generate_orbit_adjacencies():
+            np.save(f'{prefix}orbit_adjacency_o1_{o1}_o2_{o2}_hop_{hop}.npy', A)
+
+
+# METHODS FOR ITERATING OVER ADJACENCIES FROM FILES
+
+def iterate_graphlet_adjacencies_from_files(prefix):
+        for graphlet in range(9):
+            yield graphlet, np.load(f'{prefix}graphlet_adjacency_{graphlet}.npy')
+
+# def iterate_orbit_adjacencies_from_files(prefix):
+        
+#         o1=0 
+#         o2=0
+#         hop=1
+#         yield o1, o2, hop, np.load(f'{prefix}orbit_adjacency_o1_{o1}_o2_{o2}_hop_{hop}.npy')
+        
+#         for (o1, o2) in self.__orbits_singlehop_2_c_index.keys():
+#             A = np.load(f'{prefix}orbit_adjacency_o1_{o1}_o2_{o2}_hop_{hop}.npy')
+#             yield o1, o2, hop, A
+       
+#         hop = 2
+#         for (o1, o2) in self.__orbits_doublehop_2_c_index.keys():
+#             A = np.load(f'{prefix}orbit_adjacency_o1_{o1}_o2_{o2}_hop_{hop}.npy')
+#             yield o1, o2, hop, A
+        
+#         hop = 3
+#         for (o1, o2) in self.__orbits_triplehop_2_c_index.keys():
+#             A = np.load(f'{prefix}orbit_adjacency_o1_{o1}_o2_{o2}_hop_{hop}.npy')
+#             yield o1, o2, hop, A
