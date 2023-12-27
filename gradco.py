@@ -8,6 +8,7 @@ class Counter(object):
 
     # (hop, orbit1, orbit2) -> c_index
     __ORBIT_ADJ_2_C_INDEX = {# single hop
+                             (1, 0, 0): -1,  # standard adjacency matrix, not stored in c arrays
                              (1, 1, 2): 1,
                              (1, 3, 3): 2,
                              (1, 4, 5): 4,
@@ -184,9 +185,6 @@ class Counter(object):
 
     # ORBIT ADJACENCIES
     def generate_orbit_adjacencies(self, hop=None):
-        # global __ORBIT_ADJ_2_C_INDEX
-        if hop is None or hop == 1:
-            yield 1, 0, 0, self.__get_graphlet_adjacency_0()
 
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
             if hop is None or _hop == hop:
@@ -194,19 +192,17 @@ class Counter(object):
                 yield _hop, o1, o2, A
 
     def __get_orbit_adjacency_from_c_index(self, i):
-        A = np.zeros((self.__n, self.__n))
-        A_sparse = self.__orbit_adjacencies[i]
-        A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
-        A = self.__apply_reverse_ordering(A)
-        return A
+        if i == -1:
+            return self.__get_graphlet_adjacency_0()
+        else:
+            A = np.zeros((self.__n, self.__n))
+            A_sparse = self.__orbit_adjacencies[i]
+            A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+            A = self.__apply_reverse_ordering(A)
+            return A
     
     """ get individual orbit adjacencies"""
     def get_orbit_adjacency(self, hop, o1, o2):
-        # global __ORBIT_ADJ_2_C_INDEX
-
-        if (o1, o2) == (0, 0):
-            A = self.__get_graphlet_adjacency_0()
-            return A
 
         if o1 < o2: 
             key = (hop, o1, o2)
@@ -239,9 +235,6 @@ def iterate_graphlet_adjacencies_from_files(prefix):
             yield graphlet, np.load(f'{prefix}graphlet_adjacency_{graphlet}.npy')
 
 def iterate_orbit_adjacencies_from_files(prefix, hop=None):
-    if hop is None or hop == 1:
-        A = np.load(f'{prefix}orbit_adjacency_hop_1_o1_0_o2_0.npy')
-        yield 1, 0, 0, A
     for (_hop, o1, o2), c_index in Counter._Counter__ORBIT_ADJ_2_C_INDEX.items():
         if hop is None or _hop == hop:
             A = np.load(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npy')
