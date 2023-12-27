@@ -15,12 +15,9 @@ def matches_count_windels(triu, graphlet, expected_counts):
     A = squareform(triu)
     A = A.astype(np.float64)
     G = nx.from_numpy_array(A)
-    # A_orbit = count(G, graphlet)
-    # return True
     c = gradco.Counter(A)
     c.count()
-    return True
-    AG = c.get_graphlet_counts(graphlet)
+    AG = c.get_graphlet_adjacency(graphlet)
     # AG = count(G, graphlet)
     # print(A)
     # print(AG)
@@ -90,11 +87,18 @@ def matches_count_windels(triu, graphlet, expected_counts):
     return outcome
 
 
-def matches_orca(triu, adj_type, expected_counts):
+def matches_orca(triu, o1, o2, hop, expected_counts):
     print(inspect.stack()[1].function)  # print name of the test
+
     A = squareform(triu)
+    A = A.astype(np.float64)
     G = nx.from_numpy_array(A)
-    A_orbit = count(G, adj_type)
+    c = gradco.Counter(A)
+    c.count()
+    A_orbit = c.get_orbit_adjacency(o1, o2, hop)
+    # A = squareform(triu)
+    # G = nx.from_numpy_array(A)
+    # A_orbit = count(G, adj_type)
     counts = np.sum(A_orbit, axis=1)
     outcome = np.array_equal(counts, expected_counts)
     if outcome:
@@ -103,7 +107,7 @@ def matches_orca(triu, adj_type, expected_counts):
             outcome = False
 
     if DEBUG and outcome is False:
-        print(f"\n failed test_G{adj_type}: {inspect.stack()[1][3]}")
+        print(f"\n failed test_G{o1=} {o2=} {hop=}: {inspect.stack()[1][3]}")
         print(f"\n{A=}")
         print(f"\n{A_orbit=}")
         print(f"\n{counts=}")

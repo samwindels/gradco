@@ -22,7 +22,8 @@ class Counter(object):
 
         self.__n = A.shape[0]
         self.__orbit_adjacencies = None
-        self.__orbits_singlehop_2_c_index = {(1, 2): 1,
+        self.__orbits_singlehop_2_c_index = {
+                                          (1, 2): 1,
                                           (3, 3): 2,
                                           (4, 5): 4, 
                                           (5, 5): 6,
@@ -140,60 +141,52 @@ class Counter(object):
         return A
 
     def __get_graphlet_adjacency_1(self):
-        A = self.get_orbit_adjacency('A1_2')
+        A = self.get_orbit_adjacency(1, 2, 1) # A1_2, single hop
         A += A.transpose()  # A2_1
-        A += self.get_orbit_adjacency('A1_1')
-        A = self.__apply_reverse_ordering(A)
+        A += self.get_orbit_adjacency(1, 1, 2) # A1_1, double hop
         return A
     
     def __get_graphlet_adjacency_2(self):
-        A = self.get_orbit_adjacency('A3_3')
-        A = self.__apply_reverse_ordering(A)
+        A = self.get_orbit_adjacency(3, 3, 1) # A3_3, single hop 
         return A
 
     def __get_graphlet_adjacency_3(self):
         
-        A = self.get_orbit_adjacency('A4_5')
-        A = self.get_orbit_adjacency('A4_5_bis')
+        A = self.get_orbit_adjacency(4, 5, 1) # A4_5, single hop
+        A += self.get_orbit_adjacency(4, 5, 2) # A4_5, double hop
         A += A.transpose()  # A5_4 and 5_4_bis
-        A = self.get_orbit_adjacency('A5_5')
-        A = self.get_orbit_adjacency('A4_4')
-        A = self.__apply_reverse_ordering(A)
+        A += self.get_orbit_adjacency(5, 5, 1) # A5_5, single hop
+        A += self.get_orbit_adjacency(4, 4, 3)  # A4_4, triple hop
         return A
 
     def __get_graphlet_adjacency_4(self):
-        A = self.get_orbit_adjacency('A6_7')
+        A = self.get_orbit_adjacency(6, 7, 1) # A6_7, single hop
         A += A.transpose()  # A7_6
-        A += self.get_orbit_adjacency('A6_6')
-        A = self.__apply_reverse_ordering(A)
+        A += self.get_orbit_adjacency(6, 6, 2) # A6_6, double hop
         return A
 
     def __get_graphlet_adjacency_5(self):
-        A = self.get_orbit_adjacency('A8_8')
-        A += self.get_orbit_adjacency('A8_8_bis')
-        A = self.__apply_reverse_ordering(A)
+        A = self.get_orbit_adjacency(8, 8, 1) # A8_8, single hop
+        A += self.get_orbit_adjacency(8, 8, 2) # A8_8, double hop
         return A
 
     def __get_graphlet_adjacency_6(self):
-        A = self.get_orbit_adjacency('A9_10')
-        A += self.get_orbit_adjacency('A9_11')
-        A += self.get_orbit_adjacency('A10_11')
+        A = self.get_orbit_adjacency(9, 10, 2) # A9_10, double hop
+        A += self.get_orbit_adjacency(9, 11, 1) # A9_11, single hop
+        A += self.get_orbit_adjacency(10, 11, 1) # A10_11, single hop
         A += A.transpose()
-        A += self.get_orbit_adjacency('A10_10')
-        A = self.__apply_reverse_ordering(A)
+        A += self.get_orbit_adjacency(10, 10, 1) # A10_10, single hop
         return A
 
     def __get_graphlet_adjacency_7(self):
-        A = self.get_orbit_adjacency('A12_13')
+        A = self.get_orbit_adjacency(12, 13, 1)
         A += A.transpose()
-        A += self.get_orbit_adjacency('A12_12')
-        A += self.get_orbit_adjacency('A13_13')
-        A = self.__apply_reverse_ordering(A)
+        A += self.get_orbit_adjacency(12, 12, 2)
+        A += self.get_orbit_adjacency(13, 13, 1)
         return A
 
     def __get_graphlet_adjacency_8(self):
-        A = self.get_orbit_adjacency('A14_14')
-        A = self.__apply_reverse_ordering(A)
+        A = self.get_orbit_adjacency(14, 14, 1)
         return A
 
     """ ORBIT ADJACENCIES """
@@ -204,9 +197,16 @@ class Counter(object):
             yield from self.generate_orbit_adjacencies_for_hop(i)
 
     def generate_orbit_adjacencies_for_hop(self, hop):
+        
+        if hop == 1:
+            yield 0, 0, self.__get_graphlet_adjacency_0()
+
         orbits_2_c_index = self.__hop_to_obit_c_index_map(hop)
         for (o1, o2), i in orbits_2_c_index.items():
-            A = self.__get_orbit_adjacency_from_c_index(i)
+            if (o1, o2) == (0, 0):
+                A = self.__get_graphlet_adjacency_0()
+            else:
+                A = self.__get_orbit_adjacency_from_c_index(i)
             yield o1, o2, A
     
     def __hop_to_obit_c_index_map(self, hop):
@@ -228,23 +228,27 @@ class Counter(object):
         A_sparse = self.__orbit_adjacencies[i]
         A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
         A = self.__apply_reverse_ordering(A)
-        return o1, o2 
+        return A
     
     """ get individual orbit adjacencies"""
     def get_orbit_adjacency(self, o1, o2, hop):
 
-        orbits_2_c_index = self.__hop_to_obit_c_index_map(hop)
+        if (o1, o2) == (0, 0):
+            A = self.__get_graphlet_adjacency_0()
+            return A
+
+        orbit_2_c_index = self.__hop_to_obit_c_index_map(hop)
         if o1 <= o2:
             if (o1, o2) in orbit_2_c_index:
                 i = orbit_2_c_index[(o1, o2)]
                 A = self.__get_orbit_adjacency_from_c_index(i)
                 return A
             else:
-                raise ValueError("Orbits {o1} and {o2} are not a valid '{hop}'-hop pair")
+                raise ValueError(f"Orbits {o1} and {o2} are not a valid '{hop}'-hop pair")
         else:
             if (o2, o1) in orbit_2_c_index:
                 i = orbit_2_c_index[(o1, o2)]
                 A = self.__get_orbit_adjacency_from_c_index(i)
                 return A.T
             else:
-                raise ValueError("Orbits {o1} and {o2} are not a valid '{hop}'-hop pair")
+                raise ValueError(f"Orbits {o1} and {o2} are not a valid '{hop}'-hop pair")
