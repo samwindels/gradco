@@ -4,7 +4,7 @@ import networkx as nx
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import inspect
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_array, csr_matrix
 
 
 DEBUG = True
@@ -17,10 +17,13 @@ def matches_count_windels(triu, graphlet, expected_counts):
     A = squareform(triu)
     # A = A.astype(np.float64)
     G = nx.from_numpy_array(A)
-    c = gradco.Counter(csr_matrix(A))
+    c = gradco.Counter(csr_array(A))
+    # c = gradco.Counter(csr_matrix(A))
     # c = gradco.Counter(A)
     c.count()
     AG = c.get_graphlet_adjacency(graphlet)
+    AG = AG.todense()
+    print(AG)
     # AG = count(G, graphlet)
     # print(A)
     # print(AG)
@@ -99,6 +102,7 @@ def matches_orca(triu, o1, o2, hop, expected_counts):
     c = gradco.Counter(A)
     c.count()
     A_orbit = c.get_orbit_adjacency(o1, o2, hop)
+    A_orbit = A_orbit.todense()
     # A = squareform(triu)
     # G = nx.from_numpy_array(A)
     # A_orbit = count(G, adj_type)

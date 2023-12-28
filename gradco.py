@@ -1,5 +1,6 @@
 import gradco_c_routines
 import numpy as np
+from scipy.sparse import csr_array
 
 # global __ORBIT_ADJ_2_C_INDEX 
 
@@ -187,9 +188,13 @@ class Counter(object):
         if i == -1:
             return self.__get_graphlet_adjacency_0()
         else:
-            A = np.zeros((self.__n, self.__n))
+            # A = np.zeros((self.__n, self.__n))
+            # A_sparse = self.__orbit_adjacencies[i]
+            # A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+            # A = self.__apply_reverse_ordering(A)
+
             A_sparse = self.__orbit_adjacencies[i]
-            A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
+            A = csr_array((A_sparse[2,:], (A_sparse[0,:], A_sparse[1,:])), shape=(self.__n, self.__n))
             A = self.__apply_reverse_ordering(A)
             return A
     
@@ -322,10 +327,9 @@ def main():
     import gradco as gradco
     import numpy as np
     import networkx as nx
-    from scipy.sparse import csr_matrix
     
-    n = 4
-    m = 2
+    n = 8
+    m = 4
     G = nx.barabasi_albert_graph(n, m, seed=0)
     # A = nx.to_scipy_sparse_array(G)
     A = nx.adjacency_matrix(G)
@@ -333,16 +337,17 @@ def main():
     # A = csr_matrix(A)
     # A = np.array(A)
 
-    # counter = gradco.Counter(A)
-    # counter.count()
+    counter = gradco.Counter(A)
+    counter.count()
 
-    # dense_c = gradco.Counter(A)
-    # dense_c.count()
+    dense_c = gradco.Counter(A)
+    dense_c.count()
     
-    sparse_c = gradco.Counter(csr_matrix(A))
+    sparse_c = gradco.Counter(csr_array(A))
     sparse_c.count()
 
     for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
+        print(A_sparse.todense())
         if np.sum(A - A_sparse) != 0:
             print("ERROR")
             print(hop, o1, o2)
