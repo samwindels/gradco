@@ -364,13 +364,13 @@ def main():
         print("read OA:", o1, o2, hop)
 
 
-    # for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
-    #                                                                                                 num_iterations=1000):
-    #     print("graphlet:", graphlet)
+    for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
+                                                                                                    num_iterations=1000):
+        print("graphlet:", graphlet)
 
-    # for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix, 
-    #                                                                                                   num_iterations=1000):
-    #     print("orbit:", hop, o1, o2)
+    for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix, 
+                                                                                                      num_iterations=1000):
+        print("orbit:", hop, o1, o2)
 
 if __name__ == "__main__":
     main()
