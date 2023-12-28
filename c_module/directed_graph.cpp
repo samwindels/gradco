@@ -1,5 +1,6 @@
 
 #include "directed_graph.hh"
+#include <algorithm>
 
 DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols) : n(n) {
 
@@ -87,6 +88,13 @@ DirectedGraph::DirectedGraph(int n, PyArrayObject* rows, PyArrayObject* cols) : 
 
     	    /* Increment the iterator to the next inner loop */
     	} while(iternext_rows(iter_rows) && iternext_cols(iter_cols));
+
+	/* make sure the out neighbours are ascending*/
+	/* is not the case when using scipy nonzero*/
+	for (int i=0; i<n; i++){
+		std::sort(adj_out[i].begin(), adj_out[i].end());
+	}
+
 
     	NpyIter_Deallocate(iter_rows);
     	NpyIter_Deallocate(iter_cols);

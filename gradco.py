@@ -36,8 +36,8 @@ class Counter(object):
         # assert A is a valid adjacency matrix
         self.__assert_has_entries(A)
         self.__assert_equal_dims(A)
-        self.__assert_unweighted(A)
-        self.__assert_symmetric(A)
+        # self.__assert_unweighted(A)
+        # self.__assert_symmetric(A)
        
         # apply degree ordering
         self.__A, self.__order, self.__reverse_order = self.__apply_degree_ordering(A)
@@ -67,8 +67,8 @@ class Counter(object):
 
     # DEGREE ORDERING 
     def __apply_degree_ordering(self, A):
-        rowsum = np.sum(A, axis=1)
-        order = np.argsort(rowsum)
+        rowsum = np.asarray(A.sum(axis=1)).squeeze() # scipy returns numpy matrix instead of array
+        order = np.argsort(rowsum, axis=0)
         reverse_order = np.argsort(order)
         A = A[order, :]
         A = A[:, order]
@@ -81,7 +81,7 @@ class Counter(object):
 
     # CALL C ROUTINES
     def count(self):
-        rows, cols = np.nonzero(self.__A)
+        rows, cols = self.__A.nonzero()
         self.__orbit_adjacencies = gradco_c_routines.gradco_c_count(rows, cols, self.__n)
 
     # GRAPHLET ADJACENCIES
@@ -322,16 +322,32 @@ def main():
     import gradco as gradco
     import numpy as np
     import networkx as nx
+    from scipy.sparse import csr_matrix
     
-    n = 100
-    m = 5
-    G = nx.barabasi_albert_graph(n, m)
+    n = 4
+    m = 2
+    G = nx.barabasi_albert_graph(n, m, seed=0)
+    # A = nx.to_scipy_sparse_array(G)
     A = nx.adjacency_matrix(G)
     A = A.todense()
-    A = np.array(A)
+    # A = csr_matrix(A)
+    # A = np.array(A)
 
-    counter = gradco.Counter(A)
-    counter.count()
+    # counter = gradco.Counter(A)
+    # counter.count()
+
+    # dense_c = gradco.Counter(A)
+    # dense_c.count()
+    
+    sparse_c = gradco.Counter(csr_matrix(A))
+    sparse_c.count()
+
+    for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
+        if np.sum(A - A_sparse) != 0:
+            print("ERROR")
+            print(hop, o1, o2)
+            print(A-A_sparse)
+            # break 
 
     prefix = "scratch/"
     # counter.save_graphlet_adjacencies(prefix)
@@ -342,13 +358,13 @@ def main():
     #     print("read OA:", o1, o2, hop)
 
 
-    for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
-                                                                                                    num_iterations=1000):
-        print("graphlet:", graphlet)
+    # for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
+    #                                                                                                 num_iterations=1000):
+    #     print("graphlet:", graphlet)
 
-    for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix, 
-                                                                                                      num_iterations=1000):
-        print("orbit:", hop, o1, o2)
+    # for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix, 
+    #                                                                                                   num_iterations=1000):
+    #     print("orbit:", hop, o1, o2)
 
 if __name__ == "__main__":
     main()

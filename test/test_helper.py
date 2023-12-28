@@ -4,6 +4,8 @@ import networkx as nx
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import inspect
+from scipy.sparse import csr_matrix
+
 
 DEBUG = True
 # DEBUG = False
@@ -13,9 +15,10 @@ def matches_count_windels(triu, graphlet, expected_counts):
 
     print(inspect.stack()[1].function)  # print name of the test
     A = squareform(triu)
-    A = A.astype(np.float64)
+    # A = A.astype(np.float64)
     G = nx.from_numpy_array(A)
-    c = gradco.Counter(A)
+    c = gradco.Counter(csr_matrix(A))
+    # c = gradco.Counter(A)
     c.count()
     AG = c.get_graphlet_adjacency(graphlet)
     # AG = count(G, graphlet)
