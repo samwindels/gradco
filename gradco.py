@@ -243,8 +243,8 @@ def __normalize_symmetric(A):
         Divide each entry of an adjacency matrix by square root of the
         rowsum and colsum. Implementation assumes M is symmetric.
     """
-    D_array=np.sum(A, axis=1)
-    D_array=np.power(D_array,0.5) + np.finfo(float).eps
+    D_array= np.array(A.sum(axis=1)).squeeze()
+    D_array= np.power(D_array,0.5) + np.finfo(float).eps
     A = A / D_array[:,None]
     A = A / D_array[None,:]
     # __assert_rows_sum_to_max_one(A)
@@ -255,8 +255,8 @@ def __normalize_rows(A):
     """
         Divide each entry of an adjacency matrix by the rowsum.
     """
-    D_array=np.sum(A, axis=1)
-    D_array=D_array + np.finfo(float).eps
+    D_array = np.array(A.sum(axis=1)).squeeze()
+    D_array = D_array + np.finfo(float).eps
     A = A / D_array[:,None]
 
     # __assert_rows_sum_to_one(A)
@@ -280,6 +280,7 @@ def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
     # Generate a random initial guess for the dominant eigenvector
     n = matrix.shape[0]
     eigen_vector = np.random.rand(n)
+    # eigen_vector = np.ones(n)
 
     for iteration in range(num_iterations):
         # Compute the matrix-vector product
@@ -302,18 +303,35 @@ def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
 
     return eigen_value, eigen_vector
 
-def generate_graphlet_centrality_from_precomputed(prefix, num_iterations=1000):
+def generate_graphlet_centrality_from_precomputed(prefix, normalize=None, num_iterations=1000):
     for graphlet, A in iterate_graphlet_adjacencies_from_files(prefix):
-        # A = __normalize_symmetric(A)
-        A = __normalize_rows(A)
+        A = A.toarray()
+        if normalize is not None:
+            case normalize:
+                match "rows":
+                    A = __normalize_rows(A)
+                match "symmetric":
+                    A = __normalize_symmetric(A)
+                match _:
+                    raise ValueError("normalize must be either 'rows' or 'symmetric'")
+
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
         yield graphlet, eigen_value, eigen_vector
 
-def generate_orbit_centrality_from_precomputed(prefix, hop=None, num_iterations=1000):
+def generate_orbit_centrality_from_precomputed(prefix, normalize=None, hop=None, num_iterations=1000):
     for hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix, hop):
+        A = A.toarray()
         A += 1  # add identity matrix to make sure it is irreducible
-        # A = __normalize_rows(A)
-        # A = __normalize_symmetric(A)
+        
+        if normalize is not None:
+            case normalize:
+                match "rows":
+                    A = __normalize_rows(A)
+                match "symmetric":
+                    A = __normalize_symmetric(A)
+                match _:
+                    raise ValueError("normalize must be either 'rows' or 'symmetric'")
+
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
         yield hop, o1, o2, eigen_value, eigen_vector
         if o1 != o2:
@@ -358,10 +376,10 @@ def main():
     prefix = "scratch/"
     counter.save_graphlet_adjacencies(prefix)
     counter.save_orbit_adjacencies(prefix)
-    for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
-        print("read GA:", graphlet)
-    for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
-        print("read OA:", o1, o2, hop)
+    # for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
+    #     print("read GA:", graphlet)
+    # for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
+    #     print("read OA:", o1, o2, hop)
 
 
     for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
