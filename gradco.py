@@ -307,12 +307,12 @@ def generate_graphlet_centrality_from_precomputed(prefix, normalize=None, num_it
     for graphlet, A in iterate_graphlet_adjacencies_from_files(prefix):
         A = A.toarray()
         if normalize is not None:
-            case normalize:
-                match "rows":
+            match normalize:
+                case "rows":
                     A = __normalize_rows(A)
-                match "symmetric":
+                case "symmetric":
                     A = __normalize_symmetric(A)
-                match _:
+                case _:
                     raise ValueError("normalize must be either 'rows' or 'symmetric'")
 
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
@@ -324,12 +324,12 @@ def generate_orbit_centrality_from_precomputed(prefix, normalize=None, hop=None,
         A += 1  # add identity matrix to make sure it is irreducible
         
         if normalize is not None:
-            case normalize:
-                match "rows":
+            match normalize:
+                case "rows":
                     A = __normalize_rows(A)
-                match "symmetric":
+                case "symmetric":
                     A = __normalize_symmetric(A)
-                match _:
+                case _:
                     raise ValueError("normalize must be either 'rows' or 'symmetric'")
 
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
