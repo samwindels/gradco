@@ -1,6 +1,6 @@
 import gradco_c_routines
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import csr_array, save_npz, load_npz
 
 # global __ORBIT_ADJ_2_C_INDEX 
 
@@ -124,6 +124,7 @@ class Counter(object):
     
     def __get_graphlet_adjacency_0(self):
         A = self.__apply_reverse_ordering(self.__A)
+        A = csr_array(A)
         return A
 
     def __get_graphlet_adjacency_1(self):
@@ -218,22 +219,22 @@ class Counter(object):
     # IO
     def save_graphlet_adjacencies(self, prefix):
         for i, A in enumerate(self.generate_graphlet_adjacencies()):
-            np.save(f'{prefix}graphlet_adjacency_{i}.npy', A)
+            save_npz(f'{prefix}graphlet_adjacency_{i}.npz', A)
     
     def save_orbit_adjacencies(self, prefix, hop=None):
         for _hop, o1, o2, A in self.generate_orbit_adjacencies(hop):
-            np.save(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npy', A)
+            save_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz', A)
 
 
 # METHODS FOR ITERATING OVER ADJACENCIES FROM FILES
 def iterate_graphlet_adjacencies_from_files(prefix):
         for graphlet in range(9):
-            yield graphlet, np.load(f'{prefix}graphlet_adjacency_{graphlet}.npy')
+            yield graphlet, load_npz(f'{prefix}graphlet_adjacency_{graphlet}.npz')
 
 def iterate_orbit_adjacencies_from_files(prefix, hop=None):
     for (_hop, o1, o2), c_index in Counter._Counter__ORBIT_ADJ_2_C_INDEX.items():
         if hop is None or _hop == hop:
-            A = np.load(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npy')
+            A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
             yield _hop, o1, o2, A
 
 # CENTRALITIES
@@ -340,27 +341,27 @@ def main():
     counter = gradco.Counter(A)
     counter.count()
 
-    dense_c = gradco.Counter(A)
-    dense_c.count()
+    # dense_c = gradco.Counter(A)
+    # dense_c.count()
     
-    sparse_c = gradco.Counter(csr_array(A))
-    sparse_c.count()
+    # sparse_c = gradco.Counter(csr_array(A))
+    # sparse_c.count()
 
-    for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
-        print(A_sparse.todense())
-        if np.sum(A - A_sparse) != 0:
-            print("ERROR")
-            print(hop, o1, o2)
-            print(A-A_sparse)
-            # break 
+    # for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
+    #     print(A_sparse.todense())
+    #     if np.sum(A - A_sparse) != 0:
+    #         print("ERROR")
+    #         print(hop, o1, o2)
+    #         print(A-A_sparse)
+    #         # break 
 
     prefix = "scratch/"
-    # counter.save_graphlet_adjacencies(prefix)
-    # counter.save_orbit_adjacencies(prefix)
-    # for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
-    #     print("read GA:", graphlet)
-    # for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
-    #     print("read OA:", o1, o2, hop)
+    counter.save_graphlet_adjacencies(prefix)
+    counter.save_orbit_adjacencies(prefix)
+    for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
+        print("read GA:", graphlet)
+    for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
+        print("read OA:", o1, o2, hop)
 
 
     # for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
