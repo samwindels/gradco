@@ -167,10 +167,10 @@ class Counter(object):
         return A
 
     def __get_graphlet_adjacency_7(self):
-        A = self.get_orbit_adjacency(1, 12, 13)
+        A = self.get_orbit_adjacency(1, 12, 13)  #A12_13 single hop
         A += A.transpose()
-        A += self.get_orbit_adjacency(2, 12, 12)
-        A += self.get_orbit_adjacency(1, 13, 13)
+        A += self.get_orbit_adjacency(2, 12, 12)  #A12_12 double hop
+        A += self.get_orbit_adjacency(1, 13, 13)  #A13_13 double hop
         return A
 
     def __get_graphlet_adjacency_8(self):
@@ -185,14 +185,11 @@ class Counter(object):
                 A = self.__get_orbit_adjacency_from_c_index(c_index)
                 yield _hop, o1, o2, A
 
+
     def __get_orbit_adjacency_from_c_index(self, i):
         if i == -1:
             return self.__get_graphlet_adjacency_0()
         else:
-            # A = np.zeros((self.__n, self.__n))
-            # A_sparse = self.__orbit_adjacencies[i]
-            # A[A_sparse[0,:], A_sparse[1,:]] = A_sparse[2,:]
-            # A = self.__apply_reverse_ordering(A)
 
             A_sparse = self.__orbit_adjacencies[i]
             A = csr_array((A_sparse[2,:], (A_sparse[0,:], A_sparse[1,:])), shape=(self.__n, self.__n))
