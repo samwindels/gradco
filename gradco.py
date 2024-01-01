@@ -185,9 +185,9 @@ class Counter(object):
                 A = self.__get_orbit_adjacency_from_c_index(c_index)
                 yield _hop, o1, o2, A
 
-    def generate_edge_orbit_adjacencies(self, hop=None):
+    def generate_edge_orbit_adjacencies(self):
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
-            if hop is None or _hop == hop:
+            if _hop == 1:
                 A = self.__get_orbit_adjacency_from_c_index(c_index)
                 if o1 == o2:
                     yield _hop, o1, o2, A
@@ -231,9 +231,9 @@ class Counter(object):
         for _hop, o1, o2, A in self.generate_orbit_adjacencies(hop):
             save_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz', A)
     
-    def save_edge_orbit_adjacencies(self, prefix, hop=None):
-        for _hop, o1, o2, A in self.generate_edge_orbit_adjacencies(hop):
-            save_npz(f'{prefix}edge_orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz', A)
+    def save_edge_orbit_adjacencies(self, prefix):
+        for _hop, o1, o2, A in self.generate_edge_orbit_adjacencies():
+            save_npz(f'{prefix}edge_orbit_adjacency_hop_1_o1_{o1}_o2_{o2}.npz', A)
 
 
 # METHODS FOR ITERATING OVER ADJACENCIES FROM FILES
