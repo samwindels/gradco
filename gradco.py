@@ -398,14 +398,13 @@ def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
     return eigen_value, eigen_vector
 
 def __normalise(A, normalisation):
-    if normalisation is not None:
-        match normalise:
-            case "rows":
-                A = __normalise_rows(A)
-            case "symmetric":
-                A = __normalise_symmetric(A)
-            case _:
-                raise ValueError("normalise must be either 'rows' or 'symmetric'")
+    match normalisation:
+        case "rows":
+            A = __normalise_rows(A)
+        case "symmetric":
+            A = __normalise_symmetric(A)
+        case _:
+            raise ValueError("normalise must be either 'rows' or 'symmetric'")
 
 def generate_graphlet_centrality_from_precomputed(prefix, normalisation=None, num_iterations=1000):
     for graphlet, A in iterate_graphlet_adjacencies_from_files(prefix):
