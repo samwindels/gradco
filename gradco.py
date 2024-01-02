@@ -184,16 +184,21 @@ class Counter(object):
             if hop is None or _hop == hop:
                 A = self.__get_orbit_adjacency_from_c_index(c_index)
                 yield _hop, o1, o2, A
+                if o1 != o2:
+                    yield _hop, o2, o1, A.T
 
     def generate_edge_orbit_adjacencies(self):
+        e = 0 
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
             if _hop == 1:
                 A = self.__get_orbit_adjacency_from_c_index(c_index)
                 if o1 == o2:
-                    yield _hop, o1, o2, A
+                    yield e, A
+                    e += 1
                 else:
                     A += A.T
-                    yield _hop, o1, o2, A
+                    yield e, A
+                    e += 1
 
     def __get_orbit_adjacency_from_c_index(self, i):
         if i == -1:
@@ -232,8 +237,8 @@ class Counter(object):
             save_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz', A)
     
     def save_edge_orbit_adjacencies(self, prefix):
-        for _hop, o1, o2, A in self.generate_edge_orbit_adjacencies():
-            save_npz(f'{prefix}edge_orbit_adjacency_hop_1_o1_{o1}_o2_{o2}.npz', A)
+        for e, A in self.generate_edge_orbit_adjacencies():
+            save_npz(f'{prefix}edge_orbit_adjacency_e_{e}.npz', A)
 
 
 # METHODS FOR ITERATING OVER ADJACENCIES FROM FILES
@@ -246,15 +251,20 @@ def iterate_orbit_adjacencies_from_files(prefix, hop=None):
         if hop is None or _hop == hop:
             A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
             yield _hop, o1, o2, A
+            if o1 != o2:
+                A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
+                yield _hop, o2, o1, A
 
-def iterate_edge_orbit_adjacencies_from_files(prefix, hop=None):
+def iterate_edge_orbit_adjacencies_from_files(prefix):
+    e = 0 
     for (_hop, o1, o2), c_index in Counter._Counter__ORBIT_ADJ_2_C_INDEX.items():
-        if hop is None or _hop == hop:
-            A = load_npz(f'{prefix}edge_orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
-            yield _hop, o1, o2, A
+        if _hop == 1:
+            A = load_npz(f'{prefix}edge_orbit_adjacency_e_{e}.npz')
+            yield e, A
+            e += 1
 
 # CENTRALITIES
-def __normalize_symmetric(A):
+def __normalise_symmetric(A):
     """
         Divide each entry of an adjacency matrix by square root of the
         rowsum and colsum. Implementation assumes M is symmetric.
@@ -267,7 +277,7 @@ def __normalize_symmetric(A):
     # __assert_cols_sum_to_max_one(A)
     return A
 
-def __normalize_rows(A):
+def __normalise_rows(A):
     """
         Divide each entry of an adjacency matrix by the rowsum.
     """
@@ -319,30 +329,30 @@ def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
 
     return eigen_value, eigen_vector
 
-def __normalize(A, normalization):
-    if normalize is not None:
-        match normalize:
+def __normalise(A, normalisation):
+    if normalise is not None:
+        match normalise:
             case "rows":
-                A = __normalize_rows(A)
+                A = __normalise_rows(A)
             case "symmetric":
-                A = __normalize_symmetric(A)
+                A = __normalise_symmetric(A)
             case _:
-                raise ValueError("normalize must be either 'rows' or 'symmetric'")
+                raise ValueError("normalise must be either 'rows' or 'symmetric'")
 
-def generate_graphlet_centrality_from_precomputed(prefix, normalization=None, num_iterations=1000):
+def generate_graphlet_centrality_from_precomputed(prefix, normalisation=None, num_iterations=1000):
     for graphlet, A in iterate_graphlet_adjacencies_from_files(prefix):
         A = A.toarray()
-        if normalize is not None:
-            __normalize(A, normalization)
+        if normalisation is not None:
+            __normalise(A, normalisation)
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
         yield graphlet, eigen_value, eigen_vector
 
-def generate_orbit_centrality_from_precomputed(prefix, normalize=None, hop=None, num_iterations=1000):
+def generate_orbit_centrality_from_precomputed(prefix, normalisation=None, hop=None, num_iterations=1000):
     for hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix, hop):
         A = A.toarray()
         A += 1  # add identity matrix to make sure it is irreducible
-        if normalize is not None:
-            __normalize(A, normalization)
+        if normalisation is not None:
+            __normalise(A, normalisation)
         
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
         yield hop, o1, o2, eigen_value, eigen_vector
@@ -350,15 +360,13 @@ def generate_orbit_centrality_from_precomputed(prefix, normalize=None, hop=None,
             eigen_value, eigen_vector = __power_iteration(A.T, num_iterations)
             yield hop, o2, o1, eigen_value, eigen_vector
 
-def generate_edge_orbit_centrality_from_precomputed(prefix, normalize=None, hop=None, num_iterations=1000):
-    for hop, o1, o2, A in iterate_edge_orbit_adjacencies_from_files(prefix, hop):
+def generate_edge_orbit_centrality_from_precomputed(prefix, normalisation=None, num_iterations=1000):
+    for e, A in iterate_edge_orbit_adjacencies_from_files(prefix):
         A = A.toarray()
-        if normalize is not None:
-
-            __normalize(A, normalization)
-        
+        if normalisation is not None:
+            __normalise(A, normalisation)
         eigen_value, eigen_vector = __power_iteration(A, num_iterations)
-        yield hop, o1, o2, eigen_value, eigen_vector
+        yield e, eigen_value, eigen_vector
 
 
 def main():
@@ -397,21 +405,18 @@ def main():
     counter.save_graphlet_adjacencies(prefix)
     counter.save_orbit_adjacencies(prefix)
     counter.save_edge_orbit_adjacencies(prefix)
-    # for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
-    #     print("read GA:", graphlet)
-    # for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
-    #     print("read OA:", o1, o2, hop)
-
-
-    # for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix, 
-    #                                                                                                 num_iterations=1000):
-    #     print("graphlet:", graphlet)
-
-    # for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix, 
-    #                                                                                                   num_iterations=1000):
-    #     print("orbit:", hop, o1, o2)
-    for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
+    for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
+        print("read GA:", graphlet)
+    for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
+        print("read OA:", o1, o2, hop)
+    for e, A in gradco.iterate_edge_orbit_adjacencies_from_files(prefix):
+        print("read EA:", e)
+    for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix):
+        print("graphlet:", graphlet)
+    for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix):
         print("orbit:", hop, o1, o2)
+    for e, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
+        print("edge orbit:", e)
 
 if __name__ == "__main__":
     main()
