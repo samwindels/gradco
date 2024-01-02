@@ -263,6 +263,42 @@ def iterate_edge_orbit_adjacencies_from_files(prefix):
             yield e, A
             e += 1
 
+def get_edge_gdv_from_precomputed(prefix):
+
+    # (hop, o1, o2): scaling_constant
+    node_orbits = {(1, 2),
+                   (3, 3),
+                   (4, 5),
+                   (5, 5),
+                   (6, 7),
+                   (8, 8),
+                   (9, 11),
+                   (10, 10),
+                   (10, 11),
+                   (12, 13),
+                   (13, 13),
+                   (14, 14),
+                   }
+                                  
+    gdvs = [ None ] * 12
+    e = 0
+    for _hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix):
+        key = (o1, o2)
+        if o1 ==0 and o2 == 0:
+            rows, cols = A.nonzero()
+            triu_indices = rows<cols
+            rows = rows[triu_indices]
+            cols = cols[triu_indices]
+
+        if key in node_orbits:
+            if o1 != o2:
+                A += A.T
+            gdvs[e] = A[rows, cols].A1
+            e += 1
+        if _hop>1:
+            break
+    return np.stack(gdvs).T
+
 def get_gdv_from_precomputed(prefix):
 
     # (hop, o1, o2): scaling_constant
@@ -450,12 +486,22 @@ def main():
     for e, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
         print("edge orbit:", e)
     
-    orca_counts = gradco.run_orca(G)
-    w_counts = gradco.get_gdv_from_precomputed(prefix)
-    for i in range(15):
+    # orca_counts = gradco.run_orca(G, "node")
+    # w_counts = gradco.get_gdv_from_precomputed(prefix)
+    # for i in range(15):
+    #     print(i, orca_counts[:, i] - w_counts[:, i])
+    
+    orca_counts = gradco.run_orca(G, "edge")
+    w_counts = gradco.get_edge_gdv_from_precomputed(prefix)
+    print(orca_counts.shape)
+    print(w_counts.shape)
+
+    for i in range(12):
         print(i, orca_counts[:, i] - w_counts[:, i])
+        pass
+    
  
-def run_orca(G):
+def run_orca(G, mode):
     import uuid
     import networkx as nx 
     import time
@@ -465,15 +511,16 @@ def run_orca(G):
 
     unique_id = uuid.uuid1()
     edgelist_file='G_{}.txt'.format(unique_id)
-    gdv_file='G_gdv_{}.txt'.format(unique_id)
+    gdv_file='G_{}_gdv_{}.txt'.format(mode, unique_id)
 
     G = nx.convert_node_labels_to_integers(G)
     with open(edgelist_file, 'w') as ostr:
         ostr.write(f"{G.number_of_nodes()} {G.number_of_edges()}\n")
         for edge in G.edges():
-            ostr.write(f"{edge[0]} {edge[1]}\n")
+            if edge[0] < edge[1]:
+                ostr.write(f"{edge[0]} {edge[1]}\n")
 
-    command=['./orca','node',str(4),edgelist_file, gdv_file]
+    command=['./orca', mode,str(4),edgelist_file, gdv_file]
     start_time = time.time()
     subprocess.call(command,
                     # stdout=subprocess.DEVNULL,
@@ -484,7 +531,7 @@ def run_orca(G):
     # counts = np.sum(df_counts, axis=0)
     #cleanup
     os.remove(edgelist_file)
-    os.remove(gdv_file)
+    # os.remove(gdv_file)
 
     return df_counts.values
 
