@@ -252,7 +252,7 @@ def iterate_orbit_adjacencies_from_files(prefix, hop=None):
             A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
             yield _hop, o1, o2, A
             if o1 != o2:
-                A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
+                A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o2}_o2_{o1}.npz')
                 yield _hop, o2, o1, A
 
 def iterate_edge_orbit_adjacencies_from_files(prefix):
@@ -263,13 +263,45 @@ def iterate_edge_orbit_adjacencies_from_files(prefix):
             yield e, A
             e += 1
 
+def get_gdv_from_precomputed(prefix):
+
+    # (hop, o1, o2): scaling_constant
+    orbit_2_scaling = {(1, 0, 0): 1, 
+                       (1, 1, 2): 1,
+                       (1, 2, 1): 2,
+                       (1, 3, 3): 2,
+                       (1, 4, 5): 1,
+                       (1, 5, 5): 1,
+                       (1, 6, 7): 1,
+                       (1, 7, 6): 3,
+                       (1, 8, 8): 2,
+                       (1, 9, 11): 1,
+                       (1, 10, 10): 1,
+                       (1, 11, 9): 1,
+                       (1, 12, 13): 2,
+                       (1, 13, 12): 2,
+                       (1, 14, 14): 3,
+                       }
+                                  
+    gdvs = [ None ] * 15
+    incumbent_orbit = 0
+    for _hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix):
+        key = (_hop, o1, o2)
+        if key in orbit_2_scaling:
+            scaling = orbit_2_scaling[key]
+            gdvs[o1] = A.sum(axis=1).A1.squeeze() / scaling
+        if _hop>1:
+            break
+    return np.stack(gdvs).T
+
+
 # CENTRALITIES
 def __normalise_symmetric(A):
     """
         Divide each entry of an adjacency matrix by square root of the
         rowsum and colsum. Implementation assumes M is symmetric.
     """
-    D_array= np.array(A.sum(axis=1)).squeeze()
+    D_array= A.sum(axis=1).squeeze()
     D_array= np.power(D_array,0.5) + np.finfo(float).eps
     A = A / D_array[:,None]
     A = A / D_array[None,:]
@@ -281,7 +313,7 @@ def __normalise_rows(A):
     """
         Divide each entry of an adjacency matrix by the rowsum.
     """
-    D_array = np.array(A.sum(axis=1)).squeeze()
+    D_array = A.sum(axis=1).squeeze()
     D_array = D_array + np.finfo(float).eps
     A = A / D_array[:,None]
 
@@ -417,6 +449,45 @@ def main():
         print("orbit:", hop, o1, o2)
     for e, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
         print("edge orbit:", e)
+    
+    orca_counts = gradco.run_orca(G)
+    w_counts = gradco.get_gdv_from_precomputed(prefix)
+    for i in range(15):
+        print(i, orca_counts[:, i] - w_counts[:, i])
+ 
+def run_orca(G):
+    import uuid
+    import networkx as nx 
+    import time
+    import subprocess
+    import pandas as pd
+    import os
+
+    unique_id = uuid.uuid1()
+    edgelist_file='G_{}.txt'.format(unique_id)
+    gdv_file='G_gdv_{}.txt'.format(unique_id)
+
+    G = nx.convert_node_labels_to_integers(G)
+    with open(edgelist_file, 'w') as ostr:
+        ostr.write(f"{G.number_of_nodes()} {G.number_of_edges()}\n")
+        for edge in G.edges():
+            ostr.write(f"{edge[0]} {edge[1]}\n")
+
+    command=['./orca','node',str(4),edgelist_file, gdv_file]
+    start_time = time.time()
+    subprocess.call(command,
+                    # stdout=subprocess.DEVNULL,
+                    # stderr=subprocess.DEVNULL,
+                    timeout=24*60*60)
+
+    df_counts = pd.read_csv(gdv_file, sep=' ', header=None)
+    # counts = np.sum(df_counts, axis=0)
+    #cleanup
+    os.remove(edgelist_file)
+    os.remove(gdv_file)
+
+    return df_counts.values
+
 
 if __name__ == "__main__":
     main()
