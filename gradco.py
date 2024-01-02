@@ -398,7 +398,7 @@ def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
     return eigen_value, eigen_vector
 
 def __normalise(A, normalisation):
-    if normalise is not None:
+    if normalisation is not None:
         match normalise:
             case "rows":
                 A = __normalise_rows(A)
