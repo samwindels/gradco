@@ -24,7 +24,7 @@ def main():
     # gnu++2b => working draft with GNU extensions 
 
     setup(name="gradco",  # Name of the package. Used at install: pip install gradco
-          version="0.0.3",
+          version="0.0.4",
           description="GRaphlet and Orbit Adjacency Counter (GROADCO).",
           author="Sam Windels",
           author_email="sam.windels@gmail.com",
