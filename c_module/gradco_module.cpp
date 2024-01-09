@@ -124,9 +124,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				}
 			}
 		}
-	}	
-	std::cout<<"out-out wedges"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=0; j<G.adj_out[b].size(); j++){
@@ -187,9 +184,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				}
 			}
 		}
-	}
-	std::cout<<"out-in wedges"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=G.adj_in[b].size()-1; j>-1; j--){
