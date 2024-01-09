@@ -98,11 +98,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							std::cout<<"G3 6, d<b : "<<b<<' '<<a<<' '<<c<<' '<<d<<std::endl;
 							
 							A4_4.increment_all_2_all(b, d);
-							/* A4_5.increment_from_to(a, b); */
-							/* A4_5.increment_from_to(d, c); */
+							A4_5.increment_from_to(b, a);
+							A4_5.increment_from_to(d, c);
 							A4_5_bis.increment_from_to(b, c);
 							A4_5_bis.increment_from_to(d, a);
-							/* A5_5.increment_all_2_all(b, c); */
+							A5_5.increment_all_2_all(a, c);
 						}
 					}
 					
@@ -114,11 +114,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl;
 							
 							A4_4.increment_all_2_all(c, d);
-							/* A4_5.increment_from_to(d, a); */
-							/* A4_5.increment_from_to(c, b); */
+							A4_5.increment_from_to(d, b);
+							A4_5.increment_from_to(c, a);
 							A4_5_bis.increment_from_to(d, a);
 							A4_5_bis.increment_from_to(c, b);
-							/* A5_5.increment_all_2_all(a, b); */
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
@@ -146,11 +146,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
 							// a -> b -> c -> d
 							A4_4.increment_all_2_all(a, d);
-							/* A4_5.increment_from_to(a, b); */
-							/* A4_5.increment_from_to(d, c); */
+							A4_5.increment_from_to(a, b);
+							A4_5.increment_from_to(d, c);
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
-							/* A5_5.increment_all_2_all(b, c); */
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 
@@ -161,11 +161,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
-							/* A4_5.increment_from_to(a, b); */
-							/* A4_5.increment_from_to(d, c); */
+							A4_5.increment_from_to(a, b);
+							A4_5.increment_from_to(d, c);
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
-							/* A5_5.increment_all_2_all(b, c); */
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 					for (int k=0; k<G.adj_out[a].size(); k++){
@@ -177,11 +177,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							// c <- b <- a -> d 
 							std::cout<<"G3 5b, 7a: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl;
 							A4_4.increment_all_2_all(d, c);
-							/* A4_5.increment_from_to(d, a); */
-							/* A4_5.increment_from_to(c, b); */
+							A4_5.increment_from_to(d, a);
+							A4_5.increment_from_to(c, b);
 							A4_5_bis.increment_from_to(d, b);
 							A4_5_bis.increment_from_to(c, a);
-							/* A5_5.increment_all_2_all(a, b); */
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
@@ -303,10 +303,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						A1_2_ba = A1_2.get(b, a);
 						A8_8_bis.add_scalar(a, c, A1_2_bc);
 						A8_8_bis.add_scalar(c, a, A1_2_ba);
-						A4_5.add_scalar(a, b, A1_2_bc);
-						A4_5.add_scalar(c, b, A1_2_ba);
-						A5_5.add_scalar(b, c, A1_2_bc);
-						A5_5.add_scalar(b, a, A1_2_ba);
+						/* A4_5.add_scalar(a, b, A1_2_bc); */
+						/* A4_5.add_scalar(c, b, A1_2_ba); */
+						/* A5_5.add_scalar(b, c, A1_2_bc); */
+						/* A5_5.add_scalar(b, a, A1_2_ba); */
 
 						A12_12.add_scalar(a, c, A1_1_ac);
 						A12_12.add_scalar(c, a, A1_1_ac);
@@ -353,10 +353,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					A1_2_ba = A1_2.get(b, a);
 					A8_8_bis.add_scalar(a, c, A1_2_bc);
 					A8_8_bis.add_scalar(c, a, A1_2_ba);
-					A4_5.add_scalar(a, b, A1_2_bc);
-					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, c, A1_2_bc);
-					A5_5.add_scalar(b, a, A1_2_ba);
+					/* A4_5.add_scalar(a, b, A1_2_bc); */
+					/* A4_5.add_scalar(c, b, A1_2_ba); */
+					/* A5_5.add_scalar(b, c, A1_2_bc); */
+					/* A5_5.add_scalar(b, a, A1_2_ba); */
 					
 					A12_12.add_scalar(a, c, A1_1_ac);
 					A12_12.add_scalar(c, a, A1_1_ac);
@@ -401,10 +401,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					A1_2_ba = A1_2.get(b, a);
 					A8_8_bis.add_scalar(a, c, A1_2_bc);
 					A8_8_bis.add_scalar(c, a, A1_2_ba);
-					A4_5.add_scalar(a, b, A1_2_bc);
-					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, c, A1_2_bc);
-					A5_5.add_scalar(b, a, A1_2_ba);
+					/* A4_5.add_scalar(a, b, A1_2_bc); */
+					/* A4_5.add_scalar(c, b, A1_2_ba); */
+					/* A5_5.add_scalar(b, c, A1_2_bc); */
+					/* A5_5.add_scalar(b, a, A1_2_ba); */
 					
 					A12_12.add_scalar(a, c, A1_1_ac);
 					A12_12.add_scalar(c, a, A1_1_ac);
@@ -430,8 +430,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
 
 	//3. depend on infered infered matrices
-	A4_5.subtract_matrix_multiple(A8_8, 1);
-	A5_5.subtract_matrix_multiple(A8_8, 1);
+	/* A4_5.subtract_matrix_multiple(A8_8, 1); */
+	/* A5_5.subtract_matrix_multiple(A8_8, 1); */
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
 	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
 	
