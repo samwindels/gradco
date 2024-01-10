@@ -296,22 +296,21 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	}
 
 	//INFERED  
-	
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
-	for (int b = 0; b < n; b++){
-		if (G.adj_out[b].size() >= 2){
-			for (int i=0; i<G.adj_out[b].size(); i++){
-				a = G.adj_out[b][i];
-				for (int j=i+1; j<G.adj_out[b].size(); j++){
+	for (int a = 0; a < n; a++){
+		if (G.adj_out[a].size() >= 2){
+			for (int i=0; i<G.adj_out[a].size(); i++){
+				b = G.adj_out[a][i];
+				for (int j=i+1; j<G.adj_out[a].size(); j++){
 					// in-out wedge
-					// a <- b -> c
-					c = G.adj_out[b][j];
-					if (G.has_out_edge(a, c)){
+					// b <- a -> c
+					c = G.adj_out[a][j];
+					if (G.has_out_edge(b, c)){
 						// triangle
-						__update_A12_13_A14_14(A12_13, a, b, c, A3_3);
-						__update_A10_10_A12_13(A10_10, a, b, c, A1_2);
-						__update_A13_13_A14_14(A13_13, a, b, c, A3_3);
-						__update_A10_11_A12_13(A10_11, a, b, c, A1_2);
+						__update_A12_13_A14_14(A12_13, b, a, c, A3_3);
+						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
+						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
+						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
 
 					}else{
 						/* // three node path */
@@ -319,13 +318,13 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						/* A4_5.add_scalar(c, b, A1_2_ba); */
 						/* A5_5.add_scalar(b, c, A1_2_bc); */
 						/* A5_5.add_scalar(b, a, A1_2_ba); */
-						__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
- 						__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
-						__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
-						__update_A8_8_A12_13(A8_8, a, b, c, A1_1);
-						__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
-						__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
-						__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
+						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
+ 						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
+						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
+						__update_A8_8_A12_13(A8_8, b, a, c, A1_1);
+						__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2);
+						__update_A12_12_A8_8bis(A12_12, b, a, c, A1_1);
+						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
 
 						
 					}
