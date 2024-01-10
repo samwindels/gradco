@@ -44,9 +44,9 @@ void __update_A4_5_A8_8(Matrix& A4_5, int l, int m, int r, Matrix& A1_2){
 	A4_5.add_scalar(r, m, A1_2.get(m, l));
 }
 
-void __update_A9_11_A12_13(Matrix& A9_11, int l, int m, int r, Matrix& A3_3){
-	A9_11.add_scalar(l, m, A3_3.get(m, r));
-	A9_11.add_scalar(r, m, A3_3.get(l, m));
+void __update_A9_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A3_3){
+	A.add_scalar(l, m, A3_3.get(m, r));
+	A.add_scalar(r, m, A3_3.get(l, m));
 }
 
 void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
@@ -74,22 +74,22 @@ void __update_A12_13_A14_14(Matrix& A12_13, int l, int m, int r, Matrix& A3_3){
 	A12_13.add_scalar(r, m, A3_3_lm);
 }
 
-void __update_A10_10_A12_13(Matrix& A10_10, int l, int m, int r, Matrix& A1_2){
-	A10_10.add_scalar(l, m, A1_2.get(l, r));
-	A10_10.add_scalar(m, l, A1_2.get(m, r));
-	A10_10.add_scalar(l, r, A1_2.get(l, m));
-	A10_10.add_scalar(r, l, A1_2.get(r, m));
-	A10_10.add_scalar(m, r, A1_2.get(m, l));
-	A10_10.add_scalar(r, m, A1_2.get(r, l));
+void __update_A10_10_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(l, r));
+	A.add_scalar(m, l, A1_2.get(m, r));
+	A.add_scalar(l, r, A1_2.get(l, m));
+	A.add_scalar(r, l, A1_2.get(r, m));
+	A.add_scalar(m, r, A1_2.get(m, l));
+	A.add_scalar(r, m, A1_2.get(r, l));
 }
 
-void __update_A10_11_A12_13(Matrix& A10_11, int l, int m, int r, Matrix& A1_2){
-	A10_11.add_scalar(l, m, A1_2.get(l, m)); 
-	A10_11.add_scalar(l, r, A1_2.get(l, r)); 
-	A10_11.add_scalar(m, l, A1_2.get(m, l)); 
-	A10_11.add_scalar(m, r,	A1_2.get(m, r)); 
-	A10_11.add_scalar(r, l, A1_2.get(r, l)); 
-	A10_11.add_scalar(r, m, A1_2.get(r, m)); 
+void __update_A10_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(l, m)); 
+	A.add_scalar(l, r, A1_2.get(l, r)); 
+	A.add_scalar(m, l, A1_2.get(m, l)); 
+	A.add_scalar(m, r, A1_2.get(m, r)); 
+	A.add_scalar(r, l, A1_2.get(r, l)); 
+	A.add_scalar(r, m, A1_2.get(r, m)); 
 }
 
 
@@ -398,6 +398,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	/* // 4. depends on infered infered infered matrices */
 	/* A6_6.subtract_matrix_multiple(A9_10, 1); */
 	
+	
 	// ordering matters !!!  	
 	// SINGLE HOP
 	// 1. dependend on brute force matrices
@@ -406,12 +407,17 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	
 	// 2. dependend on infered matrices
 	A8_8.subtract_matrix_multiple(A5_5, 1);
+
+	//3. depend on infered infered matrices
+	/* A12_13.subtract_matrix_multiple(A8_8, 1); */	
+	A4_5.subtract_matrix_multiple(A8_8, 1);
+	
+	// 4. depends on infered infered infered matrices
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
-
-	//3. depend on infered infered matrices
-	A4_5.subtract_matrix_multiple(A8_8, 1);
+	
+	//5. depends on infered infered infered infered matrices	
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
 	
 	// DOUBLE HOP
