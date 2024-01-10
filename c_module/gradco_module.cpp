@@ -263,7 +263,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=G.adj_in[b].size()-1; j>-1; j--){
-				// in-out wedge
+				// out-in wedge
 				// a -> b <- c
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
