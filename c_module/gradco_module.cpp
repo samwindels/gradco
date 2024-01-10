@@ -413,13 +413,13 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	
 	// 3. depends on infered infered infered matrices
 	A14_14.subtract_matrix_multiple(A12_13, 1);
-	/* A13_13.subtract_matrix_multiple(A14_14, 2); */
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
 	
 	// 4. depends on infered infered infered infered matrices	
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
+	A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two
 	
 	// DOUBLE HOP
 	// 1. dependend on brute force matrices
