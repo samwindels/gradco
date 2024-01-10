@@ -320,10 +320,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 					}else{
 						/* // three node path */
-						/* A4_5.add_scalar(a, b, A1_2_bc); */
-						/* A4_5.add_scalar(c, b, A1_2_ba); */
-						/* A5_5.add_scalar(b, c, A1_2_bc); */
-						/* A5_5.add_scalar(b, a, A1_2_ba); */
 						__update_A4_5_A8_8(A4_5, b, a, c, A1_2);
 						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
  						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
@@ -346,10 +342,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// a -> b -> c
 				c = G.adj_out[b][j];
 				if (! G.has_out_edge(a, c)){
-					/* A4_5.add_scalar(a, b, A1_2_bc); */
-					/* A4_5.add_scalar(c, b, A1_2_ba); */
-					/* A5_5.add_scalar(b, c, A1_2_bc); */
-					/* A5_5.add_scalar(b, a, A1_2_ba); */
 					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
 					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
@@ -370,10 +362,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					/* A4_5.add_scalar(a, b, A1_2_bc); */
-					/* A4_5.add_scalar(c, b, A1_2_ba); */
-					/* A5_5.add_scalar(b, c, A1_2_bc); */
-					/* A5_5.add_scalar(b, a, A1_2_ba); */
 					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
 					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
