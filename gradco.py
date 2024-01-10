@@ -442,7 +442,7 @@ def main():
     import numpy as np
     import networkx as nx
     
-    n = 8
+    n = 1000
     m = 4
     G = nx.barabasi_albert_graph(n, m, seed=0)
     # A = nx.to_scipy_sparse_array(G)
@@ -485,10 +485,10 @@ def main():
     for e, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
         print("edge orbit:", e)
     
-    # orca_counts = gradco.run_orca(G, "node")
-    # w_counts = gradco.get_gdv_from_precomputed(prefix)
-    # for i in range(15):
-    #     print(i, orca_counts[:, i] - w_counts[:, i])
+    orca_counts = gradco.run_orca(G, "node")
+    w_counts = gradco.get_gdv_from_precomputed(prefix)
+    for i in range(15):
+        print(i, np.sum(orca_counts[:, i] - w_counts[:, i]))
     
     orca_counts = gradco.run_orca(G, "edge")
     w_counts = gradco.get_edge_gdv_from_precomputed(prefix)
@@ -496,7 +496,7 @@ def main():
     print(w_counts.shape)
 
     for i in range(12):
-        print(i, orca_counts[:, i] - w_counts[:, i])
+        print(i, np.sum(orca_counts[:, i] - w_counts[:, i]))
         pass
     
  
@@ -527,10 +527,9 @@ def run_orca(G, mode):
                     timeout=24*60*60)
 
     df_counts = pd.read_csv(gdv_file, sep=' ', header=None)
-    # counts = np.sum(df_counts, axis=0)
     #cleanup
     os.remove(edgelist_file)
-    # os.remove(gdv_file)
+    os.remove(gdv_file)
 
     return df_counts.values
 
