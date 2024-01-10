@@ -51,16 +51,16 @@ void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
-void __update_A12_13_A14_14(Matrix& A12_13, int a, int b, int c, Matrix& A3_3){
-	int A3_3_ab = A3_3.get(a,b) - 1;
-	int A3_3_ac = A3_3.get(a,c) - 1;
-	int A3_3_bc = A3_3.get(b,c) - 1;
-	A12_13.add_scalar(a, b, A3_3_bc);
-	A12_13.add_scalar(a, c, A3_3_bc);
-	A12_13.add_scalar(b, a, A3_3_ac);
-	A12_13.add_scalar(b, c, A3_3_ac);
-	A12_13.add_scalar(c, a, A3_3_ab);
-	A12_13.add_scalar(c, b, A3_3_ab);
+void __update_A12_13_A14_14(Matrix& A12_13, int l, int m, int r, Matrix& A3_3){
+	int A3_3_lm = A3_3.get(l,m) - 1;
+	int A3_3_lr = A3_3.get(l,r) - 1;
+	int A3_3_mr = A3_3.get(m,r) - 1;
+	A12_13.add_scalar(l, m, A3_3_mr);
+	A12_13.add_scalar(l, r, A3_3_mr);
+	A12_13.add_scalar(m, l, A3_3_lr);
+	A12_13.add_scalar(m, r, A3_3_lr);
+	A12_13.add_scalar(r, l, A3_3_lm);
+	A12_13.add_scalar(r, m, A3_3_lm);
 }
 
 void __update_A10_10_A12_13(Matrix& A10_10, int a, int b, int c, Matrix& A1_2){
