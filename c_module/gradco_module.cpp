@@ -62,16 +62,16 @@ void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
-void __update_A12_13_A14_14(Matrix& A12_13, int l, int m, int r, Matrix& A3_3){
+void __update_A12_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
-	A12_13.add_scalar(l, m, A3_3_mr);
-	A12_13.add_scalar(l, r, A3_3_mr);
-	A12_13.add_scalar(m, l, A3_3_lr);
-	A12_13.add_scalar(m, r, A3_3_lr);
-	A12_13.add_scalar(r, l, A3_3_lm);
-	A12_13.add_scalar(r, m, A3_3_lm);
+	A.add_scalar(l, m, A3_3_mr);
+	A.add_scalar(l, r, A3_3_mr);
+	A.add_scalar(m, l, A3_3_lr);
+	A.add_scalar(m, r, A3_3_lr);
+	A.add_scalar(r, l, A3_3_lm);
+	A.add_scalar(r, m, A3_3_lm);
 }
 
 void __update_A10_10_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
@@ -154,7 +154,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	Matrix A4_4     = Matrix(n);  // 4-node path, outside orbits
 	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
 	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
-	Matrix A14_14   = Matrix(n);  // 4-node clique
+	/* Matrix A14_14   = Matrix(n);  // 4-node clique */
 	
 
 	int a, b, c, d;
@@ -171,12 +171,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				if (G.has_out_edge(b, c)){
 					// triangle
 					A3_3.increment_all_2_all(a, b, c);
-					for (int k=j+1; k<G.adj_out[a].size(); k++){
-						d = G.adj_out[a][k];
-						if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
-							A14_14.increment_all_2_all(a, b, c, d);
-						}
-					}
+					/* for (int k=j+1; k<G.adj_out[a].size(); k++){ */
+					/* 	d = G.adj_out[a][k]; */
+					/* 	if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){ */
+					/* 		A14_14.increment_all_2_all(a, b, c, d); */
+					/* 	} */
+					/* } */
 				}else{
 					// 3-node path
 					/* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
@@ -303,6 +303,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A14_14   = Matrix(n);  // 4-node cycle with chord,
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
 			for (int i=0; i<G.adj_out[a].size(); i++){
@@ -317,6 +318,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
 						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
 						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
+						__update_A12_13_A14_14(A14_14, b, a, c, A3_3);
 
 					}else{
 						/* // three node path */
@@ -402,22 +404,21 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	
 	// ordering matters !!!  	
 	// SINGLE HOP
-	// 1. dependend on brute force matrices
-	A13_13.subtract_matrix_multiple(A14_14, 2);
-	
-	// 2. dependend on infered matrices
+	// 1. dependend on infered matrices
 	A8_8.subtract_matrix_multiple(A5_5, 1);
 
-	//3. depend on infered infered matrices
+	// 2. depend on infered infered matrices
 	A12_13.subtract_matrix_multiple(A8_8, 1);	
 	A4_5.subtract_matrix_multiple(A8_8, 1);
 	
-	// 4. depends on infered infered infered matrices
+	// 3. depends on infered infered infered matrices
+	A14_14.subtract_matrix_multiple(A12_13, 1);
+	/* A13_13.subtract_matrix_multiple(A14_14, 2); */
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
 	
-	//5. depends on infered infered infered infered matrices	
+	// 4. depends on infered infered infered infered matrices	
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
 	
 	// DOUBLE HOP
@@ -456,7 +457,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
-	PyObject* A14_14_numpy   = A14_14.to_numpy();
+	/* PyObject* A14_14_numpy   = A14_14.to_numpy(); */
+	PyObject* A14_14_numpy = A14_14.division_to_numpy(2);
 
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
