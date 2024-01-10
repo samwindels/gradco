@@ -159,7 +159,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
-	std::cout<<"in-out wedges"<<std::endl;
 	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -189,8 +188,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if(!G.has_edge(b, d) && !G.has_edge(a, d)){
 							// b <- a -> c <- d, with a < c
 							A4_4.increment_all_2_all(b, d);
-							/* A4_5.increment_from_to(b, a); */
-							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(b, c);
 							A4_5_bis.increment_from_to(d, a);
 							A5_5.increment_all_2_all(a, c);
@@ -203,8 +200,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (d!=c && !G.has_edge(a, d) && !G.has_edge(c,d)){
 							// d -> b <- a -> c, with b < c
 							A4_4.increment_all_2_all(c, d);
-							/* A4_5.increment_from_to(d, b); */
-							/* A4_5.increment_from_to(c, a); */
 							A4_5_bis.increment_from_to(d, a);
 							A4_5_bis.increment_from_to(c, b);
 							A5_5.increment_all_2_all(a, b);
@@ -232,8 +227,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
 							// a -> b -> c -> d
 							A4_4.increment_all_2_all(a, d);
-							/* A4_5.increment_from_to(a, b); */
-							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
 							A5_5.increment_all_2_all(b, c);
@@ -247,8 +240,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
-							/* A4_5.increment_from_to(a, b); */
-							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
 							A5_5.increment_all_2_all(b, c);
@@ -261,8 +252,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						{	// d <- a -> b -> c
 							// c <- b <- a -> d 
 							A4_4.increment_all_2_all(d, c);
-							/* A4_5.increment_from_to(d, a); */
-							/* A4_5.increment_from_to(c, b); */
 							A4_5_bis.increment_from_to(d, b);
 							A4_5_bis.increment_from_to(c, a);
 							A5_5.increment_all_2_all(a, b);
