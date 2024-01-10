@@ -189,8 +189,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						d = G.adj_in[c][k];
 						if(!G.has_edge(b, d) && !G.has_edge(a, d)){
 							// b <- a -> c <- d, with a < c
-							std::cout<<"G3 6, d<b : "<<b<<' '<<a<<' '<<c<<' '<<d<<std::endl;
-							
 							A4_4.increment_all_2_all(b, d);
 							A4_5.increment_from_to(b, a);
 							A4_5.increment_from_to(d, c);
@@ -205,8 +203,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						d = G.adj_in[b][k];
 						if (d!=c && !G.has_edge(a, d) && !G.has_edge(c,d)){
 							// d -> b <- a -> c, with b < c
-							std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl;
-							
 							A4_4.increment_all_2_all(c, d);
 							A4_5.increment_from_to(d, b);
 							A4_5.increment_from_to(c, a);
@@ -262,7 +258,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					for (int k=0; k<G.adj_out[a].size(); k++){
 						// successor of a
 						d = G.adj_out[a][k];
-						std::cout<<"hit"<<std::endl;
 						if (d!= b && !G.has_edge(b, d) && !G.has_edge(c, d))
 						{	// d <- a -> b -> c
 							// c <- b <- a -> d 
