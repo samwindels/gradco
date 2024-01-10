@@ -143,17 +143,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
 	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
 	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
-	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
-	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
-	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
-	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
-	Matrix A9_10    = Matrix(n);  // 4-node paw, 
-	Matrix A9_11    = Matrix(n);  // 4-node paw,
-	Matrix A10_10   = Matrix(n);  // 4-node paw,
-	Matrix A10_11   = Matrix(n);  // 4-node paw,
-	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
-	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
-	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
 	Matrix A14_14   = Matrix(n);  // 4-node clique
 	
 
@@ -290,8 +279,19 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 		}
 	}
 
-	//INFERED  
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
+	// INITIALIZE REDUNDANCY MATRICES
+	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
+	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
+	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
+	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
+	Matrix A9_10    = Matrix(n);  // 4-node paw, 
+	Matrix A9_11    = Matrix(n);  // 4-node paw,
+	Matrix A10_10   = Matrix(n);  // 4-node paw,
+	Matrix A10_11   = Matrix(n);  // 4-node paw,
+	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
 			for (int i=0; i<G.adj_out[a].size(); i++){
