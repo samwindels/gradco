@@ -16,32 +16,38 @@
 
 
 // SINGLE-HOP EQUATIONS, path-based
-void __update_A6_7_A9_11(Matrix& A6_7, int a, int b, int c, Matrix& A1_2){
-	A6_7.add_scalar(a, b, A1_2.get(a, b) -1);
-	A6_7.add_scalar(c, b, A1_2.get(c, b) -1);
+// depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
+// wedge: l - m - r 
+// l = left
+// m = middle
+// r = right
+
+void  __update_A6_7_A9_11(Matrix& A6_7, int l, int m, int r, Matrix& A1_2){
+	A6_7.add_scalar(l, m, A1_2.get(l, m) -1);
+	A6_7.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
-void __update_A8_8_A12_13(Matrix& A8_8, int a, int b, int c, Matrix& A1_1){
-	int A1_1_ac = A1_1.get(a, c)-1;
-	A8_8.add_scalar(a, b, A1_1_ac);
-	A8_8.add_scalar(c, b, A1_1_ac);
+void __update_A8_8_A12_13(Matrix& A8_8, int l, int m, int r, Matrix& A1_1){
+	int A1_1_lr = A1_1.get(l, r)-1;
+	A8_8.add_scalar(l, m, A1_1_lr);
+	A8_8.add_scalar(r, m, A1_1_lr);
 }
 
-void __update_A9_11_A12_13(Matrix& A9_11, int a, int b, int c, Matrix& A3_3){
-	A9_11.add_scalar(a, b, A3_3.get(b, c));
-	A9_11.add_scalar(c, b, A3_3.get(a, b));
+void __update_A9_11_A12_13(Matrix& A9_11, int l, int m, int r, Matrix& A3_3){
+	A9_11.add_scalar(l, m, A3_3.get(m, r));
+	A9_11.add_scalar(r, m, A3_3.get(l, m));
 }
 
-void __update_A13_13_A14_14(Matrix& A13_13, int a, int b, int c, int d, Matrix& A3_3){
-	int A3_3_ab = A3_3.get(a,b) - 1;
-	int A3_3_ac = A3_3.get(a,c) - 1;
-	int A3_3_bc = A3_3.get(b,c) - 1;
-	A13_13.add_scalar(a, b, A3_3_ab);
-	A13_13.add_scalar(a, c, A3_3_ac);
-	A13_13.add_scalar(b, a, A3_3_ab);
-	A13_13.add_scalar(b, c, A3_3_bc);
-	A13_13.add_scalar(c, a, A3_3_ac);
-	A13_13.add_scalar(c, b, A3_3_bc);
+void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
+	int A3_3_lm = A3_3.get(l,m) - 1;
+	int A3_3_lr = A3_3.get(l,r) - 1;
+	int A3_3_mr = A3_3.get(m,r) - 1;
+	A13_13.add_scalar(l, m, A3_3_lm);
+	A13_13.add_scalar(l, r, A3_3_lr);
+	A13_13.add_scalar(m, l, A3_3_lm);
+	A13_13.add_scalar(m, r, A3_3_mr);
+	A13_13.add_scalar(r, l, A3_3_lr);
+	A13_13.add_scalar(r, m, A3_3_mr);
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
@@ -76,6 +82,11 @@ void __update_A10_11_A12_13(Matrix& A10_11, int a, int b, int c, Matrix& A1_2){
 }
 
 // DOUBLE-HOP EQUATIONS
+// depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
+// wedge: l - m - r 
+// l = left
+// m = middle
+// r = right
 void __update_A6_6_A9_10(Matrix& A6_6, int a, int b, int c, Matrix& A1_2){
 	A6_6.add_scalar(a, c, A1_2.get(a, b) -1);
 	A6_6.add_scalar(c, a, A1_2.get(c, b) -1);
@@ -286,13 +297,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 	//INFERED  
 	
-	int A3_3_ab, A3_3_ac, A3_3_bc; 
-	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
-	int A1_1_ac;
-
-
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
-	std::cout<<"IN-OUT WEDGES"<<std::endl;
 	for (int b = 0; b < n; b++){
 		if (G.adj_out[b].size() >= 2){
 			for (int i=0; i<G.adj_out[b].size(); i++){
@@ -305,7 +310,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						// triangle
 						__update_A12_13_A14_14(A12_13, a, b, c, A3_3);
 						__update_A10_10_A12_13(A10_10, a, b, c, A1_2);
-						__update_A13_13_A14_14(A13_13, a, b, c, a, A3_3);
+						__update_A13_13_A14_14(A13_13, a, b, c, A3_3);
 						__update_A10_11_A12_13(A10_11, a, b, c, A1_2);
 
 					}else{
