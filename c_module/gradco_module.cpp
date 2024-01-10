@@ -15,6 +15,112 @@
 #include "matrix.hh"
 
 
+// SINGLE-HOP EQUATIONS, path-based
+// depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
+// wedge: l - m - r 
+// l = left
+// m = middle
+// r = right
+
+void  __update_A6_7_A9_11(Matrix& A6_7, int l, int m, int r, Matrix& A1_2){
+	A6_7.add_scalar(l, m, A1_2.get(l, m) -1);
+	A6_7.add_scalar(r, m, A1_2.get(r, m) -1);
+}
+
+void __update_A8_8_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_1){
+	int A1_1_lr = A1_1.get(l, r)-1;
+	A.add_scalar(l, m, A1_1_lr);
+	A.add_scalar(r, m, A1_1_lr);
+}
+
+void __update_A8_8_A5_5(Matrix& A8_8, int l, int m, int r, Matrix& A1_2){
+	A8_8.add_scalar(l, m, A1_2.get(m, l));
+	A8_8.add_scalar(r, m, A1_2.get(m, r));
+}
+
+void __update_A4_5_A8_8(Matrix& A4_5, int l, int m, int r, Matrix& A1_2){
+	std::cout<<"A4_5_8_8"<<std::endl;
+	A4_5.add_scalar(l, m, A1_2.get(m, r));
+	A4_5.add_scalar(r, m, A1_2.get(m, l));
+}
+
+void __update_A9_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A3_3){
+	A.add_scalar(l, m, A3_3.get(m, r));
+	A.add_scalar(r, m, A3_3.get(l, m));
+}
+
+void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
+	int A3_3_lm = A3_3.get(l,m) - 1;
+	int A3_3_lr = A3_3.get(l,r) - 1;
+	int A3_3_mr = A3_3.get(m,r) - 1;
+	A13_13.add_scalar(l, m, A3_3_lm);
+	A13_13.add_scalar(l, r, A3_3_lr);
+	A13_13.add_scalar(m, l, A3_3_lm);
+	A13_13.add_scalar(m, r, A3_3_mr);
+	A13_13.add_scalar(r, l, A3_3_lr);
+	A13_13.add_scalar(r, m, A3_3_mr);
+} 
+
+// SINGLE-HOP EQUATIONS, triangle-based
+void __update_A12_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
+	int A3_3_lm = A3_3.get(l,m) - 1;
+	int A3_3_lr = A3_3.get(l,r) - 1;
+	int A3_3_mr = A3_3.get(m,r) - 1;
+	A.add_scalar(l, m, A3_3_mr);
+	A.add_scalar(l, r, A3_3_mr);
+	A.add_scalar(m, l, A3_3_lr);
+	A.add_scalar(m, r, A3_3_lr);
+	A.add_scalar(r, l, A3_3_lm);
+	A.add_scalar(r, m, A3_3_lm);
+}
+
+void __update_A10_10_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(l, r));
+	A.add_scalar(m, l, A1_2.get(m, r));
+	A.add_scalar(l, r, A1_2.get(l, m));
+	A.add_scalar(r, l, A1_2.get(r, m));
+	A.add_scalar(m, r, A1_2.get(m, l));
+	A.add_scalar(r, m, A1_2.get(r, l));
+}
+
+void __update_A10_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(l, m)); 
+	A.add_scalar(l, r, A1_2.get(l, r)); 
+	A.add_scalar(m, l, A1_2.get(m, l)); 
+	A.add_scalar(m, r, A1_2.get(m, r)); 
+	A.add_scalar(r, l, A1_2.get(r, l)); 
+	A.add_scalar(r, m, A1_2.get(r, m)); 
+}
+
+
+// DOUBLE-HOP EQUATIONS
+// depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
+// wedge: l - m - r 
+// l = left
+// m = middle
+// r = right
+void __update_A6_6_A9_10(Matrix& A6_6, int l, int m, int r, Matrix& A1_2){
+	A6_6.add_scalar(l, r, A1_2.get(l, m) -1);
+	A6_6.add_scalar(r, l, A1_2.get(r, m) -1);
+}
+
+void __update_A9_10_A12_12(Matrix& A9_10, int l, int m, int r, Matrix& A3_3){
+	A9_10.add_scalar(l, r, A3_3.get(m, r));
+	A9_10.add_scalar(r, l, A3_3.get(l, m));
+}
+
+void __update_A12_12_A8_8bis(Matrix& A12_12, int l, int m, int r, Matrix& A1_1){
+	int A1_1_lr = A1_1.get(l, r)-1;
+	A12_12.add_scalar(l, r, A1_1_lr);
+	A12_12.add_scalar(r, l, A1_1_lr);
+}
+
+void __update_A8_8bis_A4_5bis(Matrix& A8_8_bis, int l, int m, int r, Matrix& A1_2){
+
+	A8_8_bis.add_scalar(l, r, A1_2.get(m, r));
+	A8_8_bis.add_scalar(r, l, A1_2.get(m, l));
+}
+
 static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 
@@ -46,87 +152,68 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	Matrix A1_2     = Matrix(n);  // 3-node path, outside and middle orbits
 	Matrix A3_3     = Matrix(n);  // 3-node triangle
 	Matrix A4_4     = Matrix(n);  // 4-node path, outside orbits
-	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
 	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
 	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
-	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
-	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
-	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
-	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
-	Matrix A9_10    = Matrix(n);  // 4-node paw, 
-	Matrix A9_11    = Matrix(n);  // 4-node paw,
-	Matrix A10_10   = Matrix(n);  // 4-node paw,
-	Matrix A10_11   = Matrix(n);  // 4-node paw,
-	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
-	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
-	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
-	Matrix A14_14   = Matrix(n);  // 4-node clique
+	/* Matrix A14_14   = Matrix(n);  // 4-node clique */
 	
 
 	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
 	std::cout<<"in-out wedges"<<std::endl;
-	for (int b = 0; b < n; b++){
-		for (int i=0; i<G.adj_out[b].size(); i++){
-			a = G.adj_out[b][i];
-			for (int j=i+1; j<G.adj_out[b].size(); j++){
+	for (int a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=i+1; j<G.adj_out[a].size(); j++){
 				// in-out wedge
-				// a <- b -> c, with b < c
-				c = G.adj_out[b][j];
-				if (G.has_out_edge(a, c)){
+				// b <- a -> c, with b < c
+				c = G.adj_out[a][j];
+				if (G.has_out_edge(b, c)){
 					// triangle
 					A3_3.increment_all_2_all(a, b, c);
-					for (int k=j+1; k<G.adj_out[b].size(); k++){
-						d = G.adj_out[b][k];
-						if (G.has_out_edge(a, d) && G.has_out_edge(c, d)){
-							A14_14.increment_all_2_all(a, b, c, d);
-						}
-					}
+					/* for (int k=j+1; k<G.adj_out[a].size(); k++){ */
+					/* 	d = G.adj_out[a][k]; */
+					/* 	if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){ */
+					/* 		A14_14.increment_all_2_all(a, b, c, d); */
+					/* 	} */
+					/* } */
 				}else{
 					// 3-node path
 					/* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
-					A1_1.increment_all_2_all(a, c);
-					A1_2.increment_from_to(a, b);
-					A1_2.increment_from_to(c, b);
+					A1_1.increment_all_2_all(b, c);
+					A1_2.increment_from_to(b, a);
+					A1_2.increment_from_to(c, a);
 
 					for (int k=0; k<G.adj_in[c].size(); k++){
 						// predecessors of c
 						d = G.adj_in[c][k];
-						if(!G.has_edge(a, d) && !G.has_edge(b, d)){
-							// a <- b -> c <- d, with b < c
-							/* std::cout<<"G3 6, d<a : "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
-							
-							A4_4.increment_all_2_all(a, d);
-							/* A4_5.increment_from_to(a, b); */
+						if(!G.has_edge(b, d) && !G.has_edge(a, d)){
+							// b <- a -> c <- d, with a < c
+							A4_4.increment_all_2_all(b, d);
+							/* A4_5.increment_from_to(b, a); */
 							/* A4_5.increment_from_to(d, c); */
-							A4_5_bis.increment_from_to(a, c);
-							A4_5_bis.increment_from_to(d, b);
-							/* A5_5.increment_all_2_all(b, c); */
+							A4_5_bis.increment_from_to(b, c);
+							A4_5_bis.increment_from_to(d, a);
+							A5_5.increment_all_2_all(a, c);
 						}
 					}
 					
-					for (int k=0; k<G.adj_in[a].size(); k++){
-						// predecessors of a
-						d = G.adj_in[a][k];
-						if (d!=c && !G.has_edge(b, d) && !G.has_edge(c,d)){
-							// d -> a <- b -> c, with a < c
-							/* std::cout<<"G3 3, a<d<b : "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
-							
+					for (int k=0; k<G.adj_in[b].size(); k++){
+						// predecessors of b
+						d = G.adj_in[b][k];
+						if (d!=c && !G.has_edge(a, d) && !G.has_edge(c,d)){
+							// d -> b <- a -> c, with b < c
 							A4_4.increment_all_2_all(c, d);
-							/* A4_5.increment_from_to(d, a); */
-							/* A4_5.increment_from_to(c, b); */
-							A4_5_bis.increment_from_to(d, b);
-							A4_5_bis.increment_from_to(c, a);
-							/* A5_5.increment_all_2_all(a, b); */
+							/* A4_5.increment_from_to(d, b); */
+							/* A4_5.increment_from_to(c, a); */
+							A4_5_bis.increment_from_to(d, a);
+							A4_5_bis.increment_from_to(c, b);
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
 			}
 		}
-	}	
-	std::cout<<"out-out wedges"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=0; j<G.adj_out[b].size(); j++){
@@ -150,7 +237,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
-							/* A5_5.increment_all_2_all(b, c); */
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 
@@ -165,7 +252,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
-							/* A5_5.increment_all_2_all(b, c); */
+							A5_5.increment_all_2_all(b, c);
 						}
 					}
 					for (int k=0; k<G.adj_out[a].size(); k++){
@@ -174,21 +261,17 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (d!= b && !G.has_edge(b, d) && !G.has_edge(c, d))
 						{	// d <- a -> b -> c
 							// c <- b <- a -> d 
-							/* std::cout<<"G3 5b, 7a: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl; */
 							A4_4.increment_all_2_all(d, c);
 							/* A4_5.increment_from_to(d, a); */
 							/* A4_5.increment_from_to(c, b); */
 							A4_5_bis.increment_from_to(d, b);
 							A4_5_bis.increment_from_to(c, a);
-							/* A5_5.increment_all_2_all(a, b); */
+							A5_5.increment_all_2_all(a, b);
 						}
 					}
 				}
 			}
 		}
-	}
-	std::cout<<"out-in wedges"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=G.adj_in[b].size()-1; j>-1; j--){
@@ -206,121 +289,53 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 		}
 	}
 
-	//INFERED  
-	
-	int A3_3_ab, A3_3_ac, A3_3_bc; 
-	int A1_2_ab, A1_2_ba, A1_2_ac, A1_2_ca, A1_2_bc, A1_2_cb;
-	int A1_1_ac;
-
-
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
-	std::cout<<"IN-OUT WEDGES"<<std::endl;
-	for (int b = 0; b < n; b++){
-		if (G.adj_out[b].size() >= 2){
-			for (int i=0; i<G.adj_out[b].size(); i++){
-				a = G.adj_out[b][i];
-				for (int j=i+1; j<G.adj_out[b].size(); j++){
+	// INITIALIZE REDUNDANCY MATRICES
+	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
+	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
+	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
+	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
+	Matrix A8_8_bis = Matrix(n);  // 4-node cycle, nodes two hops away 
+	Matrix A9_10    = Matrix(n);  // 4-node paw, 
+	Matrix A9_11    = Matrix(n);  // 4-node paw,
+	Matrix A10_10   = Matrix(n);  // 4-node paw,
+	Matrix A10_11   = Matrix(n);  // 4-node paw,
+	Matrix A12_12   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A12_13   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A13_13   = Matrix(n);  // 4-node cycle with chord,
+	Matrix A14_14   = Matrix(n);  // 4-node cycle with chord,
+	for (int a = 0; a < n; a++){
+		if (G.adj_out[a].size() >= 2){
+			for (int i=0; i<G.adj_out[a].size(); i++){
+				b = G.adj_out[a][i];
+				for (int j=i+1; j<G.adj_out[a].size(); j++){
 					// in-out wedge
-					// a <- b -> c
-					c = G.adj_out[b][j];
-					if (G.has_out_edge(a, c)){
+					// b <- a -> c
+					c = G.adj_out[a][j];
+					if (G.has_out_edge(b, c)){
 						// triangle
-						
-						A3_3_ab = A3_3.get(a,b) - 1;
-						A3_3_ac = A3_3.get(a,c) - 1;
-						A3_3_bc = A3_3.get(b,c) - 1;
-
-						A1_2_ab = A1_2.get(a, b);
-						A1_2_bc = A1_2.get(b, c);
-						A1_2_ac = A1_2.get(a, c);
-						A1_2_cb = A1_2.get(c, b);
-						A1_2_ca = A1_2.get(c, a);
-						A1_2_ba = A1_2.get(b, a);
-
-						A12_13.add_scalar(a, b, A3_3_bc);
-						A12_13.add_scalar(a, c, A3_3_bc);
-						A12_13.add_scalar(b, a, A3_3_ac);
-						A12_13.add_scalar(b, c, A3_3_ac);
-						A12_13.add_scalar(c, a, A3_3_ab);
-						A12_13.add_scalar(c, b, A3_3_ab);
-
-						A10_10.add_scalar(a, b, A1_2_ac);
-						A10_10.add_scalar(b, a, A1_2_bc);
-						A10_10.add_scalar(a, c, A1_2_ab);
-						A10_10.add_scalar(c, a, A1_2_cb);
-						A10_10.add_scalar(b, c, A1_2_ba);
-						A10_10.add_scalar(c, b, A1_2_ca);
-						
-						A13_13.add_scalar(a, b, A3_3_ab);
-						A13_13.add_scalar(a, c, A3_3_ac);
-						A13_13.add_scalar(b, a, A3_3_ab);
-						A13_13.add_scalar(b, c, A3_3_bc);
-						A13_13.add_scalar(c, a, A3_3_ac);
-						A13_13.add_scalar(c, b, A3_3_bc);
-						
-        /* A[a, b] += A1_2[a, b] */
-        /* A[a, c] += A1_2[a, c] */
-
-        /* A[b, a] += A1_2[b, a] */
-        /* A[b, c] += A1_2[b, c] */
-
-        /* A[c, a] += A1_2[c, a] */
-        /* A[c, b] += A1_2[c, b] */
-
-						A10_11.add_scalar(a, b, A1_2_ab); 
-						A10_11.add_scalar(a, c, A1_2_ac); 
-						
-						A10_11.add_scalar(b, a, A1_2_ba); 
-						A10_11.add_scalar(b, c,	A1_2_bc); 
-						
-						A10_11.add_scalar(c, a, A1_2_ca); 
-						A10_11.add_scalar(c, b, A1_2_cb); 
+						/* __update_A12_13_A14_14(A12_13, b, a, c, A3_3); */
+						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
+						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
+						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
+						__update_A12_13_A14_14(A14_14, b, a, c, A3_3);
 
 					}else{
 						/* // three node path */
-						A3_3_ab = A3_3.get(a, b);
-						A3_3_bc = A3_3.get(b, c);
-						A9_11.add_scalar(a, b, A3_3_bc);
-						A9_11.add_scalar(c, b, A3_3_ab);
-
-						A1_2_ab = A1_2.get(a, b) -1;
-						A1_2_cb = A1_2.get(c, b) -1;
-						A6_7.add_scalar(a, b, A1_2_ab);
-						A6_7.add_scalar(c, b, A1_2_cb);
-						A6_6.add_scalar(a, c, A1_2_ab);
-						A6_6.add_scalar(c, a, A1_2_cb);
-						
-						/* A1_2_bc = A1_2.get(b, c); */
-						/* A1_2_ba = A1_2.get(b, a); */
-						/* A8_8.add_scalar(a, b, A1_2_bc); */
-						/* A8_8.add_scalar(c, b, A1_2_ba); */
-						A1_1_ac = A1_1.get(a, c)-1;
-						A8_8.add_scalar(a, b, A1_1_ac);
-						A8_8.add_scalar(c, b, A1_1_ac);
-						
-						A1_2_bc = A1_2.get(b, c);
-						A1_2_ba = A1_2.get(b, a);
-						A8_8_bis.add_scalar(a, c, A1_2_bc);
-						A8_8_bis.add_scalar(c, a, A1_2_ba);
-						A4_5.add_scalar(a, b, A1_2_bc);
-						A4_5.add_scalar(c, b, A1_2_ba);
-						A5_5.add_scalar(b, c, A1_2_bc);
-						A5_5.add_scalar(b, a, A1_2_ba);
-
-						A12_12.add_scalar(a, c, A1_1_ac);
-						A12_12.add_scalar(c, a, A1_1_ac);
-
-						A9_10.add_scalar(a, c, A3_3_bc);
-						A9_10.add_scalar(c, a, A3_3_ab);
-
-						
+						__update_A4_5_A8_8(A4_5, b, a, c, A1_2);
+						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
+ 						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
+						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
+						/* __update_A8_8_A12_13(A8_8, b, a, c, A1_1); */
+						__update_A8_8_A5_5(A8_8, b, a, c, A1_2);
+						__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2);
+						__update_A12_12_A8_8bis(A12_12, b, a, c, A1_1);
+						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
+						__update_A8_8_A12_13(A12_13, b, a, c, A1_1);
 					}
 				}
 			}
 		}
-	}	
-	std::cout<<"OUT-OUT WEDGES"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=0; j<G.adj_out[b].size(); j++){
@@ -328,46 +343,19 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// a -> b -> c
 				c = G.adj_out[b][j];
 				if (! G.has_out_edge(a, c)){
-					A3_3_ab = A3_3.get(a, b);
-					A3_3_bc = A3_3.get(b, c);
-					A9_11.add_scalar(a, b, A3_3_bc);
-					A9_11.add_scalar(c, b, A3_3_ab);
-						
-					A1_2_ab = A1_2.get(a, b) -1;
-					A1_2_cb = A1_2.get(c, b) -1;
-					A6_7.add_scalar(a, b, A1_2_ab);
-					A6_7.add_scalar(c, b, A1_2_cb);
-					A6_6.add_scalar(a, c, A1_2_ab);
-					A6_6.add_scalar(c, a, A1_2_cb);
-					
-					/* A1_2_bc = A1_2.get(b, c); */
-					/* A1_2_ba = A1_2.get(b, a); */
-					/* A8_8.add_scalar(a, b, A1_2_bc); */
-					/* A8_8.add_scalar(c, b, A1_2_ba); */
-					A1_1_ac = A1_1.get(a, c)-1;
-					A8_8.add_scalar(a, b, A1_1_ac);
-					A8_8.add_scalar(c, b, A1_1_ac);
-					
-					A1_2_bc = A1_2.get(b, c);
-					A1_2_ba = A1_2.get(b, a);
-					A8_8_bis.add_scalar(a, c, A1_2_bc);
-					A8_8_bis.add_scalar(c, a, A1_2_ba);
-					A4_5.add_scalar(a, b, A1_2_bc);
-					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, c, A1_2_bc);
-					A5_5.add_scalar(b, a, A1_2_ba);
-					
-					A12_12.add_scalar(a, c, A1_1_ac);
-					A12_12.add_scalar(c, a, A1_1_ac);
-					
-					A9_10.add_scalar(a, c, A3_3_bc);
-					A9_10.add_scalar(c, a, A3_3_ab);
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
+					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
+					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
+ 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
+					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
+					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
+					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
+					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
+					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
+					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
 			}
 		}
-	}
-	std::cout<<"OUT-IN WEDGES"<<std::endl;
-	for (int a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=G.adj_in[b].size()-1; j>-1; j--){
@@ -376,62 +364,71 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					A3_3_ab = A3_3.get(a, b);
-					A3_3_bc = A3_3.get(b, c);
-					A9_11.add_scalar(a, b, A3_3_bc);
-					A9_11.add_scalar(c, b, A3_3_ab);
-					
-					A1_2_ab = A1_2.get(a, b) -1;
-					A1_2_cb = A1_2.get(c, b) -1;
-					A6_7.add_scalar(a, b, A1_2_ab);
-					A6_7.add_scalar(c, b, A1_2_cb);
-					A6_6.add_scalar(a, c, A1_2_ab);
-					A6_6.add_scalar(c, a, A1_2_cb);
-					
-					/* A1_2_bc = A1_2.get(b, c); */
-					/* A1_2_ba = A1_2.get(b, a); */
-					/* A8_8.add_scalar(a, b, A1_2_bc); */
-					/* A8_8.add_scalar(c, b, A1_2_ba); */
-					A1_1_ac = A1_1.get(a, c)-1;
-					A8_8.add_scalar(a, b, A1_1_ac);
-					A8_8.add_scalar(c, b, A1_1_ac);
-					
-					A1_2_bc = A1_2.get(b, c);
-					A1_2_ba = A1_2.get(b, a);
-					A8_8_bis.add_scalar(a, c, A1_2_bc);
-					A8_8_bis.add_scalar(c, a, A1_2_ba);
-					A4_5.add_scalar(a, b, A1_2_bc);
-					A4_5.add_scalar(c, b, A1_2_ba);
-					A5_5.add_scalar(b, c, A1_2_bc);
-					A5_5.add_scalar(b, a, A1_2_ba);
-					
-					A12_12.add_scalar(a, c, A1_1_ac);
-					A12_12.add_scalar(c, a, A1_1_ac);
-						
-					A9_10.add_scalar(a, c, A3_3_bc);
-					A9_10.add_scalar(c, a, A3_3_ab);
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
+					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
+					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
+ 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
+					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
+					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
+					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
+					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
+					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
+					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
 			}
 		}
 	}
 
-	// ordering matters !!!  	
-	// 1. dependend on brute force matrices
-	A12_13.subtract_matrix_multiple(A14_14, 2);
-	A13_13.subtract_matrix_multiple(A14_14, 2);
-	A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1);
+	/* // ordering matters !!! */  	
+	/* // 1. dependend on brute force matrices */
+	/* A12_13.subtract_matrix_multiple(A14_14, 2); */
+	/* A13_13.subtract_matrix_multiple(A14_14, 2); */
+	/* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); */
 	
-	// 2. dependend on infered matrices
-	A8_8.subtract_matrix_multiple(A12_13, 1);
+	/* // 2. dependend on infered matrices */
+	/* A8_8.subtract_matrix_multiple(A12_13, 1); */
+	/* A9_11.subtract_matrix_multiple(A12_13, 1); */
+	/* A10_10.subtract_matrix_multiple(A12_13, 1); */
+	/* A10_11.subtract_matrix_multiple(A12_13, 1); */
+	/* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 */
+
+	/* //3. depend on infered infered matrices */
+	/* /1* A4_5.subtract_matrix_multiple(A8_8, 1); *1/ */
+	/* /1* A5_5.subtract_matrix_multiple(A8_8, 1); *1/ */
+	/* A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 */ 
+	/* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 */
+	
+	/* // 4. depends on infered infered infered matrices */
+	/* A6_6.subtract_matrix_multiple(A9_10, 1); */
+	
+	
+	// ordering matters !!!  	
+	// SINGLE HOP
+	// 1. dependend on infered matrices
+	A8_8.subtract_matrix_multiple(A5_5, 1);
+
+	// 2. depend on infered infered matrices
+	A12_13.subtract_matrix_multiple(A8_8, 1);	
+	A4_5.subtract_matrix_multiple(A8_8, 1);
+	
+	// 3. depends on infered infered infered matrices
+	A14_14.subtract_matrix_multiple(A12_13, 1);
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
-	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
-
-	//3. depend on infered infered matrices
-	A4_5.subtract_matrix_multiple(A8_8, 1);
-	A5_5.subtract_matrix_multiple(A8_8, 1);
+	
+	// 4. depends on infered infered infered infered matrices	
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
+	A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two
+	
+	// DOUBLE HOP
+	// 1. dependend on brute force matrices
+	A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1);
+	
+	// 2. dependend on infered matrices
+	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
+	
+	//3. depend on infered infered matrices
 	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
 	
 	// 4. depends on infered infered infered matrices
@@ -460,7 +457,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
-	PyObject* A14_14_numpy   = A14_14.to_numpy();
+	/* PyObject* A14_14_numpy   = A14_14.to_numpy(); */
+	PyObject* A14_14_numpy = A14_14.division_to_numpy(2);
 
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
@@ -492,6 +490,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	return tuple;
 	
 }
+
 
 
 /* Lists the methods available */
