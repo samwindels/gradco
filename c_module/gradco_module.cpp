@@ -27,10 +27,10 @@ void  __update_A6_7_A9_11(Matrix& A6_7, int l, int m, int r, Matrix& A1_2){
 	A6_7.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
-void __update_A8_8_A12_13(Matrix& A8_8, int l, int m, int r, Matrix& A1_1){
+void __update_A8_8_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
-	A8_8.add_scalar(l, m, A1_1_lr);
-	A8_8.add_scalar(r, m, A1_1_lr);
+	A.add_scalar(l, m, A1_1_lr);
+	A.add_scalar(r, m, A1_1_lr);
 }
 
 void __update_A8_8_A5_5(Matrix& A8_8, int l, int m, int r, Matrix& A1_2){
@@ -152,7 +152,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	Matrix A1_2     = Matrix(n);  // 3-node path, outside and middle orbits
 	Matrix A3_3     = Matrix(n);  // 3-node triangle
 	Matrix A4_4     = Matrix(n);  // 4-node path, outside orbits
-	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
 	Matrix A4_5_bis = Matrix(n);  // 4-node path, outside orbit and two hops away 
 	Matrix A5_5     = Matrix(n);  // 4-node path, inside orbits 
 	Matrix A14_14   = Matrix(n);  // 4-node clique
@@ -191,8 +190,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if(!G.has_edge(b, d) && !G.has_edge(a, d)){
 							// b <- a -> c <- d, with a < c
 							A4_4.increment_all_2_all(b, d);
-							A4_5.increment_from_to(b, a);
-							A4_5.increment_from_to(d, c);
+							/* A4_5.increment_from_to(b, a); */
+							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(b, c);
 							A4_5_bis.increment_from_to(d, a);
 							A5_5.increment_all_2_all(a, c);
@@ -205,8 +204,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (d!=c && !G.has_edge(a, d) && !G.has_edge(c,d)){
 							// d -> b <- a -> c, with b < c
 							A4_4.increment_all_2_all(c, d);
-							A4_5.increment_from_to(d, b);
-							A4_5.increment_from_to(c, a);
+							/* A4_5.increment_from_to(d, b); */
+							/* A4_5.increment_from_to(c, a); */
 							A4_5_bis.increment_from_to(d, a);
 							A4_5_bis.increment_from_to(c, b);
 							A5_5.increment_all_2_all(a, b);
@@ -234,8 +233,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (!G.has_out_edge(a, d) && !G.has_out_edge(b, d)){
 							// a -> b -> c -> d
 							A4_4.increment_all_2_all(a, d);
-							A4_5.increment_from_to(a, b);
-							A4_5.increment_from_to(d, c);
+							/* A4_5.increment_from_to(a, b); */
+							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
 							A5_5.increment_all_2_all(b, c);
@@ -249,8 +248,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
-							A4_5.increment_from_to(a, b);
-							A4_5.increment_from_to(d, c);
+							/* A4_5.increment_from_to(a, b); */
+							/* A4_5.increment_from_to(d, c); */
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
 							A5_5.increment_all_2_all(b, c);
@@ -262,10 +261,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						if (d!= b && !G.has_edge(b, d) && !G.has_edge(c, d))
 						{	// d <- a -> b -> c
 							// c <- b <- a -> d 
-							std::cout<<"G3 5b, 7a: "<<a<<' '<<b<<' '<<' '<<c<<' '<<d<<std::endl;
 							A4_4.increment_all_2_all(d, c);
-							A4_5.increment_from_to(d, a);
-							A4_5.increment_from_to(c, b);
+							/* A4_5.increment_from_to(d, a); */
+							/* A4_5.increment_from_to(c, b); */
 							A4_5_bis.increment_from_to(d, b);
 							A4_5_bis.increment_from_to(c, a);
 							A5_5.increment_all_2_all(a, b);
@@ -293,6 +291,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	// INITIALIZE REDUNDANCY MATRICES
+	Matrix A4_5     = Matrix(n);  // 4-node path, outside orbit and neighbour
 	Matrix A6_6     = Matrix(n);  // 4-node star, outside orbits 
 	Matrix A6_7     = Matrix(n);  // 4-node star, outsite to centre orbits 
 	Matrix A8_8     = Matrix(n);  // 4-node cycle, neighbouring nodes 
@@ -325,6 +324,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						/* A4_5.add_scalar(c, b, A1_2_ba); */
 						/* A5_5.add_scalar(b, c, A1_2_bc); */
 						/* A5_5.add_scalar(b, a, A1_2_ba); */
+						__update_A4_5_A8_8(A4_5, b, a, c, A1_2);
 						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
  						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
 						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
@@ -350,6 +350,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* A4_5.add_scalar(c, b, A1_2_ba); */
 					/* A5_5.add_scalar(b, c, A1_2_bc); */
 					/* A5_5.add_scalar(b, a, A1_2_ba); */
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
 					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
  					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
@@ -373,6 +374,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* A4_5.add_scalar(c, b, A1_2_ba); */
 					/* A5_5.add_scalar(b, c, A1_2_bc); */
 					/* A5_5.add_scalar(b, a, A1_2_ba); */
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
 					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
  					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
@@ -424,7 +426,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
 
 	//3. depend on infered infered matrices
-	/* A4_5.subtract_matrix_multiple(A8_8, 1); */
+	A4_5.subtract_matrix_multiple(A8_8, 1);
 	/* A5_5.subtract_matrix_multiple(A8_8, 1); */
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
 	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
