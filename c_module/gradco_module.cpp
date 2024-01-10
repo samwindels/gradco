@@ -313,7 +313,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					c = G.adj_out[a][j];
 					if (G.has_out_edge(b, c)){
 						// triangle
-						__update_A12_13_A14_14(A12_13, b, a, c, A3_3);
+						/* __update_A12_13_A14_14(A12_13, b, a, c, A3_3); */
 						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
 						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
 						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
@@ -329,7 +329,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2);
 						__update_A12_12_A8_8bis(A12_12, b, a, c, A1_1);
 						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
-						/* __update_A8_8_A12_13(A12_13, b, a, c, A1_1); */
+						__update_A8_8_A12_13(A12_13, b, a, c, A1_1);
 					}
 				}
 			}
@@ -350,7 +350,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
 					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
 					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
-					/* __update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
 			}
 		}
@@ -366,11 +366,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
  					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
+					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
 					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
 					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
 					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
 					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
-					/* __update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
 			}
 		}
@@ -402,14 +403,13 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	// ordering matters !!!  	
 	// SINGLE HOP
 	// 1. dependend on brute force matrices
-	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
 	
 	// 2. dependend on infered matrices
 	A8_8.subtract_matrix_multiple(A5_5, 1);
 
 	//3. depend on infered infered matrices
-	/* A12_13.subtract_matrix_multiple(A8_8, 1); */	
+	A12_13.subtract_matrix_multiple(A8_8, 1);	
 	A4_5.subtract_matrix_multiple(A8_8, 1);
 	
 	// 4. depends on infered infered infered matrices
