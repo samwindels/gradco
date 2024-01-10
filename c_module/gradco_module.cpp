@@ -22,9 +22,9 @@
 // m = middle
 // r = right
 
-void  __update_A6_7_A9_11(Matrix& A6_7, int l, int m, int r, Matrix& A1_2){
-	A6_7.add_scalar(l, m, A1_2.get(l, m) -1);
-	A6_7.add_scalar(r, m, A1_2.get(r, m) -1);
+void  __update_A6_7_A9_11(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(l, m) -1);
+	A.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
 void __update_A8_8_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_1){
@@ -33,15 +33,14 @@ void __update_A8_8_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_1){
 	A.add_scalar(r, m, A1_1_lr);
 }
 
-void __update_A8_8_A5_5(Matrix& A8_8, int l, int m, int r, Matrix& A1_2){
-	A8_8.add_scalar(l, m, A1_2.get(m, l));
-	A8_8.add_scalar(r, m, A1_2.get(m, r));
+void __update_A8_8_A5_5(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(m, l));
+	A.add_scalar(r, m, A1_2.get(m, r));
 }
 
-void __update_A4_5_A8_8(Matrix& A4_5, int l, int m, int r, Matrix& A1_2){
-	std::cout<<"A4_5_8_8"<<std::endl;
-	A4_5.add_scalar(l, m, A1_2.get(m, r));
-	A4_5.add_scalar(r, m, A1_2.get(m, l));
+void __update_A4_5_A8_8(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, m, A1_2.get(m, r));
+	A.add_scalar(r, m, A1_2.get(m, l));
 }
 
 void __update_A9_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A3_3){
@@ -49,16 +48,16 @@ void __update_A9_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A3_3){
 	A.add_scalar(r, m, A3_3.get(l, m));
 }
 
-void __update_A13_13_A14_14(Matrix& A13_13, int l, int m, int r, Matrix& A3_3){
+void __update_A13_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
-	A13_13.add_scalar(l, m, A3_3_lm);
-	A13_13.add_scalar(l, r, A3_3_lr);
-	A13_13.add_scalar(m, l, A3_3_lm);
-	A13_13.add_scalar(m, r, A3_3_mr);
-	A13_13.add_scalar(r, l, A3_3_lr);
-	A13_13.add_scalar(r, m, A3_3_mr);
+	A.add_scalar(l, m, A3_3_lm);
+	A.add_scalar(l, r, A3_3_lr);
+	A.add_scalar(m, l, A3_3_lm);
+	A.add_scalar(m, r, A3_3_mr);
+	A.add_scalar(r, l, A3_3_lr);
+	A.add_scalar(r, m, A3_3_mr);
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
@@ -99,26 +98,26 @@ void __update_A10_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
 // l = left
 // m = middle
 // r = right
-void __update_A6_6_A9_10(Matrix& A6_6, int l, int m, int r, Matrix& A1_2){
-	A6_6.add_scalar(l, r, A1_2.get(l, m) -1);
-	A6_6.add_scalar(r, l, A1_2.get(r, m) -1);
+void __update_A6_6_A9_10(Matrix& A, int l, int m, int r, Matrix& A1_2){
+	A.add_scalar(l, r, A1_2.get(l, m) -1);
+	A.add_scalar(r, l, A1_2.get(r, m) -1);
 }
 
-void __update_A9_10_A12_12(Matrix& A9_10, int l, int m, int r, Matrix& A3_3){
-	A9_10.add_scalar(l, r, A3_3.get(m, r));
-	A9_10.add_scalar(r, l, A3_3.get(l, m));
+void __update_A9_10_A12_12(Matrix& A, int l, int m, int r, Matrix& A3_3){
+	A.add_scalar(l, r, A3_3.get(m, r));
+	A.add_scalar(r, l, A3_3.get(l, m));
 }
 
-void __update_A12_12_A8_8bis(Matrix& A12_12, int l, int m, int r, Matrix& A1_1){
+void __update_A12_12_A8_8bis(Matrix& A, int l, int m, int r, Matrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
-	A12_12.add_scalar(l, r, A1_1_lr);
-	A12_12.add_scalar(r, l, A1_1_lr);
+	A.add_scalar(l, r, A1_1_lr);
+	A.add_scalar(r, l, A1_1_lr);
 }
 
-void __update_A8_8bis_A4_5bis(Matrix& A8_8_bis, int l, int m, int r, Matrix& A1_2){
+void __update_A8_8bis_A4_5bis(Matrix& A, int l, int m, int r, Matrix& A1_2){
 
-	A8_8_bis.add_scalar(l, r, A1_2.get(m, r));
-	A8_8_bis.add_scalar(r, l, A1_2.get(m, l));
+	A.add_scalar(l, r, A1_2.get(m, r));
+	A.add_scalar(r, l, A1_2.get(m, l));
 }
 
 static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
