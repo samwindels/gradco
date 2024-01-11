@@ -4,14 +4,12 @@
 Matrix::Matrix(int n){
 	n_entries = 0;
 	z_entries = 0;  //zero entries. Skipped when mapping to numpy sparse
-    	/* adj.resize(n, std::unordered_map<int, int>()); */	
     	adj.resize(n, ankerl::unordered_dense::map<int, int>());	
 }
 
 
 Matrix::Matrix(const Matrix& m){
 	n_entries=m.n_entries;
-	/* adj.resize(m.adj.size(), std::unordered_map<int, int>()); */
     	adj.resize(m.adj.size(), ankerl::unordered_dense::map<int, int>());	
 
 	for(int i=0; i<adj.size(); i++){
