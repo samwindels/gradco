@@ -8,15 +8,6 @@ Matrix::Matrix(int n){
 }
 
 
-Matrix::Matrix(const Matrix& m){
-	n_entries=m.n_entries;
-    	adj.resize(m.adj.size(), ankerl::unordered_dense::map<int, int>());	
-
-	for(int i=0; i<adj.size(); i++){
-		adj[i] = m.adj[i];
-	}
-}
-
 void Matrix::subtract_matrix_multiple(const Matrix& m, int scalar){
 	for (int a=0; a<m.adj.size(); a++)
 	{
@@ -140,7 +131,7 @@ PyObject* Matrix::to_numpy(){
 }
 
 
-PyObject* Matrix::division_to_numpy(int scalar){
+PyObject* Matrix::to_numpy_and_divide(int numerator){
 
 	// contigues c, interpretted "3 rows, n_entries collumns"-array
 	int* array = new int[3*n_entries];
@@ -154,7 +145,7 @@ PyObject* Matrix::division_to_numpy(int scalar){
 			
 			array[i] = row;
 			array[j] = col;
-			array[k] = data/scalar;
+			array[k] = data/numerator;
 			i++;
 			j++;
 			k++;

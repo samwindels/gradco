@@ -16,11 +16,14 @@ class Matrix {
     private:
 	int n_entries;  // Track no. entries in "adj".
 	int z_entries;  // Track no. zero entries in "adj".
+	
+	std::vector<ankerl::unordered_dense::map<int, int> > adj;
+	ankerl::unordered_dense::map<int, int>::iterator it;
+	void subtract_scalar(int a, int b, int v);
 
     public:
-	std::vector<ankerl::unordered_dense::map<int, int> > adj;
 	Matrix(int n);
-	Matrix(const Matrix& m);
+	
 	void increment_all_2_all(int a, int b);
 	void increment_all_2_all(int a, int b, int c);
 	void increment_all_2_all(int a, int b, int c, int d);
@@ -28,13 +31,11 @@ class Matrix {
 
 	int get(int a, int b);
 	
-	PyObject* to_numpy();
-	PyObject* division_to_numpy(int scalar);
-	
-	ankerl::unordered_dense::map<int, int>::iterator it;
-	void add_scalar(int a, int b, int v);
-	void subtract_scalar(int a, int b, int v);
 	void subtract_matrix_multiple(const Matrix& m, int scalar);
+	void add_scalar(int a, int b, int v);
+	
+	PyObject* to_numpy();
+	PyObject* to_numpy_and_divide(int numerator);
 
 
 };

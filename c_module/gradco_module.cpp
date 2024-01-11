@@ -433,20 +433,20 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
 	PyObject* A6_6_numpy     = A6_6.to_numpy();
-	PyObject* A6_7_numpy     = A6_7.division_to_numpy(2);   
+	PyObject* A6_7_numpy     = A6_7.to_numpy_and_divide(2);   
 	PyObject* A8_8_numpy     = A8_8.to_numpy();
-	PyObject* A8_8_bis_numpy = A8_8_bis.division_to_numpy(2);
+	PyObject* A8_8_bis_numpy = A8_8_bis.to_numpy_and_divide(2);
 	PyObject* A9_10_numpy    = A9_10.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
-	PyObject* A9_11_numpy    = A9_11.division_to_numpy(2);
+	PyObject* A9_11_numpy    = A9_11.to_numpy_and_divide(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A10_11_numpy   = A10_11.to_numpy();
-	PyObject* A12_12_numpy   = A12_12.division_to_numpy(2);
+	PyObject* A12_12_numpy   = A12_12.to_numpy_and_divide(2);
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
-	PyObject* A13_13_numpy   = A13_13.division_to_numpy(2);  
+	PyObject* A13_13_numpy   = A13_13.to_numpy_and_divide(2);  
 	/* PyObject* A14_14_numpy   = A14_14.to_numpy(); */
-	PyObject* A14_14_numpy = A14_14.division_to_numpy(2);
+	PyObject* A14_14_numpy = A14_14.to_numpy_and_divide(2);
 
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
