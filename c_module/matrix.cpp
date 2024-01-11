@@ -19,15 +19,6 @@ Matrix::Matrix(const Matrix& m){
 	}
 }
 
-void Matrix::add_matrix_multiple(const Matrix& m, int scalar){
-	for (int a=0; a<m.adj.size(); a++)
-	{
-		for(auto b : m.adj[a]) {
-			add_scalar(a, b.first, b.second * scalar);
-		}
-	}
-}
-
 void Matrix::subtract_matrix_multiple(const Matrix& m, int scalar){
 	for (int a=0; a<m.adj.size(); a++)
 	{
@@ -72,12 +63,6 @@ void Matrix::add_scalar(int a, int b, int v){
         }
 
 }
-
-/* void Matrix::add_scalar_all_2_all(int a, int b, int c, int scalar){ */
-
-/* 	add_scalar(a, b); */	
-/* 	adw_scalar(b, a); */	
-/* } */
 
 void Matrix::increment_from_to(int a, int b){
 	// check if key `b` exists in the map or not

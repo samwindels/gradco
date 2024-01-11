@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <vector>
-/* #include <unordered_map> */
 
 
 class Matrix {
@@ -18,9 +17,7 @@ class Matrix {
 	int n_entries;  // Track no. entries in "adj".
 	int z_entries;  // Track no. zero entries in "adj".
 
-	
     public:
-	/* std::vector<std::unordered_map<int, int> > adj; */
 	std::vector<ankerl::unordered_dense::map<int, int> > adj;
 	Matrix(int n);
 	Matrix(const Matrix& m);
@@ -29,19 +26,15 @@ class Matrix {
 	void increment_all_2_all(int a, int b, int c, int d);
 	void increment_from_to(int a, int b);
 
-	/* void add_scalar_all_2_all(int a, int b, int c, int scalar); */
-	
 	int get(int a, int b);
 	
 	PyObject* to_numpy();
 	PyObject* division_to_numpy(int scalar);
 	
-	/* std::unordered_map<int, int>::iterator it; */
 	ankerl::unordered_dense::map<int, int>::iterator it;
-	void add_matrix_multiple(const Matrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
-	void subtract_matrix_multiple(const Matrix& m, int scalar);
 	void subtract_scalar(int a, int b, int v);
+	void subtract_matrix_multiple(const Matrix& m, int scalar);
 
 
 };
