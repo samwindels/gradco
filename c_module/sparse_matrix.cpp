@@ -1,20 +1,14 @@
 
 #include "sparse_matrix.hh"
 
-SparseMatrix::SparseMatrix(int n){
-	n_entries = 0;
-	z_entries = 0;  //zero entries. Skipped when mapping to numpy sparse
-    	adj.resize(n, ankerl::unordered_dense::map<int, int>());	
-}
 
-
-void SparseMatrix::subtract_matrix_multiple(const SparseMatrix& m, int scalar){
-	for (int a=0; a<m.adj.size(); a++)
-	{
-		for(auto b : m.adj[a]) {
-			subtract_scalar(a, b.first, b.second * scalar);
-		}
-	}
+void SparseMatrix::subtract_matrix_multiple(const Matrix& m, int scalar){
+	/* for (int a=0; a<m.get_n(); a++) */
+	/* { */
+	/* 	for(auto b : m.adj[a]) { */
+	/* 		subtract_scalar(a, b.first, b.second * scalar); */
+	/* 	} */
+	/* } */
 }
 
 
@@ -85,6 +79,7 @@ void SparseMatrix::increment_all_2_all(int a, int b, int c){
 	increment_from_to(c, a);
 	increment_from_to(c, b);
 }
+
 void SparseMatrix::increment_all_2_all(int a, int b, int c, int d){
 
 	increment_from_to(a, b);
@@ -156,6 +151,7 @@ PyObject* SparseMatrix::to_numpy_and_divide(int numerator){
 	return PyArray_SimpleNewFromData(2, dims, NPY_INT, array);
 
 }
+
 int SparseMatrix::get(int a, int b){
 
         it = adj[a].find(b);
