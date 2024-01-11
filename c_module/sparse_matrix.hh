@@ -11,7 +11,7 @@
 #include <vector>
 
 
-class Matrix {
+class SparseMatrix {
 
     private:
 	int n_entries;  // Track no. entries in "adj".
@@ -22,7 +22,7 @@ class Matrix {
 	void subtract_scalar(int a, int b, int v);
 
     public:
-	Matrix(int n);
+	SparseMatrix(int n);
 	
 	void increment_all_2_all(int a, int b);
 	void increment_all_2_all(int a, int b, int c);
@@ -31,7 +31,7 @@ class Matrix {
 
 	int get(int a, int b);
 	
-	void subtract_matrix_multiple(const Matrix& m, int scalar);
+	void subtract_matrix_multiple(const SparseMatrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
 	
 	PyObject* to_numpy();

@@ -1,14 +1,14 @@
 
-#include "matrix.hh"
+#include "sparse_matrix.hh"
 
-Matrix::Matrix(int n){
+SparseMatrix::SparseMatrix(int n){
 	n_entries = 0;
 	z_entries = 0;  //zero entries. Skipped when mapping to numpy sparse
     	adj.resize(n, ankerl::unordered_dense::map<int, int>());	
 }
 
 
-void Matrix::subtract_matrix_multiple(const Matrix& m, int scalar){
+void SparseMatrix::subtract_matrix_multiple(const SparseMatrix& m, int scalar){
 	for (int a=0; a<m.adj.size(); a++)
 	{
 		for(auto b : m.adj[a]) {
@@ -18,7 +18,7 @@ void Matrix::subtract_matrix_multiple(const Matrix& m, int scalar){
 }
 
 
-void Matrix::subtract_scalar(int a, int b, int v){
+void SparseMatrix::subtract_scalar(int a, int b, int v){
         it = adj[a].find(b);
  
         // key found
@@ -36,7 +36,7 @@ void Matrix::subtract_scalar(int a, int b, int v){
 
 }
 
-void Matrix::add_scalar(int a, int b, int v){
+void SparseMatrix::add_scalar(int a, int b, int v){
 	if (v==0){ return; }
         
 	it = adj[a].find(b);
@@ -53,7 +53,7 @@ void Matrix::add_scalar(int a, int b, int v){
 
 }
 
-void Matrix::increment_from_to(int a, int b){
+void SparseMatrix::increment_from_to(int a, int b){
 	// check if key `b` exists in the map or not
         it = adj[a].find(b);
  
@@ -68,13 +68,13 @@ void Matrix::increment_from_to(int a, int b){
         }
 }
 
-void Matrix::increment_all_2_all(int a, int b){
+void SparseMatrix::increment_all_2_all(int a, int b){
 
 	increment_from_to(a, b);
 	increment_from_to(b, a);
 }
 
-void Matrix::increment_all_2_all(int a, int b, int c){
+void SparseMatrix::increment_all_2_all(int a, int b, int c){
 
 	increment_from_to(a, b);
 	increment_from_to(a, c);
@@ -85,7 +85,7 @@ void Matrix::increment_all_2_all(int a, int b, int c){
 	increment_from_to(c, a);
 	increment_from_to(c, b);
 }
-void Matrix::increment_all_2_all(int a, int b, int c, int d){
+void SparseMatrix::increment_all_2_all(int a, int b, int c, int d){
 
 	increment_from_to(a, b);
 	increment_from_to(a, c);
@@ -105,7 +105,7 @@ void Matrix::increment_all_2_all(int a, int b, int c, int d){
 
 }
 
-PyObject* Matrix::to_numpy(){
+PyObject* SparseMatrix::to_numpy(){
 
 	// contigues c, interpretted "3 rows, n_entries collumns"-array
 	int* array = new int[3*n_entries];
@@ -131,7 +131,7 @@ PyObject* Matrix::to_numpy(){
 }
 
 
-PyObject* Matrix::to_numpy_and_divide(int numerator){
+PyObject* SparseMatrix::to_numpy_and_divide(int numerator){
 
 	// contigues c, interpretted "3 rows, n_entries collumns"-array
 	int* array = new int[3*n_entries];
@@ -156,7 +156,7 @@ PyObject* Matrix::to_numpy_and_divide(int numerator){
 	return PyArray_SimpleNewFromData(2, dims, NPY_INT, array);
 
 }
-int Matrix::get(int a, int b){
+int SparseMatrix::get(int a, int b){
 
         it = adj[a].find(b);
  
