@@ -1,5 +1,5 @@
-/* #define PY_SSIZE_T_CLEAN */
-/* #include <Python.h> */
+#ifndef SPARSE_MATRIX_H
+#define SPARSE_MATRIX_H
 
 #define NO_IMPORT_ARRAY
 #define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
@@ -70,4 +70,4 @@ class SparseMatrix : public Matrix{
 
 };
 
-
+#endif // SPARSE_MATRIX_H
