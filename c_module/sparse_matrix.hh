@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include "symmetric_dense_matrix.hh" 
+#include "dense_matrix.hh" 
 
 
 class SparseMatrix{

@@ -14,6 +14,7 @@
 #include "directed_graph.hh"
 #include "sparse_matrix.hh"
 #include "symmetric_dense_matrix.hh"
+#include "dense_matrix.hh"
 
 
 // SINGLE-HOP EQUATIONS, path-based
@@ -153,6 +154,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	/* SparseMatrix A4_4     = SparseMatrix(n);  // 4-node path, outside orbits */
 	SymmetricDenseMatrix A4_4_dense     = SymmetricDenseMatrix(n);  // 4-node path, outside orbits
 	SparseMatrix A4_5_bis = SparseMatrix(n);  // 4-node path, outside orbit and two hops away 
+	DenseMatrix A4_5_bis_dense = DenseMatrix(n);  // 4-node path, outside orbit and two hops away 
 	/* SparseMatrix A5_5     = SparseMatrix(n);  // 4-node path, inside orbits */ 
 	SymmetricDenseMatrix A5_5_dense     = SymmetricDenseMatrix(n);  // 4-node path, inside orbits 
 	/* SparseMatrix A14_14   = SparseMatrix(n);  // 4-node clique */
@@ -192,6 +194,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_4_dense.increment(b, d);
 							A4_5_bis.increment_from_to(b, c);
 							A4_5_bis.increment_from_to(d, a);
+							A4_5_bis_dense.increment(b,c);
+							A4_5_bis_dense.increment(d,a);
 							/* A5_5.increment_all_2_all(a, c); */
 							A5_5_dense.increment(a, c);
 						}
@@ -206,6 +210,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_4_dense.increment(c, d);
 							A4_5_bis.increment_from_to(d, a);
 							A4_5_bis.increment_from_to(c, b);
+							A4_5_bis_dense.increment(d,a);
+							A4_5_bis_dense.increment(c,b);
 							/* A5_5.increment_all_2_all(a, b); */
 							A5_5_dense.increment(a, b);
 						}
@@ -234,6 +240,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_4_dense.increment(a, d);
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
+							A4_5_bis_dense.increment(a,c);
+							A4_5_bis_dense.increment(d,b);
 							/* A5_5.increment_all_2_all(b, c); */
 							A5_5_dense.increment(b, c);
 						}
@@ -248,6 +256,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_4_dense.increment(a, d);
 							A4_5_bis.increment_from_to(a, c);
 							A4_5_bis.increment_from_to(d, b);
+							A4_5_bis_dense.increment(a,c);
+							A4_5_bis_dense.increment(d,b);
 							/* A5_5.increment_all_2_all(b, c); */
 							A5_5_dense.increment(b, c);
 						}
@@ -262,6 +272,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_4_dense.increment(d, c);
 							A4_5_bis.increment_from_to(d, b);
 							A4_5_bis.increment_from_to(c, a);
+							A4_5_bis_dense.increment(d,b);
+							A4_5_bis_dense.increment(c,a);
 							/* A5_5.increment_all_2_all(a, b); */
 							A5_5_dense.increment(a, b);
 						}
@@ -441,7 +453,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	/* PyObject* A4_4_numpy     = A4_4.to_numpy(); */
 	PyObject* A4_4_numpy     = A4_4_dense.to_numpy();
 	PyObject* A4_5_numpy     = A4_5.to_numpy();
-	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
+	/* PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy(); */
+	PyObject* A4_5_bis_numpy = A4_5_bis_dense.to_numpy();
 	/* PyObject* A5_5_numpy     = A5_5.to_numpy(); */
 	PyObject* A5_5_numpy     = A5_5_dense.to_numpy();
 	PyObject* A6_6_numpy     = A6_6.to_numpy();
