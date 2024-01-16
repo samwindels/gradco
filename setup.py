@@ -11,7 +11,6 @@ def main():
                               sources=["c_module/directed_graph.cpp", 
                                        "c_module/gradco_module.cpp",
                                        # "c_module/matrix.cpp",
-                                       # "c_module/sparse_matrix.cpp",
                                        ],
                               depends=["c_module/unordered_dense.h", 
                                        "c_module/sparse_matrix.hh",

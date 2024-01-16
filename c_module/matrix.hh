@@ -20,18 +20,18 @@ class Matrix {
     public:
 	Matrix(int n) : n_entries(0), n(n) {};
 	
-	virtual void increment_all_2_all(int a, int b);
-	virtual void increment_all_2_all(int a, int b, int c);
-	virtual void increment_all_2_all(int a, int b, int c, int d);
-	virtual void increment_from_to(int a, int b);
+	virtual void increment_all_2_all(int a, int b) = 0;
+	virtual void increment_all_2_all(int a, int b, int c) = 0;
+	virtual void increment_all_2_all(int a, int b, int c, int d) = 0;
+	virtual void increment_from_to(int a, int b) = 0;
 
-	virtual int get(int a, int b);
+	virtual int get(int a, int b) = 0;
 	
-	virtual void subtract_matrix_multiple(const Matrix& m, int scalar);
-	virtual void add_scalar(int a, int b, int v);
+	virtual void subtract_matrix_multiple(const Matrix& m, int scalar) = 0;
+	virtual void add_scalar(int a, int b, int v) = 0;
 	
-	virtual PyObject* to_numpy();
-	virtual PyObject* to_numpy_and_divide(int numerator);
+	virtual PyObject* to_numpy() = 0;
+	virtual PyObject* to_numpy_and_divide(int numerator) = 0;
 
 	int get_n() const{
 		return this->n;

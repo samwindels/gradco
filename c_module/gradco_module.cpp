@@ -148,12 +148,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 
 	// INITIALIZE MATRICES
-	Matrix A1_1     = SparseMatrix(n);  // 3-node path, outside orbits
-	Matrix A1_2     = SparseMatrix(n);  // 3-node path, outside and middle orbits
-	Matrix A3_3     = SparseMatrix(n);  // 3-node triangle
-	Matrix A4_4     = SparseMatrix(n);  // 4-node path, outside orbits
-	Matrix A4_5_bis = SparseMatrix(n);  // 4-node path, outside orbit and two hops away 
-	Matrix A5_5     = SparseMatrix(n);  // 4-node path, inside orbits 
+	SparseMatrix A1_1     = SparseMatrix(n);  // 3-node path, outside orbits
+	SparseMatrix A1_2     = SparseMatrix(n);  // 3-node path, outside and middle orbits
+	SparseMatrix A3_3     = SparseMatrix(n);  // 3-node triangle
+	SparseMatrix A4_4     = SparseMatrix(n);  // 4-node path, outside orbits
+	SparseMatrix A4_5_bis = SparseMatrix(n);  // 4-node path, outside orbit and two hops away 
+	SparseMatrix A5_5     = SparseMatrix(n);  // 4-node path, inside orbits 
 	/* Matrix A14_14   = SparseMatrix(n);  // 4-node clique */
 	
 
@@ -280,19 +280,19 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
 	// INITIALIZE REDUNDANCY MATRICES
-	Matrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour
-	Matrix A6_6     = SparseMatrix(n);  // 4-node star, outside orbits 
-	Matrix A6_7     = SparseMatrix(n);  // 4-node star, outsite to centre orbits 
-	Matrix A8_8     = SparseMatrix(n);  // 4-node cycle, neighbouring nodes 
-	Matrix A8_8_bis = SparseMatrix(n);  // 4-node cycle, nodes two hops away 
-	Matrix A9_10    = SparseMatrix(n);  // 4-node paw, 
-	Matrix A9_11    = SparseMatrix(n);  // 4-node paw,
-	Matrix A10_10   = SparseMatrix(n);  // 4-node paw,
-	Matrix A10_11   = SparseMatrix(n);  // 4-node paw,
-	Matrix A12_12   = SparseMatrix(n);  // 4-node cycle with chord,
-	Matrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
-	Matrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
-	Matrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
+	SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour
+	SparseMatrix A6_6     = SparseMatrix(n);  // 4-node star, outside orbits 
+	SparseMatrix A6_7     = SparseMatrix(n);  // 4-node star, outsite to centre orbits 
+	SparseMatrix A8_8     = SparseMatrix(n);  // 4-node cycle, neighbouring nodes 
+	SparseMatrix A8_8_bis = SparseMatrix(n);  // 4-node cycle, nodes two hops away 
+	SparseMatrix A9_10    = SparseMatrix(n);  // 4-node paw, 
+	SparseMatrix A9_11    = SparseMatrix(n);  // 4-node paw,
+	SparseMatrix A10_10   = SparseMatrix(n);  // 4-node paw,
+	SparseMatrix A10_11   = SparseMatrix(n);  // 4-node paw,
+	SparseMatrix A12_12   = SparseMatrix(n);  // 4-node cycle with chord,
+	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
+	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
+	SparseMatrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
 			for (int i=0; i<G.adj_out[a].size(); i++){
