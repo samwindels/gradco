@@ -126,7 +126,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 	/* parse input from python */
 	int n;
-	int graphlet;
 	PyArrayObject* rows = NULL;
 	PyArrayObject* cols = NULL;
 	
@@ -160,7 +159,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
-	for (int a = 0; a < n; a++){
+	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
 			for (int j=i+1; j<G.adj_out[a].size(); j++){
