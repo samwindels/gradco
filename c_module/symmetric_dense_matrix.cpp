@@ -1,5 +1,5 @@
 #include "symmetric_dense_matrix.hh"
-
+#include <iostream>
 
 SymmetricDenseMatrix::SymmetricDenseMatrix(int n) : n(n){
 			
@@ -44,6 +44,7 @@ PyObject* SymmetricDenseMatrix::to_numpy(){
 			n_entries++;
 		}
 	}
+	n_entries = n_entries * 2; // output matrix is symmetric, array only stores upper triu
 
 	// contigues c, interpretted "3 rows, n_entries collumns"-array
 	int* np_array = new int[3*n_entries];
@@ -56,15 +57,22 @@ PyObject* SymmetricDenseMatrix::to_numpy(){
 	unsigned int val;
 	unsigned int flat_i;
 
-	for (int row=0; row < this->len; row++)
+	for (int row=0; row < this->n; row++)
 	{
-		for (int col=row+1; col < this->len; col++)
+		for (int col=row+1; col < this->n; col++)
 		{
 			flat_i = to_flat_index(row, col);
 			val = this->array[flat_i];
 			if (val != 0){
+				/* std::cout << "i: " << i << " j: " << j << " k: " << k << std::endl; */
 				np_array[i] = row;
 				np_array[j] = col;
+				np_array[k] = val;
+				i++;
+				j++;
+				k++;
+				np_array[j] = row;
+				np_array[i] = col;
 				np_array[k] = val;
 				i++;
 				j++;

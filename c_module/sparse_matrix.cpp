@@ -13,6 +13,10 @@ void SparseMatrix::subtract_matrix_multiple(SparseMatrix& m, int scalar){
 	}
 }
 
+
+void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m, int scalar){
+}
+
 //private
 void SparseMatrix::subtract_scalar(int a, int b, int v){
         it = adj[a].find(b);
