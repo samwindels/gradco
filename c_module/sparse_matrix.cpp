@@ -1,15 +1,14 @@
+#include "matrix.hh"
+#include "sparse_matrix.hh"
 
-/* #include "sparse_matrix.hh" */
-
-
-/* void SparseMatrix::subtract_matrix_multiple(const Matrix& m, int scalar){ */
-/* 	/1* for (int a=0; a<m.get_n(); a++) *1/ */
-/* 	/1* { *1/ */
-/* 	/1* 	for(auto b : m.adj[a]) { *1/ */
-/* 	/1* 		subtract_scalar(a, b.first, b.second * scalar); *1/ */
-/* 	/1* 	} *1/ */
-/* 	/1* } *1/ */
-/* } */
+void SparseMatrix::subtract_matrix_multiple(const Matrix& m, int scalar){
+	/* for (int a=0; a<m.get_n(); a++) */
+	/* { */
+	/* 	for(auto b : m.adj[a]) { */
+	/* 		subtract_scalar(a, b.first, b.second * scalar); */
+	/* 	} */
+	/* } */
+}
 
 //private
 void SparseMatrix::subtract_scalar(int a, int b, int v){
@@ -28,36 +27,36 @@ void SparseMatrix::subtract_scalar(int a, int b, int v){
         }
 }
 
-/* void SparseMatrix::add_scalar(int a, int b, int v){ */
-/* 	if (v==0){ return; } */
+void SparseMatrix::add_scalar(int a, int b, int v){
+	if (v==0){ return; }
         
-/* 	it = adj[a].find(b); */
+	it = adj[a].find(b);
  
-/*         // key found */
-/*         if (it != adj[a].end()) { */
-/*             	it->second+=v; */    
-/*         } */
-/*         // key not found */
-/*         else { */
-/*             	adj[a].insert(std::make_pair(b, v)); */
-/* 		n_entries++; */
-/*         } */
+        // key found
+        if (it != adj[a].end()) {
+            	it->second+=v;    
+        }
+        // key not found
+        else {
+            	adj[a].insert(std::make_pair(b, v));
+		n_entries++;
+        }
 
-/* } */
+}
 
-/* void SparseMatrix::increment_from_to(int a, int b){ */
-/* 	// check if key `b` exists in the map or not */
-/*         it = adj[a].find(b); */
-/*         // key found */
-/*         if (it != adj[a].end()) { */
-/*             	it->second++;    // increment map's value for key `b` */
-/*         } */
-/*         // key not found */
-/*         else { */
-/*             	adj[a].insert(std::make_pair(b, 1)); */
-/* 		n_entries++; */
-/*         } */
-/* } */
+void SparseMatrix::increment_from_to(int a, int b){
+	// check if key `b` exists in the map or not
+        it = adj[a].find(b);
+        // key found
+        if (it != adj[a].end()) {
+            	it->second++;    // increment map's value for key `b`
+        }
+        // key not found
+        else {
+            	adj[a].insert(std::make_pair(b, 1));
+		n_entries++;
+        }
+}
 
 void SparseMatrix::increment_all_2_all(int a, int b){
 

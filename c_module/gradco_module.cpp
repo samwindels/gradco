@@ -12,7 +12,6 @@
 #include <iostream>
 
 #include "directed_graph.hh"
-/* #include "matrix.hh" */
 #include "sparse_matrix.hh"
 
 
