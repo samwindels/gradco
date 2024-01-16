@@ -19,9 +19,7 @@ class SymmetricDenseMatrix{
 	
 	public:
 		SymmetricDenseMatrix(int n);
-		void add_scalar(int i, int j, int v);
-		void increment_all_2_all(int a, int b);
-		void increment_from_to(int a, int b);
+		void increment(int a, int b);
 		PyObject* to_numpy();
 	};
 	
