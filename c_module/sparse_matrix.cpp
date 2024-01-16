@@ -31,6 +31,22 @@ void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m){
 	}
 }
 
+void SparseMatrix::subtract_matrix(DenseMatrix& m){
+
+	unsigned int flat_i = 0;
+	unsigned int val = 0;
+	for (unsigned int row=0; row<m.get_n(); row++)
+	{
+		for (unsigned int col=0; col<m.get_n(); col++) {
+			val = m.get_entry(flat_i);
+			if (val != 0){
+				subtract_scalar(row, col, val);
+			}
+			flat_i++;
+		}
+	}
+}
+
 //private
 void SparseMatrix::subtract_scalar(int a, int b, int v){
         it = adj[a].find(b);
