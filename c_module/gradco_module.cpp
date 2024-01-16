@@ -22,33 +22,33 @@
 // m = middle
 // r = right
 
-void  __update_A6_7_A9_11(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void  __update_A6_7_A9_11(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m) -1);
 	A.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
-void __update_A8_8_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_1){
+void __update_A8_8_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
 	A.add_scalar(l, m, A1_1_lr);
 	A.add_scalar(r, m, A1_1_lr);
 }
 
-void __update_A8_8_A5_5(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A8_8_A5_5(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(m, l));
 	A.add_scalar(r, m, A1_2.get(m, r));
 }
 
-void __update_A4_5_A8_8(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A4_5_A8_8(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(m, r));
 	A.add_scalar(r, m, A1_2.get(m, l));
 }
 
-void __update_A9_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A3_3){
+void __update_A9_11_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
 	A.add_scalar(l, m, A3_3.get(m, r));
 	A.add_scalar(r, m, A3_3.get(l, m));
 }
 
-void __update_A13_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
+void __update_A13_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
@@ -61,7 +61,7 @@ void __update_A13_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
-void __update_A12_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
+void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
@@ -73,7 +73,7 @@ void __update_A12_13_A14_14(Matrix& A, int l, int m, int r, Matrix& A3_3){
 	A.add_scalar(r, m, A3_3_lm);
 }
 
-void __update_A10_10_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A10_10_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, r));
 	A.add_scalar(m, l, A1_2.get(m, r));
 	A.add_scalar(l, r, A1_2.get(l, m));
@@ -82,7 +82,7 @@ void __update_A10_10_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
 	A.add_scalar(r, m, A1_2.get(r, l));
 }
 
-void __update_A10_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m)); 
 	A.add_scalar(l, r, A1_2.get(l, r)); 
 	A.add_scalar(m, l, A1_2.get(m, l)); 
@@ -98,23 +98,23 @@ void __update_A10_11_A12_13(Matrix& A, int l, int m, int r, Matrix& A1_2){
 // l = left
 // m = middle
 // r = right
-void __update_A6_6_A9_10(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A6_6_A9_10(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 	A.add_scalar(l, r, A1_2.get(l, m) -1);
 	A.add_scalar(r, l, A1_2.get(r, m) -1);
 }
 
-void __update_A9_10_A12_12(Matrix& A, int l, int m, int r, Matrix& A3_3){
+void __update_A9_10_A12_12(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
 	A.add_scalar(l, r, A3_3.get(m, r));
 	A.add_scalar(r, l, A3_3.get(l, m));
 }
 
-void __update_A12_12_A8_8bis(Matrix& A, int l, int m, int r, Matrix& A1_1){
+void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
 	A.add_scalar(l, r, A1_1_lr);
 	A.add_scalar(r, l, A1_1_lr);
 }
 
-void __update_A8_8bis_A4_5bis(Matrix& A, int l, int m, int r, Matrix& A1_2){
+void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
 
 	A.add_scalar(l, r, A1_2.get(m, r));
 	A.add_scalar(r, l, A1_2.get(m, l));
@@ -152,7 +152,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A4_4     = SparseMatrix(n);  // 4-node path, outside orbits
 	SparseMatrix A4_5_bis = SparseMatrix(n);  // 4-node path, outside orbit and two hops away 
 	SparseMatrix A5_5     = SparseMatrix(n);  // 4-node path, inside orbits 
-	/* Matrix A14_14   = SparseMatrix(n);  // 4-node clique */
+	/* SparseMatrix A14_14   = SparseMatrix(n);  // 4-node clique */
 	
 
 	int a, b, c, d;

@@ -9,20 +9,23 @@
 
 #include <iostream>
 #include <vector>
-#include "matrix.hh"
 
 
-class SparseMatrix : public Matrix{
+class SparseMatrix{
 
     private:
+	int n; // Dimension of matrix.
 	int z_entries;  // Track no. zero entries in "adj".
+	int n_entries;  // Track no. entries in "adj".
 	
 	ankerl::unordered_dense::map<int, int>::iterator it;
 	void subtract_scalar(int a, int b, int v);
 
     public:
-	SparseMatrix(int n): Matrix(n) {
+	SparseMatrix(int n){
     		adj.resize(n, ankerl::unordered_dense::map<int, int>());	
+		this->n = n;
+		n_entries = 0;
 	}
 	
 	void increment_all_2_all(int a, int b);
@@ -31,8 +34,9 @@ class SparseMatrix : public Matrix{
 	
 	void increment_from_to(int a, int b); 
 	int get(int a, int b);
+	int get_n();
 	
-	void subtract_matrix_multiple(const Matrix& m, int scalar){};
+	void subtract_matrix_multiple(SparseMatrix& m, int scalar);
 	void add_scalar(int a, int b, int v);
 	PyObject* to_numpy();
 	PyObject* to_numpy_and_divide(int numerator);

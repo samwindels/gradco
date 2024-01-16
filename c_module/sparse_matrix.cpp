@@ -1,13 +1,16 @@
-#include "matrix.hh"
 #include "sparse_matrix.hh"
 
-void SparseMatrix::subtract_matrix_multiple(const Matrix& m, int scalar){
-	/* for (int a=0; a<m.get_n(); a++) */
-	/* { */
-	/* 	for(auto b : m.adj[a]) { */
-	/* 		subtract_scalar(a, b.first, b.second * scalar); */
-	/* 	} */
-	/* } */
+int SparseMatrix::get_n(){
+	return n;
+}
+
+void SparseMatrix::subtract_matrix_multiple(SparseMatrix& m, int scalar){
+	for (int a=0; a<m.get_n(); a++)
+	{
+		for(auto b : m.adj[a]) {
+			subtract_scalar(a, b.first, b.second * scalar);
+		}
+	}
 }
 
 //private
