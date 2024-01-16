@@ -177,7 +177,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* } */
 				}else{
 					// 3-node path
-					/* std::cout<<"in-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
 					A1_1.increment_all_2_all(b, c);
 					A1_2.increment_from_to(b, a);
 					A1_2.increment_from_to(c, a);
@@ -216,7 +215,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// a -> b -> c
 				if (! G.has_out_edge(a, c)){
 					// 3-node path
-					/* std::cout<<"out-out"<<a<<' '<<b<<' '<<' '<<c<<std::endl; */
 					A1_1.increment_all_2_all(a, c);
 					A1_2.increment_from_to(a, b);
 					A1_2.increment_from_to(c, b);
@@ -237,7 +235,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						// predecessors of c
 						d = G.adj_in[c][k];
 						if(d!= b && d != a && !G.has_edge(a, d) && !G.has_edge(b, d)){
-							/* std::cout<<"G3 2 & 4: "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 							// a -> b -> c <- d
 							A4_4.increment_all_2_all(a, d);
 							A4_5_bis.increment_from_to(a, c);
@@ -268,7 +265,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					/* std::cout<<"out-in "<<a<<' '<<b<<' '<<c<<' '<<d<<std::endl; */
 					A1_1.increment_all_2_all(a, c);
 					A1_2.increment_from_to(a, b);
 					A1_2.increment_from_to(c, b);
@@ -292,6 +288,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
+	
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
 			for (int i=0; i<G.adj_out[a].size(); i++){
