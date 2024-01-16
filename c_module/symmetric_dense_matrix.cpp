@@ -26,7 +26,7 @@ void SymmetricDenseMatrix::increment(int i, int j){
 	this->array[to_flat_index(i,j)]++;
 }
 
-int SymmetricDenseMatrix::to_flat_index(int i, int j){
+unsigned int SymmetricDenseMatrix::to_flat_index(int i, int j){
 	if (i<j){ 
 		return offsets[i]+j;
 	}
@@ -36,9 +36,9 @@ int SymmetricDenseMatrix::to_flat_index(int i, int j){
 }
 
 
-PyObject* to_numpy(){
+PyObject* SymmetricDenseMatrix::to_numpy(){
 
-	n_entries = 0;
+	unsigned int n_entries = 0;
 	for (int i=0; i<this->len; i++){
 		if (this->array[i] != 0){
 			n_entries++;
@@ -49,9 +49,12 @@ PyObject* to_numpy(){
 	int* np_array = new int[3*n_entries];
 	const npy_intp dims[2] = {3, n_entries};
 	
-	int i=0, j=n_entries, k=2*n_entries;
+	int i=0;
+	int j=n_entries; 
+	int k=2*n_entries;
 
-
+	unsigned int val;
+	unsigned int flat_i;
 
 	for (int row=0; row < this->len; row++)
 	{

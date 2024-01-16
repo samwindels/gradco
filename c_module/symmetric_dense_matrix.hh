@@ -15,7 +15,7 @@ class SymmetricDenseMatrix{
 		unsigned int* array;
 		int len; // Length of array.
 
-		int to_flat_index(int i, int j);
+		unsigned int to_flat_index(int i, int j);
 	
 	public:
 		SymmetricDenseMatrix(int n);
