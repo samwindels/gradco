@@ -15,12 +15,13 @@ class SymmetricDenseMatrix{
 		unsigned int* array;
 		int len; // Length of array.
 
-		unsigned int to_flat_index(int i, int j);
-	
 	public:
 		SymmetricDenseMatrix(int n);
 		void increment(int a, int b);
 		PyObject* to_numpy();
+		unsigned int to_flat_index(int i, int j);
+		int get_n();
+		unsigned int get_entry(int flat_i);
 	};
 	
 #endif // SYMMETRIC_DENSE_MATRIX_H

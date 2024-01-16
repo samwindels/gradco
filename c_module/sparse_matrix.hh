@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <vector>
-#include "symmetric_dense_matrix" 
+#include "symmetric_dense_matrix.hh" 
 
 
 class SparseMatrix{
@@ -38,7 +38,7 @@ class SparseMatrix{
 	int get_n();
 	
 	void subtract_matrix_multiple(SparseMatrix& m, int scalar);
-	void subtract_matrix(SymmetricDenseMatrix& m, int scalar);
+	void subtract_matrix(SymmetricDenseMatrix& m);
 	void add_scalar(int a, int b, int v);
 	PyObject* to_numpy();
 	PyObject* to_numpy_and_divide(int numerator);

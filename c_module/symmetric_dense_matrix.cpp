@@ -22,6 +22,14 @@ SymmetricDenseMatrix::SymmetricDenseMatrix(int n) : n(n){
 		}
 }
 
+int SymmetricDenseMatrix::get_n(){
+	return this->n;
+}
+
+unsigned int SymmetricDenseMatrix::get_entry(int flat_i){
+	return this->array[flat_i];
+}
+
 void SymmetricDenseMatrix::increment(int i, int j){
 	this->array[to_flat_index(i,j)]++;
 }

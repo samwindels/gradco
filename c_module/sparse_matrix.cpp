@@ -14,7 +14,21 @@ void SparseMatrix::subtract_matrix_multiple(SparseMatrix& m, int scalar){
 }
 
 
-void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m, int scalar){
+void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m){
+
+	unsigned int flat_i = 0;
+	unsigned int val = 0;
+	for (unsigned int row=0; row<m.get_n(); row++)
+	{
+		for (unsigned int col=row+1; col<m.get_n(); col++) {
+			val = m.get_entry(flat_i);
+			if (val != 0){
+				subtract_scalar(row, col, val);
+				subtract_scalar(col, row, val);
+			}
+			flat_i++;
+		}
+	}
 }
 
 //private
