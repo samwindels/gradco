@@ -24,33 +24,33 @@
 // m = middle
 // r = right
 
-void  __update_A6_7_A9_11(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void  __update_A6_7_A9_11(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m) -1);
 	A.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
-void __update_A8_8_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_1){
+void __update_A8_8_A12_13(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
 	A.add_scalar(l, m, A1_1_lr);
 	A.add_scalar(r, m, A1_1_lr);
 }
 
-void __update_A8_8_A5_5(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A8_8_A5_5(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(m, l));
 	A.add_scalar(r, m, A1_2.get(m, r));
 }
 
-void __update_A4_5_A8_8(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A4_5_A8_8(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(m, r));
 	A.add_scalar(r, m, A1_2.get(m, l));
 }
 
-void __update_A9_11_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
+void __update_A9_11_A12_13(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	A.add_scalar(l, m, A3_3.get(m, r));
 	A.add_scalar(r, m, A3_3.get(l, m));
 }
 
-void __update_A13_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
+void __update_A13_13_A14_14(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
@@ -63,7 +63,7 @@ void __update_A13_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& 
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
-void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
+void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
@@ -75,7 +75,7 @@ void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SparseMatrix& 
 	A.add_scalar(r, m, A3_3_lm);
 }
 
-void __update_A10_10_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A10_10_A12_13(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, r));
 	A.add_scalar(m, l, A1_2.get(m, r));
 	A.add_scalar(l, r, A1_2.get(l, m));
@@ -84,7 +84,7 @@ void __update_A10_10_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& 
 	A.add_scalar(r, m, A1_2.get(r, l));
 }
 
-void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m)); 
 	A.add_scalar(l, r, A1_2.get(l, r)); 
 	A.add_scalar(m, l, A1_2.get(m, l)); 
@@ -100,23 +100,23 @@ void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, SparseMatrix& 
 // l = left
 // m = middle
 // r = right
-void __update_A6_6_A9_10(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A6_6_A9_10(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, r, A1_2.get(l, m) -1);
 	A.add_scalar(r, l, A1_2.get(r, m) -1);
 }
 
-void __update_A9_10_A12_12(SparseMatrix& A, int l, int m, int r, SparseMatrix& A3_3){
+void __update_A9_10_A12_12(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	A.add_scalar(l, r, A3_3.get(m, r));
 	A.add_scalar(r, l, A3_3.get(l, m));
 }
 
-void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_1){
+void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
 	A.add_scalar(l, r, A1_1_lr);
 	A.add_scalar(r, l, A1_1_lr);
 }
 
-void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, SparseMatrix& A1_2){
+void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 
 	A.add_scalar(l, r, A1_2.get(m, r));
 	A.add_scalar(r, l, A1_2.get(m, l));
@@ -148,9 +148,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 
 	// INITIALIZE MATRICES
-	SparseMatrix A1_1     = SparseMatrix(n);  // 3-node path, outside orbits
-	SparseMatrix A1_2     = SparseMatrix(n);  // 3-node path, outside and middle orbits
-	SparseMatrix A3_3     = SparseMatrix(n);  // 3-node triangle
+	SymmetricDenseMatrix A1_1     = SymmetricDenseMatrix(n);  // 3-node path, outside orbits
+	/* SparseMatrix A1_2     = SparseMatrix(n);  // 3-node path, outside and middle orbits */
+	DenseMatrix A1_2     = DenseMatrix(n);  // 3-node path, outside and middle orbits
+	SymmetricDenseMatrix A3_3     = SymmetricDenseMatrix(n);  // 3-node triangle
 	/* SparseMatrix A4_4     = SparseMatrix(n);  // 4-node path, outside orbits */
 	SymmetricDenseMatrix A4_4_dense     = SymmetricDenseMatrix(n);  // 4-node path, outside orbits
 	/* SparseMatrix A4_5_bis = SparseMatrix(n);  // 4-node path, outside orbit and two hops away */ 
@@ -172,7 +173,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_out[a][j];
 				if (G.has_out_edge(b, c)){
 					// triangle
-					A3_3.increment_all_2_all(a, b, c);
+					/* A3_3.increment_all_2_all(a, b, c); */
+					A3_3.increment(a, b);
+					A3_3.increment(a, c);
+					A3_3.increment(b, c);
 					/* for (int k=j+1; k<G.adj_out[a].size(); k++){ */
 					/* 	d = G.adj_out[a][k]; */
 					/* 	if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){ */
@@ -181,9 +185,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* } */
 				}else{
 					// 3-node path
-					A1_1.increment_all_2_all(b, c);
-					A1_2.increment_from_to(b, a);
-					A1_2.increment_from_to(c, a);
+					/* A1_1.increment_all_2_all(b, c); */
+					A1_1.increment(b, c);
+					/* A1_2.increment_from_to(b, a); */
+					/* A1_2.increment_from_to(c, a); */
+					A1_2.increment(b, a);
+					A1_2.increment(c, a);
 
 					for (int k=0; k<G.adj_in[c].size(); k++){
 						// predecessors of c
@@ -227,9 +234,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// a -> b -> c
 				if (! G.has_out_edge(a, c)){
 					// 3-node path
-					A1_1.increment_all_2_all(a, c);
-					A1_2.increment_from_to(a, b);
-					A1_2.increment_from_to(c, b);
+					/* A1_1.increment_all_2_all(a, c); */
+					/* A1_2.increment_from_to(a, b); */
+					/* A1_2.increment_from_to(c, b); */
+					A1_1.increment(a, c);
+					A1_2.increment(a, b);
+					A1_2.increment(c, b);
 
 					for (int k=0; k<G.adj_out[c].size(); k++){
 						// sucessors of c
@@ -289,9 +299,13 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
-					A1_1.increment_all_2_all(a, c);
-					A1_2.increment_from_to(a, b);
-					A1_2.increment_from_to(c, b);
+					/* A1_1.increment_all_2_all(a, c); */
+					/* A1_2.increment_from_to(a, b); */
+					/* A1_2.increment_from_to(c, b); */
+					A1_1.increment(a, c);
+					A1_2.increment(a, b);
+					A1_2.increment(c, b);
+
 				}
 			}
 		}

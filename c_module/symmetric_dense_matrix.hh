@@ -21,7 +21,8 @@ class SymmetricDenseMatrix{
 		PyObject* to_numpy();
 		unsigned int to_flat_index(int i, int j);
 		int get_n();
-		unsigned int get_entry(int flat_i);
+		unsigned int get(int flat_i);
+		unsigned int get(int i, int j);
 	};
 	
 #endif // SYMMETRIC_DENSE_MATRIX_H

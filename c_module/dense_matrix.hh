@@ -21,7 +21,8 @@ class DenseMatrix{
 		void increment(int a, int b);
 		PyObject* to_numpy();
 		int get_n();
-		unsigned int get_entry(int flat_index);
+		unsigned int get(int flat_index);
+		unsigned int get(int i, int j);
 	};
 	
 #endif // DENSE_MATRIX_H

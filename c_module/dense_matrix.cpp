@@ -29,7 +29,11 @@ int DenseMatrix::get_n(){
 	return this->n;
 }
 
-unsigned int DenseMatrix::get_entry(int flat_i){
+unsigned int DenseMatrix::get(int i, int j){
+	return this->array[to_flat_index(i,j)];
+}
+
+unsigned int DenseMatrix::get(int flat_i){
 	return this->array[flat_i];
 }
 
