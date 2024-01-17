@@ -174,7 +174,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
-	std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point start_time = init_time;
 	
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
@@ -509,6 +510,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
     	end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
+	std::cout<<"TOTAL TIME"<<std::endl;
+	__print_execution_time(init_time, end_time);
+
 	
 	return tuple;
 	
