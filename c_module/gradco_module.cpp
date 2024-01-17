@@ -10,12 +10,27 @@
 // #define NDEBUG  // uncomment to disable assert()
 #include <cassert>
 #include <iostream>
+#include <chrono>
 
 #include "directed_graph.hh"
 #include "sparse_matrix.hh"
 #include "symmetric_dense_matrix.hh"
 #include "dense_matrix.hh"
 
+void __print_execution_time(std::chrono::system_clock::time_point start_time,
+			    std::chrono::system_clock::time_point end_time){
+
+    // Calculate the duration
+    std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+
+    // Extract minutes and remaining seconds
+    std::chrono::minutes minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
+    std::chrono::seconds remaining_seconds = duration - minutes;
+
+    // Output the duration in minutes and seconds
+    std::cout << "Execution Time: " << minutes.count() << " minutes and "
+              << remaining_seconds.count() << " seconds" << std::endl;
+}
 
 // SINGLE-HOP EQUATIONS, path-based
 // depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
@@ -159,6 +174,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	int a, b, c, d;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
+	std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+	
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -277,7 +294,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 		}
 	}
 
-	std::cout<<"APPLYING REDUNDANCIES"<<std::endl;
+    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+	start_time = end_time;
+	
+	std::cout<<"COMPUTING REDUNDANCY MATRICES"<<std::endl;
 	// INITIALIZE REDUNDANCY MATRICES
 	SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour
 	SparseMatrix A6_6     = SparseMatrix(n);  // 4-node star, outside orbits 
@@ -367,7 +388,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}
+    	
+	end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+	start_time = end_time;
 
+	std::cout<<"COMPUTING ADJACENCY MATRICES"<<std::endl;
 	/* // ordering matters !!! */  	
 	/* // 1. dependend on brute force matrices */
 	/* A12_13.subtract_matrix_multiple(A14_14, 2); */
@@ -425,9 +451,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	// 4. depends on infered infered infered matrices
 	A6_6.subtract_matrix_multiple(A9_10, 1);
 	
+    	end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+	start_time = end_time;
 
 	//FORMAT RESULTS
-	std::cout<<"Translating c arrays to numpy arrays"<<std::endl;
+	std::cout<<"CONVERTING TO NUMPY ARRAYS"<<std::endl;
 	PyObject* A1_1_numpy     = A1_1.to_numpy();
 	PyObject* A1_2_numpy     = A1_2.to_numpy();
 	PyObject* A3_3_numpy     = A3_3.to_numpy();
@@ -477,6 +506,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	for (int i=0; i<18; i++){
 		Py_DECREF(PyTuple_GetItem(tuple,i));
 	}
+    	end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+	start_time = end_time;
 	
 	return tuple;
 	
