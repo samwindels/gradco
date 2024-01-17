@@ -21,7 +21,7 @@ def main():
                                        "c_module/directed_graph.hh"],
                               include_dirs=[ np.get_include(), "."],
                               language='c++',
-                              extra_compile_args=['-std=c++17', '-O3', '-march=native'],
+                              extra_compile_args=['-std=c++17', '-O3'],
                               )
     # c++20 
     # gnu++20 
