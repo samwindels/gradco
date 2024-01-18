@@ -137,81 +137,18 @@ void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, DenseMatrix&
 	A.add_scalar(r, l, A1_2.get(m, l));
 }
 
-static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
-
-
-	/* parse input from python */
-	int n;
-	PyArrayObject* rows = NULL;
-	PyArrayObject* cols = NULL;
-	
-	if (!PyArg_ParseTuple(args, "O!O!i", &PyArray_Type, &rows, &PyArray_Type, &cols, &n))
-		return NULL;
-
-	// SANITY CHECKS NUMPY ARRAYS
-	// arrays are one dimensional
-	assert(PyArray_NDIM(rows)==1);
-	assert(PyArray_NDIM(cols)==1);
-	
-	// arrays are equal length
-	assert(PyArray_SIZE(rows)==PyArray_SIZE(cols));
-
-	/* std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl; */
-
-	DirectedGraph G = DirectedGraph(n, rows, cols);
-
-
-
-	// INITIALIZE MATRICES
-	SymmetricDenseMatrix A1_1     = SymmetricDenseMatrix(n);  // 3-node path, outside orbits
-	DenseMatrix A1_2     = DenseMatrix(n);  // 3-node path, outside and middle orbits
-	SymmetricDenseMatrix A3_3     = SymmetricDenseMatrix(n);  // 3-node triangle
-	SymmetricDenseMatrix A4_4     = SymmetricDenseMatrix(n);  // 4-node path, outside orbits
-	DenseMatrix A4_5_bis = DenseMatrix(n);  // 4-node path, outside orbit and two hops away 
-	SymmetricDenseMatrix A5_5     = SymmetricDenseMatrix(n);  // 4-node path, inside orbits 
-	SymmetricDenseMatrix A12_12   = SymmetricDenseMatrix(n);  // 4-node cycle with chord, inside orbits
-	
-
+void __count_four_node_path_based(DirectedGraph& G, 
+				  int n, 
+				  SymmetricDenseMatrix& A1_1, 
+				  DenseMatrix& A1_2, 
+				  SymmetricDenseMatrix& A3_3, 
+				  SymmetricDenseMatrix& A4_4, 
+				  DenseMatrix& A4_5_bis, 
+				  SymmetricDenseMatrix& A5_5){
 	int a, b, c, d;
-
-	std::cout<<"BRUTE FORCE"<<std::endl;
+	std::cout<<"BRUTE FORCE FOUR NODE PATHS"<<std::endl;
 	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point start_time = init_time;
-
-	for (a = 0; a < n; a++){
-		for (int i=0; i<G.adj_out[a].size(); i++){
-			b = G.adj_out[a][i];
-			for (int j=i+1; j<G.adj_out[a].size(); j++){
-				// in-out wedge
-				// b <- a -> c, with b < c
-				c = G.adj_out[a][j];
-				if (G.has_out_edge(b, c)){
-					// triangle
-					for (int k=j+1; k<G.adj_out[a].size(); k++){
-						d = G.adj_out[a][k];
-						if (G.has_out_edge(c, d)){
-							if (G.has_out_edge(c, d)){
-							//update A14_14
-							}
-							else{
-								A12_12.increment(a, c);
-							}
-						}
-					}
-					for(int k=0; k<G.adj_in[a].size();k++){
-						d = G.adj_in[a][k];
-						if (G.has_out_edge(d, c) && !G.has_out_edge(d, b)){
-							A12_12.increment(a, c);
-						}
-					}
-				}
-			}
-		}
-	}
-    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-	__print_execution_time(start_time, end_time);
-
-
 	// brute force old	
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
@@ -225,12 +162,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					A3_3.increment(a, b);
 					A3_3.increment(a, c);
 					A3_3.increment(b, c);
-					/* for (int k=j+1; k<G.adj_out[a].size(); k++){ */
-					/* 	d = G.adj_out[a][k]; */
-					/* 	if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){ */
-					/* 		A14_14.increment_all_2_all(a, b, c, d); */
-					/* 	} */
-					/* } */
 				}else{
 					// 3-node path
 					A1_1.increment(b, c);
@@ -330,9 +261,78 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 			}
 		}
 	}
+    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+}
 
-    	/* std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now(); */
-    	end_time = std::chrono::system_clock::now();
+static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
+
+
+	/* parse input from python */
+	int n;
+	PyArrayObject* rows = NULL;
+	PyArrayObject* cols = NULL;
+	
+	if (!PyArg_ParseTuple(args, "O!O!i", &PyArray_Type, &rows, &PyArray_Type, &cols, &n))
+		return NULL;
+
+	// SANITY CHECKS NUMPY ARRAYS
+	// arrays are one dimensional
+	assert(PyArray_NDIM(rows)==1);
+	assert(PyArray_NDIM(cols)==1);
+	
+	// arrays are equal length
+	assert(PyArray_SIZE(rows)==PyArray_SIZE(cols));
+
+	/* std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl; */
+
+	std::cout<<"BUILDING DIGRAPH"<<std::endl;
+	DirectedGraph G = DirectedGraph(n, rows, cols);
+	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point start_time = init_time;
+	
+	// INITIALIZE MATRICES
+	SymmetricDenseMatrix A1_1     = SymmetricDenseMatrix(n);  // 3-node path, outside orbits
+	DenseMatrix A1_2     = DenseMatrix(n);  // 3-node path, outside and middle orbits
+	SymmetricDenseMatrix A12_12   = SymmetricDenseMatrix(n);  // 4-node cycle with chord, inside orbits
+	SymmetricDenseMatrix A3_3     = SymmetricDenseMatrix(n);  // 3-node triangle, inside orbits
+	SymmetricDenseMatrix A14_14   = SymmetricDenseMatrix(n);  // 4-node clique 
+
+	int a, b, c, d;
+
+	std::cout<<"BRUTE FORCE"<<std::endl;
+	for (a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=i+1; j<G.adj_out[a].size(); j++){
+				// in-out wedge
+				// b <- a -> c, with b < c
+				c = G.adj_out[a][j];
+				if (G.has_out_edge(b, c)){
+					// triangle
+					for (int k=j+1; k<G.adj_out[a].size(); k++){
+						d = G.adj_out[a][k];
+						if (G.has_out_edge(c, d)){
+							if (G.has_out_edge(c, d)){
+							//update A14_14
+							}
+							else{
+								A12_12.increment(a, c);
+							}
+						}
+					}
+					for(int k=0; k<G.adj_in[a].size();k++){
+						d = G.adj_in[a][k];
+						if (G.has_out_edge(d, c) && !G.has_out_edge(d, b)){
+							A12_12.increment(a, c);
+						}
+					}
+				}
+			}
+		}
+	}
+
+    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
 	
@@ -352,84 +352,84 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
 	
-	for (int a = 0; a < n; a++){
-		if (G.adj_out[a].size() >= 2){
-			for (int i=0; i<G.adj_out[a].size(); i++){
-				b = G.adj_out[a][i];
-				for (int j=i+1; j<G.adj_out[a].size(); j++){
-					// in-out wedge
-					// b <- a -> c
-					c = G.adj_out[a][j];
-					if (G.has_out_edge(b, c)){
-						// triangle
-						/* __update_A12_13_A14_14(A12_13, b, a, c, A3_3); */
-						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
-						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
-						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
-						__update_A12_13_A14_14(A14_14, b, a, c, A3_3);
+	/* for (int a = 0; a < n; a++){ */
+	/* 	if (G.adj_out[a].size() >= 2){ */
+	/* 		for (int i=0; i<G.adj_out[a].size(); i++){ */
+	/* 			b = G.adj_out[a][i]; */
+	/* 			for (int j=i+1; j<G.adj_out[a].size(); j++){ */
+	/* 				// in-out wedge */
+	/* 				// b <- a -> c */
+	/* 				c = G.adj_out[a][j]; */
+	/* 				if (G.has_out_edge(b, c)){ */
+	/* 					// triangle */
+	/* 					/1* __update_A12_13_A14_14(A12_13, b, a, c, A3_3); *1/ */
+	/* 					__update_A10_10_A12_13(A10_10, b, a, c, A1_2); */
+	/* 					__update_A13_13_A14_14(A13_13, b, a, c, A3_3); */
+	/* 					__update_A10_11_A12_13(A10_11, b, a, c, A1_2); */
+	/* 					__update_A12_13_A14_14(A14_14, b, a, c, A3_3); */
 
-					}else{
-						/* // three node path */
-						__update_A4_5_A8_8(A4_5, b, a, c, A1_2);
-						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
- 						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
-						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
-						/* __update_A8_8_A12_13(A8_8, b, a, c, A1_1); */
-						__update_A8_8_A5_5(A8_8, b, a, c, A1_2);
-						__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2);
-						/* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); */
-						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
-						__update_A8_8_A12_13(A12_13, b, a, c, A1_1);
-					}
-				}
-			}
-		}
-		for (int i=0; i<G.adj_out[a].size(); i++){
-			b = G.adj_out[a][i];
-			for (int j=0; j<G.adj_out[b].size(); j++){
-				// out-out wedge
-				// a -> b -> c
-				c = G.adj_out[b][j];
-				if (! G.has_out_edge(a, c)){
-					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
-					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
-					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
- 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
-					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
-					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
-					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
-					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
-					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
-					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
-				}
-			}
-		}
-		for (int i=0; i<G.adj_out[a].size(); i++){
-			b = G.adj_out[a][i];
-			for (int j=G.adj_in[b].size()-1; j>-1; j--){
-				// in-out wedge
-				// a -> b <- c
-				c = G.adj_in[b][j];
-				if (c <= a){ break; }
-				if (! G.has_out_edge(a, c)){
-					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
-					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
-					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
- 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
-					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
-					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
-					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
-					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
-					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
-					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
-				}
-			}
-		}
-	}
+	/* 				}else{ */
+	/* 					/1* // three node path *1/ */
+	/* 					__update_A4_5_A8_8(A4_5, b, a, c, A1_2); */
+	/* 					__update_A9_11_A12_13(A9_11, b, a, c, A3_3); */
+ 						/* __update_A6_6_A9_10(A6_6, b, a, c, A1_2); */
+	/* 					__update_A6_7_A9_11(A6_7, b, a, c, A1_2); */
+	/* 					/1* __update_A8_8_A12_13(A8_8, b, a, c, A1_1); *1/ */
+	/* 					__update_A8_8_A5_5(A8_8, b, a, c, A1_2); */
+	/* 					__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2); */
+	/* 					/1* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); *1/ */
+	/* 					__update_A9_10_A12_12(A9_10, b, a, c, A3_3); */
+	/* 					__update_A8_8_A12_13(A12_13, b, a, c, A1_1); */
+	/* 				} */
+	/* 			} */
+	/* 		} */
+	/* 	} */
+	/* 	for (int i=0; i<G.adj_out[a].size(); i++){ */
+	/* 		b = G.adj_out[a][i]; */
+	/* 		for (int j=0; j<G.adj_out[b].size(); j++){ */
+	/* 			// out-out wedge */
+	/* 			// a -> b -> c */
+	/* 			c = G.adj_out[b][j]; */
+	/* 			if (! G.has_out_edge(a, c)){ */
+	/* 				__update_A4_5_A8_8(A4_5, a, b, c, A1_2); */
+	/* 				__update_A9_11_A12_13(A9_11, a, b, c, A3_3); */
+	/* 				__update_A6_7_A9_11(A6_7, a, b, c, A1_2); */
+ 					/* __update_A6_6_A9_10(A6_6, a, b, c, A1_2); */
+	/* 				/1* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); *1/ */
+	/* 				__update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+	/* 				__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
+	/* 				/1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
+	/* 				__update_A9_10_A12_12(A9_10, a, b, c, A3_3); */
+	/* 				__update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+	/* 			} */
+	/* 		} */
+	/* 	} */
+	/* 	for (int i=0; i<G.adj_out[a].size(); i++){ */
+	/* 		b = G.adj_out[a][i]; */
+	/* 		for (int j=G.adj_in[b].size()-1; j>-1; j--){ */
+	/* 			// in-out wedge */
+	/* 			// a -> b <- c */
+	/* 			c = G.adj_in[b][j]; */
+	/* 			if (c <= a){ break; } */
+	/* 			if (! G.has_out_edge(a, c)){ */
+	/* 				__update_A4_5_A8_8(A4_5, a, b, c, A1_2); */
+	/* 				__update_A9_11_A12_13(A9_11, a, b, c, A3_3); */
+	/* 				__update_A6_7_A9_11(A6_7, a, b, c, A1_2); */
+ 					/* __update_A6_6_A9_10(A6_6, a, b, c, A1_2); */
+	/* 				/1* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); *1/ */
+	/* 				__update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+	/* 				__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
+	/* 				/1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
+	/* 				__update_A9_10_A12_12(A9_10, a, b, c, A3_3); */
+	/* 				__update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+	/* 			} */
+	/* 		} */
+	/* 	} */
+	/* } */
     	
-	end_time = std::chrono::system_clock::now();
-	__print_execution_time(start_time, end_time);
-	start_time = end_time;
+	/* end_time = std::chrono::system_clock::now(); */
+	/* __print_execution_time(start_time, end_time); */
+	/* start_time = end_time; */
 
 	std::cout<<"COMPUTING ADJACENCY MATRICES"<<std::endl;
 	/* // ordering matters !!! */  	

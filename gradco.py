@@ -2,9 +2,6 @@ import gradco_c_routines
 import numpy as np
 from scipy.sparse import csr_array, save_npz, load_npz
 
-# global __ORBIT_ADJ_2_C_INDEX 
-
-
 class Counter(object):
 
     # (hop, orbit1, orbit2) -> c_index
