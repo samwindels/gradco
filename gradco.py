@@ -1,6 +1,7 @@
 import gradco_c_routines
 import numpy as np
 from scipy.sparse import csr_array, save_npz, load_npz
+import networkx as nx
 
 # global __ORBIT_ADJ_2_C_INDEX 
 
@@ -68,8 +69,12 @@ class Counter(object):
 
     # DEGREE ORDERING 
     def __apply_degree_ordering(self, A):
-        rowsum = np.asarray(A.sum(axis=1)).squeeze() # scipy returns numpy matrix instead of array
-        order = np.argsort(rowsum, axis=0)
+        # rowsum = np.asarray(A.sum(axis=1)).squeeze() # scipy returns numpy matrix instead of array
+        # order = np.argsort(rowsum, axis=0)
+        
+        # G = nx.from_numpy_array(A)
+        # order = np.argsort([nx.core_number(G)[node] for node in G.nodes()])
+        order = range(A.shape[0])
         reverse_order = np.argsort(order)
         A = A[order, :]
         A = A[:, order]

@@ -32,6 +32,12 @@ void __print_execution_time(std::chrono::system_clock::time_point start_time,
               << remaining_seconds.count() << " seconds" << std::endl;
 }
 
+void __print_hit_mis_evaluation(std::string name, float hits, float misses){
+	float total = hits + misses;
+	float miss_rate = misses/total;
+	std::cout<<name<<": "<<hits<<" hits, "<<misses<<" misses, "<<miss_rate<<" miss rate"<<std::endl;
+}
+
 // SINGLE-HOP EQUATIONS, path-based
 // depending on the type of wedge (in-out, out-out, out-in) the positon of nodes a, b, c, d is different
 // wedge: l - m - r 
@@ -176,7 +182,26 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	std::cout<<"BRUTE FORCE"<<std::endl;
 	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point start_time = init_time;
-	
+
+	float in_out_wedges = 0;
+	float in_out_wedges_miss = 0;
+	float out_out_wedges = 0;
+	float out_out_wedges_miss = 0;
+	float out_in_wedges = 0;
+	float out_in_wedges_miss = 0;
+
+	// four node paths
+	float out_in_out = 0;
+	float out_in_out_miss = 0;
+	float in_out_in = 0;
+	float in_out_in_miss = 0;
+	float out_out_out = 0;
+	float out_out_out_miss = 0;
+	float out_out_in = 0;
+	float out_out_in_miss = 0;
+	float in_out_out = 0;
+	float in_out_out_miss = 0;
+
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -195,8 +220,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* 		A14_14.increment_all_2_all(a, b, c, d); */
 					/* 	} */
 					/* } */
+					in_out_wedges_miss++;
 				}else{
 					// 3-node path
+					in_out_wedges++;
 					A1_1.increment(b, c);
 					A1_2.increment(b, a);
 					A1_2.increment(c, a);
@@ -210,6 +237,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_5_bis.increment(b,c);
 							A4_5_bis.increment(d,a);
 							A5_5.increment(a, c);
+							in_out_in++;
+						}else {
+							in_out_in_miss++;
 						}
 					}
 					
@@ -222,6 +252,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_5_bis.increment(d,a);
 							A4_5_bis.increment(c,b);
 							A5_5.increment(a, b);
+							out_in_out++;
+						}else{
+							out_in_out_miss++;
 						}
 					}
 				}
@@ -234,6 +267,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// out-out wedge
 				// a -> b -> c
 				if (! G.has_out_edge(a, c)){
+					out_out_wedges++;
 					// 3-node path
 					A1_1.increment(a, c);
 					A1_2.increment(a, b);
@@ -249,6 +283,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_5_bis.increment(a,c);
 							A4_5_bis.increment(d,b);
 							A5_5.increment(b, c);
+							out_out_out++;
+						}else{
+							out_out_out_miss++;
 						}
 					}
 
@@ -261,6 +298,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 							A4_5_bis.increment(a,c);
 							A4_5_bis.increment(d,b);
 							A5_5.increment(b, c);
+							out_out_in++;
+						}else{
+							out_out_in_miss++;
 						}
 					}
 					for (int k=0; k<G.adj_out[a].size(); k++){
@@ -268,13 +308,18 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						d = G.adj_out[a][k];
 						if (d!= b && !G.has_edge(b, d) && !G.has_edge(c, d))
 						{	// d <- a -> b -> c
-							// c <- b <- a -> d 
 							A4_4.increment(d, c);
 							A4_5_bis.increment(d,b);
 							A4_5_bis.increment(c,a);
 							A5_5.increment(a, b);
+							in_out_out++;
+						}
+						else{
+							in_out_out_miss++;
 						}
 					}
+				} else {
+					out_out_wedges_miss++;
 				}
 			}
 		}
@@ -286,14 +331,36 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				c = G.adj_in[b][j];
 				if (c <= a){ break; }
 				if (! G.has_out_edge(a, c)){
+					out_in_wedges++;
 					A1_1.increment(a, c);
 					A1_2.increment(a, b);
 					A1_2.increment(c, b);
 
 				}
+				else{out_in_wedges_miss++;}
 			}
 		}
 	}
+
+	__print_hit_mis_evaluation("in-out wedges", in_out_wedges, in_out_wedges_miss);
+	__print_hit_mis_evaluation("in_out_in", in_out_in, in_out_in_miss);
+	__print_hit_mis_evaluation("out-in-out", out_in_out, out_in_out_miss); 	
+	float total_hits = in_out_in + out_in_out;
+	float total_misses = in_out_in_miss + out_in_out_miss;
+	__print_hit_mis_evaluation("total", total_hits, total_misses);
+	std::cout<<'\n'<<std::endl;
+
+	__print_hit_mis_evaluation("out-out wedges", out_out_wedges, out_out_wedges_miss);
+	__print_hit_mis_evaluation("out_out_out", out_out_out, out_out_out_miss);
+	__print_hit_mis_evaluation("out_out_in", out_out_in, out_out_in_miss);
+	__print_hit_mis_evaluation("in_out_out", in_out_out, in_out_out_miss);
+	total_hits = out_out_out + out_out_in + in_out_out;
+	total_misses = out_out_out_miss + out_out_in_miss + in_out_out_miss;
+	__print_hit_mis_evaluation("total", total_hits, total_misses);
+	std::cout<<'\n'<<std::endl;
+	
+	std::cout<<"out-in wedges: "<<out_in_wedges<<" misses: " <<out_in_wedges_miss<<std::endl;
+	std::cout<<'\n'<<std::endl;
 
     	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
