@@ -169,6 +169,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SymmetricDenseMatrix A4_4     = SymmetricDenseMatrix(n);  // 4-node path, outside orbits
 	DenseMatrix A4_5_bis = DenseMatrix(n);  // 4-node path, outside orbit and two hops away 
 	SymmetricDenseMatrix A5_5     = SymmetricDenseMatrix(n);  // 4-node path, inside orbits 
+	SymmetricDenseMatrix A12_12   = SymmetricDenseMatrix(n);  // 4-node cycle with chord, inside orbits
 	
 
 	int a, b, c, d;
@@ -176,7 +177,42 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	std::cout<<"BRUTE FORCE"<<std::endl;
 	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point start_time = init_time;
-	
+
+	for (a = 0; a < n; a++){
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=i+1; j<G.adj_out[a].size(); j++){
+				// in-out wedge
+				// b <- a -> c, with b < c
+				c = G.adj_out[a][j];
+				if (G.has_out_edge(b, c)){
+					// triangle
+					for (int k=j+1; k<G.adj_out[a].size(); k++){
+						d = G.adj_out[a][k];
+						if (G.has_out_edge(c, d)){
+							if (G.has_out_edge(c, d)){
+							//update A14_14
+							}
+							else{
+								A12_12.increment(a, c);
+							}
+						}
+					}
+					for(int k=0; k<G.adj_in[a].size();k++){
+						d = G.adj_in[a][k];
+						if (G.has_out_edge(d, c) && !G.has_out_edge(d, b)){
+							A12_12.increment(a, c);
+						}
+					}
+				}
+			}
+		}
+	}
+    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+
+
+	// brute force old	
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -295,7 +331,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 		}
 	}
 
-    	std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    	/* std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now(); */
+    	end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
 	
@@ -310,7 +347,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A9_11    = SparseMatrix(n);  // 4-node paw,
 	SparseMatrix A10_10   = SparseMatrix(n);  // 4-node paw,
 	SparseMatrix A10_11   = SparseMatrix(n);  // 4-node paw,
-	SparseMatrix A12_12   = SparseMatrix(n);  // 4-node cycle with chord,
+	/* SparseMatrix A12_12   = SparseMatrix(n);  // 4-node cycle with chord, */
 	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
@@ -340,7 +377,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						/* __update_A8_8_A12_13(A8_8, b, a, c, A1_1); */
 						__update_A8_8_A5_5(A8_8, b, a, c, A1_2);
 						__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2);
-						__update_A12_12_A8_8bis(A12_12, b, a, c, A1_1);
+						/* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); */
 						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
 						__update_A8_8_A12_13(A12_13, b, a, c, A1_1);
 					}
@@ -361,7 +398,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
 					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
 					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
-					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
+					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
 					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
 					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
@@ -382,7 +419,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					/* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); */
 					__update_A8_8_A5_5(A8_8, a, b, c, A1_2);
 					__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2);
-					__update_A12_12_A8_8bis(A12_12, a, b, c, A1_1);
+					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
 					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
 					__update_A8_8_A12_13(A12_13, a, b, c, A1_1);
 				}
@@ -444,10 +481,10 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	A8_8_bis.subtract_matrix(A4_5_bis);
 	
 	// 2. dependend on infered matrices
-	A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2
+	/* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 */
 	
 	//3. depend on infered infered matrices
-	A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2
+	/* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 */
 	
 	// 4. depends on infered infered infered matrices
 	A6_6.subtract_matrix_multiple(A9_10, 1);
@@ -474,7 +511,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A9_11_numpy    = A9_11.to_numpy_and_divide(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A10_11_numpy   = A10_11.to_numpy();
-	PyObject* A12_12_numpy   = A12_12.to_numpy_and_divide(2);
+	/* PyObject* A12_12_numpy   = A12_12.to_numpy_and_divide(2); */
+	PyObject* A12_12_numpy   = A12_12.to_numpy();
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.to_numpy_and_divide(2);  

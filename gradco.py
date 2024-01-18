@@ -210,7 +210,49 @@ class Counter(object):
             A = self.__apply_reverse_ordering(A)
             return A
     
+    # def compute_A12_12_digraph(adj):
+   
+    #     G_digraph = nx.from_numpy_array(adj, using=nx.DiGraph)
+    #     # G_digraph = nx.DiGraph(nodes=G.nodes())
+    #     # G_digraph.add_edges_from(G.edges())
+    #     # k = G_digraph.number_of_nodes()
+    #     A = np.zeros(A.shape)
+    
+    #     print(G_digraph.edges())
+    
+    #     for a in G_digraph.nodes():
+    #         for b in G_digraph.successors(a):
+    #             for c in G_digraph.successors(a):
+    #                 if c>b:
+    #                     if G.has_edge(a, c): # check if b,c have triangle neighbours
+    #                         # a is on orbit 12
+    #                         for d in G_digraph.successors(c):
+    #                             if d != a and d != b:
+    #                                 if G.has_edge(d, b):
+    #                                     if not G.has_edge(d, a):
+    #                                         # print(a, b, c, d)
+    #                                         A[a, d] += 1
+    #                                         A[d, a] += 1
+    #                         # check if a,b have triangle neighbours
+    #                         # a is on orbit 13
+    #                         # for d in G_digraph.neighbors(b):
+    #                         #     if d != c and d != a:
+    #                         #         if G_digraph.has_edge(d, a):
+    #                         #             if not G.has_edge(c, d):
+    #                         #                 A[c, d] += 1
+    #                         #                 # A[d, c] += 1
+    #                         #                 print('hit', a, b, c, d)
+    #                         for d in G_digraph.neighbors(a):
+    #                             if d != c and d != b:
+    #                                 if G.has_edge(d, b):
+    #                                     if not G.has_edge(c, d):
+    #                                         A[c, d] += 1
+    #                                         A[d, c] += 1
+    #     return A
+    
     def get_orbit_adjacency(self, hop, o1, o2):
+        # if hop==1 and o1==12 and o2==12:
+        #     return self.compute_A12_12_digraph(self.__A)
 
         if o1 < o2: 
             key = (hop, o1, o2)
