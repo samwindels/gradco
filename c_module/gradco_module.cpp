@@ -125,17 +125,19 @@ void __update_A9_10_A12_12(SparseMatrix& A, int l, int m, int r, SymmetricDenseM
 	A.add_scalar(r, l, A3_3.get(l, m));
 }
 
-void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
-	int A1_1_lr = A1_1.get(l, r)-1;
-	A.add_scalar(l, r, A1_1_lr);
-	A.add_scalar(r, l, A1_1_lr);
-}
 
 void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 
 	A.add_scalar(l, r, A1_2.get(m, r));
 	A.add_scalar(r, l, A1_2.get(m, l));
 }
+
+void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
+	int A1_1_lr = A1_1.get(l, r)-1;
+	A.add_scalar(l, r, A1_1_lr);
+	A.add_scalar(r, l, A1_1_lr);
+}
+
 
 void __count_four_node_path_based(DirectedGraph& G, 
 				  int n, 
@@ -425,142 +427,152 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	
-	/* for (int a = 0; a < n; a++){ */
-	/* 	if (G.adj_out[a].size() >= 2){ */
-	/* 		for (int i=0; i<G.adj_out[a].size(); i++){ */
-	/* 			b = G.adj_out[a][i]; */
-	/* 			for (int j=i+1; j<G.adj_out[a].size(); j++){ */
-	/* 				// in-out wedge */
-	/* 				// b <- a -> c */
-	/* 				c = G.adj_out[a][j]; */
-	/* 				if (G.has_out_edge(b, c)){ */
-	/* 					// triangle */
-	/* 					/1* __update_A12_13_A14_14(A12_13, b, a, c, A3_3); *1/ */
-	/* 					__update_A10_10_A12_13(A10_10, b, a, c, A1_2); */
-	/* 					__update_A13_13_A14_14(A13_13, b, a, c, A3_3); */
-	/* 					__update_A10_11_A12_13(A10_11, b, a, c, A1_2); */
-	/* 					__update_A12_13_A14_14(A14_14, b, a, c, A3_3); */
+	for (int a = 0; a < n; a++){
+		if (G.adj_out[a].size() >= 2){
+			for (int i=0; i<G.adj_out[a].size(); i++){
+				b = G.adj_out[a][i];
+				for (int j=i+1; j<G.adj_out[a].size(); j++){
+					// in-out wedge
+					// b <- a -> c
+					c = G.adj_out[a][j];
+					if (G.has_out_edge(b, c)){
+						// triangle
+						__update_A12_13_A14_14(A12_13, b, a, c, A3_3);
+						__update_A10_10_A12_13(A10_10, b, a, c, A1_2);
+						__update_A13_13_A14_14(A13_13, b, a, c, A3_3);
+						__update_A10_11_A12_13(A10_11, b, a, c, A1_2);
+						/* __update_A12_13_A14_14(A14_14, b, a, c, A3_3); */
 
-	/* 				}else{ */
-	/* 					/1* // three node path *1/ */
-	/* 					__update_A4_5_A8_8(A4_5, b, a, c, A1_2); */
-	/* 					__update_A9_11_A12_13(A9_11, b, a, c, A3_3); */
- 						/* __update_A6_6_A9_10(A6_6, b, a, c, A1_2); */
-	/* 					__update_A6_7_A9_11(A6_7, b, a, c, A1_2); */
-	/* 					/1* __update_A8_8_A12_13(A8_8, b, a, c, A1_1); *1/ */
-	/* 					__update_A8_8_A5_5(A8_8, b, a, c, A1_2); */
-	/* 					__update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2); */
-	/* 					/1* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); *1/ */
-	/* 					__update_A9_10_A12_12(A9_10, b, a, c, A3_3); */
-	/* 					__update_A8_8_A12_13(A12_13, b, a, c, A1_1); */
-	/* 				} */
-	/* 			} */
-	/* 		} */
-	/* 	} */
-	/* 	for (int i=0; i<G.adj_out[a].size(); i++){ */
-	/* 		b = G.adj_out[a][i]; */
-	/* 		for (int j=0; j<G.adj_out[b].size(); j++){ */
-	/* 			// out-out wedge */
-	/* 			// a -> b -> c */
-	/* 			c = G.adj_out[b][j]; */
-	/* 			if (! G.has_out_edge(a, c)){ */
-	/* 				__update_A4_5_A8_8(A4_5, a, b, c, A1_2); */
-	/* 				__update_A9_11_A12_13(A9_11, a, b, c, A3_3); */
-	/* 				__update_A6_7_A9_11(A6_7, a, b, c, A1_2); */
- 					/* __update_A6_6_A9_10(A6_6, a, b, c, A1_2); */
-	/* 				/1* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); *1/ */
-	/* 				__update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
-	/* 				__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
-	/* 				/1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
-	/* 				__update_A9_10_A12_12(A9_10, a, b, c, A3_3); */
-	/* 				__update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
-	/* 			} */
-	/* 		} */
-	/* 	} */
-	/* 	for (int i=0; i<G.adj_out[a].size(); i++){ */
-	/* 		b = G.adj_out[a][i]; */
-	/* 		for (int j=G.adj_in[b].size()-1; j>-1; j--){ */
-	/* 			// in-out wedge */
-	/* 			// a -> b <- c */
-	/* 			c = G.adj_in[b][j]; */
-	/* 			if (c <= a){ break; } */
-	/* 			if (! G.has_out_edge(a, c)){ */
-	/* 				__update_A4_5_A8_8(A4_5, a, b, c, A1_2); */
-	/* 				__update_A9_11_A12_13(A9_11, a, b, c, A3_3); */
-	/* 				__update_A6_7_A9_11(A6_7, a, b, c, A1_2); */
- 					/* __update_A6_6_A9_10(A6_6, a, b, c, A1_2); */
-	/* 				/1* __update_A8_8_A12_13(A8_8, a, b, c, A1_1); *1/ */
-	/* 				__update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
-	/* 				__update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
-	/* 				/1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
-	/* 				__update_A9_10_A12_12(A9_10, a, b, c, A3_3); */
-	/* 				__update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
-	/* 			} */
-	/* 		} */
-	/* 	} */
-	/* } */
+					}else{
+						/* // three node path */
+						__update_A4_5_A8_8(A4_5, b, a, c, A1_2);
+						__update_A9_11_A12_13(A9_11, b, a, c, A3_3);
+ 						__update_A6_6_A9_10(A6_6, b, a, c, A1_2);
+						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
+						__update_A8_8_A12_13(A8_8, b, a, c, A1_1);
+						__update_A8_8bis_A4_5bis(A4_5_bis, b, a, c, A1_2);
+						/* __update_A8_8_A5_5(A8_8, b, a, c, A1_2); */
+						/* __update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2); */
+						/* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); */
+						__update_A12_12_A8_8bis(A8_8_bis, b, a, c, A1_1);
+						/* __update_A8_8bis_A12_12(A8_8_bis, b, a, c, A1_2); */
+						/* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); */
+						__update_A9_10_A12_12(A9_10, b, a, c, A3_3);
+						/* __update_A8_8_A12_13(A12_13, b, a, c, A1_1); */
+					}
+				}
+			}
+		}
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=0; j<G.adj_out[b].size(); j++){
+				// out-out wedge
+				// a -> b -> c
+				c = G.adj_out[b][j];
+				if (! G.has_out_edge(a, c)){
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
+					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
+					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
+ 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
+					__update_A8_8_A12_13(A8_8, a, b, c, A1_1);
+					/* __update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+					/* __update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
+					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
+					__update_A8_8bis_A4_5bis(A4_5_bis, a, b, c, A1_2);
+					__update_A12_12_A8_8bis(A8_8_bis, a, b, c, A1_1);
+					/* __update_A8_8bis_A12_12(A8_8_bis, a, b, c, A1_2); */
+					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
+					/* __update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+				}
+			}
+		}
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=G.adj_in[b].size()-1; j>-1; j--){
+				// in-out wedge
+				// a -> b <- c
+				c = G.adj_in[b][j];
+				if (c <= a){ break; }
+				if (! G.has_out_edge(a, c)){
+					__update_A4_5_A8_8(A4_5, a, b, c, A1_2);
+					__update_A9_11_A12_13(A9_11, a, b, c, A3_3);
+					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
+ 					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
+					__update_A8_8_A12_13(A8_8, a, b, c, A1_1);
+					/* __update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+					/* __update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
+					__update_A8_8bis_A4_5bis(A4_5_bis, a, b, c, A1_2);
+					/* /1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
+					__update_A12_12_A8_8bis(A8_8_bis, a, b, c, A1_1);
+					/* __update_A8_8bis_A12_12(A8_8_bis, a, b, c, A1_2); */
+					__update_A9_10_A12_12(A9_10, a, b, c, A3_3);
+					/* __update_A8_8_A12_13(A12_13, a, b, c, A1_1); */
+				}
+			}
+		}
+	}
     	
-	/* end_time = std::chrono::system_clock::now(); */
-	/* __print_execution_time(start_time, end_time); */
-	/* start_time = end_time; */
+	end_time = std::chrono::system_clock::now();
+	__print_execution_time(start_time, end_time);
+	start_time = end_time;
 
 	std::cout<<"COMPUTING ADJACENCY MATRICES"<<std::endl;
 	/* // ordering matters !!! */  	
-	/* // 1. dependend on brute force matrices */
-	/* A12_13.subtract_matrix_multiple(A14_14, 2); */
-	/* A13_13.subtract_matrix_multiple(A14_14, 2); */
+	// 1. dependend on brute force matrices
+	A12_13.subtract_matrix_multiple(A14_14, 2);
+	A13_13.subtract_matrix_multiple(A14_14, 2);
 	/* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); */
+	A8_8_bis.subtract_matrix_multiple(A12_12, 2);
+	A9_10.subtract_matrix_multiple(A12_12, 2);
 	
 	/* // 2. dependend on infered matrices */
-	/* A8_8.subtract_matrix_multiple(A12_13, 1); */
-	/* A9_11.subtract_matrix_multiple(A12_13, 1); */
-	/* A10_10.subtract_matrix_multiple(A12_13, 1); */
-	/* A10_11.subtract_matrix_multiple(A12_13, 1); */
-	/* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 */
-
-	/* //3. depend on infered infered matrices */
-	/* /1* A4_5.subtract_matrix_multiple(A8_8, 1); *1/ */
-	/* /1* A5_5.subtract_matrix_multiple(A8_8, 1); *1/ */
-	/* A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 */ 
-	/* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 */
-	
-	/* // 4. depends on infered infered infered matrices */
-	/* A6_6.subtract_matrix_multiple(A9_10, 1); */
-	
-	
-	// ordering matters !!!  	
-	// SINGLE HOP
-	// 1. dependend on infered matrices
-	/* A8_8.subtract_matrix_multiple(A5_5, 1); */
-	/* A8_8.subtract_matrix(A5_5); */
-
-	// 2. depend on infered infered matrices
-	A12_13.subtract_matrix_multiple(A8_8, 1);	
-	A4_5.subtract_matrix_multiple(A8_8, 1);
-	
-	// 3. depends on infered infered infered matrices
-	/* A14_14.subtract_matrix_multiple(A12_13, 1); */
+	A8_8.subtract_matrix(A12_13);
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
-	
-	// 4. depends on infered infered infered infered matrices	
+
+	/* //3. depend on infered infered matrices */
+	A4_5.subtract_matrix_multiple(A8_8, 1);
+	A5_5.subtract_matrix_multiple(A8_8, 1);
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
-	/* A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two */
-	
-	// DOUBLE HOP
-	// 1. dependend on brute force matrices
-	/* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); */
-	/* A8_8_bis.subtract_matrix(A4_5_bis); */
-	
-	// 2. dependend on infered matrices
-	/* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 */
-	
-	//3. depend on infered infered matrices
-	/* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 */
-	
-	// 4. depends on infered infered infered matrices
 	A6_6.subtract_matrix_multiple(A9_10, 1);
+	
+	/* // 4. depends on infered infered infered matrices */
+	
+	
+	/* // ordering matters !!! */  	
+	/* // SINGLE HOP */
+	/* // 1. dependend on infered matrices */
+	/* /1* A8_8.subtract_matrix_multiple(A5_5, 1); *1/ */
+	/* /1* A8_8.subtract_matrix(A5_5); *1/ */
+
+	/* // 2. depend on infered infered matrices */
+	/* A12_13.subtract_matrix_multiple(A8_8, 1); */	
+	/* A4_5.subtract_matrix_multiple(A8_8, 1); */
+	
+	/* // 3. depends on infered infered infered matrices */
+	/* /1* A14_14.subtract_matrix_multiple(A12_13, 1); *1/ */
+	/* A9_11.subtract_matrix_multiple(A12_13, 1); */
+	/* A10_10.subtract_matrix_multiple(A12_13, 1); */
+	/* A10_11.subtract_matrix_multiple(A12_13, 1); */
+	
+	/* // 4. depends on infered infered infered infered matrices */	
+	/* A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 */ 
+	/* /1* A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two *1/ */
+	
+	/* // DOUBLE HOP */
+	/* // 1. dependend on brute force matrices */
+	/* /1* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); *1/ */
+	/* /1* A8_8_bis.subtract_matrix(A4_5_bis); *1/ */
+	
+	/* // 2. dependend on infered matrices */
+	/* /1* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 *1/ */
+	
+	/* //3. depend on infered infered matrices */
+	/* /1* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 *1/ */
+	
+	/* // 4. depends on infered infered infered matrices */
+	/* A6_6.subtract_matrix_multiple(A9_10, 1); */
 	
     	end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
@@ -595,9 +607,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					A1_1_numpy,     // 0  Brute force
 					A1_2_numpy,     // 1  Brute force
 					A3_3_numpy,     // 2  Brute force
-					A4_4_numpy,     // 3  Brute force
+					A4_4_numpy,     // 3   no computed
 					A4_5_numpy,     // 4  Inf. (1-hop) 
-					A4_5_bis_numpy, // 5  Brute Force 
+					A4_5_bis_numpy, // 5  Inf. (2-hop)
 					A5_5_numpy,     // 6  Inf. (1-hop)
 					A6_6_numpy,     // 7  Inf. (2-hop)
 					A6_7_numpy,     // 8  Inf. (1-hop)
