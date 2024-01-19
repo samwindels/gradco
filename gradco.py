@@ -253,13 +253,13 @@ class Counter(object):
                     for c in G_digraph.successors(a):
                         if c >b:
                             for d in G_digraph.successors(b):
-                                if G.has_edge(b, c) and G.has_edge(d, c) and not G.has_edge(a, d):
+                                if G_digraph.has_edge(b, c) and G.has_edge(c, d) and not G_digraph.has_edge(a, d):
                                     print("iso 3 and 4:", a, b, c, d)
                                     A[a, d] += 1
                                     A[d, a] += 1
                             for d in G_digraph.predecessors(b):
                                 if d > a:
-                                    if G.has_edge(b, c) and G.has_edge(d, c) and not G.has_edge(a, d):
+                                    if G_digraph.has_edge(b, c) and G_digraph.has_edge(d, c) and not G_digraph.has_edge(a, d):
                                         print("iso 5", a, b, c, d)
                                         A[a, d] += 1
                                         A[d, a] += 1
@@ -269,9 +269,9 @@ class Counter(object):
         
     
     def get_orbit_adjacency(self, hop, o1, o2):
-        print(hop, o1, o2)
-        if hop==2 and o1==12 and o2==12:
-            return self.compute_A12_12_digraph(self.__A)
+        # print(hop, o1, o2)
+        # if hop==2 and o1==12 and o2==12:
+        #     return self.compute_A12_12_digraph(self.__A)
 
         if o1 < o2: 
             key = (hop, o1, o2)
