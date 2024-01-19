@@ -2,6 +2,18 @@ import gradco_c_routines
 import numpy as np
 from scipy.sparse import csr_array, save_npz, load_npz
 
+import time
+from collections.abc import Iterator
+from contextlib import contextmanager
+
+@contextmanager
+def time_it() -> Iterator[None]:
+    tic: float = time.perf_counter()
+    try:
+        yield
+    finally:
+        toc: float = time.perf_counter()
+        print(f"Computation time = {1000*(toc - tic):.3f}ms")
 
 class Counter(object):
 
@@ -68,7 +80,14 @@ class Counter(object):
     def __apply_degree_ordering(self, A):
         rowsum = np.asarray(A.sum(axis=1)).squeeze() # scipy returns numpy matrix instead of array
         order = np.argsort(rowsum, axis=0)
-        order = np.arange(A.shape[0]) # TODO: remove this line
+        # import networkx as nx
+        # G = nx.from_scipy_sparse_array(A) 
+        # G = nx.from_numpy_array(A) 
+        # core_numbers = nx.core_number(G)
+        # order = np.argsort([ core_numbers[node] for node in G.nodes()], axis=0)
+        
+        # order = np.arange(A.shape[0]) # TODO: remove this line
+        
         reverse_order = np.argsort(order)
         A = A[order, :]
         A = A[:, order]
@@ -81,6 +100,9 @@ class Counter(object):
 
     # CALL C ROUTINES
     def count(self):
+        A = self.__A.todense()
+        with time_it():
+            A3 = np.linalg.matrix_power(A, 3)
         rows, cols = self.__A.nonzero()
         self.__orbit_adjacencies = gradco_c_routines.gradco_c_count(rows, cols, self.__n)
 

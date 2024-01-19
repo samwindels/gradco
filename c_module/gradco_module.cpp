@@ -521,7 +521,6 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	// 1. dependend on brute force matrices
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
-	/* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); */
 	A8_8_bis.subtract_matrix_multiple(A12_12, 2);
 	A9_10.subtract_matrix_multiple(A12_12, 2);
 	
@@ -530,49 +529,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
+	A6_6.subtract_matrix_multiple(A9_10, 1);
 
 	/* //3. depend on infered infered matrices */
 	A4_5.subtract_matrix_multiple(A8_8, 1);
 	A5_5.subtract_matrix_multiple(A8_8, 1);
-	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
-	A6_6.subtract_matrix_multiple(A9_10, 1);
-	
-	/* // 4. depends on infered infered infered matrices */
-	
-	
-	/* // ordering matters !!! */  	
-	/* // SINGLE HOP */
-	/* // 1. dependend on infered matrices */
-	/* /1* A8_8.subtract_matrix_multiple(A5_5, 1); *1/ */
-	/* /1* A8_8.subtract_matrix(A5_5); *1/ */
-
-	/* // 2. depend on infered infered matrices */
-	/* A12_13.subtract_matrix_multiple(A8_8, 1); */	
-	/* A4_5.subtract_matrix_multiple(A8_8, 1); */
-	
-	/* // 3. depends on infered infered infered matrices */
-	/* /1* A14_14.subtract_matrix_multiple(A12_13, 1); *1/ */
-	/* A9_11.subtract_matrix_multiple(A12_13, 1); */
-	/* A10_10.subtract_matrix_multiple(A12_13, 1); */
-	/* A10_11.subtract_matrix_multiple(A12_13, 1); */
-	
-	/* // 4. depends on infered infered infered infered matrices */	
-	/* A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 */ 
-	/* /1* A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two *1/ */
-	
-	/* // DOUBLE HOP */
-	/* // 1. dependend on brute force matrices */
-	/* /1* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); *1/ */
-	/* /1* A8_8_bis.subtract_matrix(A4_5_bis); *1/ */
-	
-	/* // 2. dependend on infered matrices */
-	/* /1* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 *1/ */
-	
-	/* //3. depend on infered infered matrices */
-	/* /1* A9_10.subtract_matrix_multiple(A12_12, 1);  // A12_12 is already times 2 *1/ */
-	
-	/* // 4. depends on infered infered infered matrices */
-	/* A6_6.subtract_matrix_multiple(A9_10, 1); */
+	A6_7.subtract_matrix_multiple(A9_11, 1);
 	
     	end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);

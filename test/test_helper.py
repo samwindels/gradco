@@ -7,8 +7,8 @@ import inspect
 from scipy.sparse import csr_array, csr_matrix
 
 
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 
 def matches_count_windels(triu, graphlet, expected_counts):

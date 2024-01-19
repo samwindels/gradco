@@ -13,6 +13,33 @@ void SparseMatrix::subtract_matrix_multiple(SparseMatrix& m, int scalar){
 	}
 }
 
+void SparseMatrix::subtract_matrix(SparseMatrix& m){
+	for (int a=0; a<m.get_n(); a++)
+	{
+		for(auto b : m.adj[a]) {
+			subtract_scalar(a, b.first, b.second);
+		}
+	}
+}
+
+// NOT TESTED
+/* void SparseMatrix::subtract_matrix(DenseMatrix& m){ */
+
+/* 	unsigned int val = 0; */
+/* 	for (unsigned int row=0; row<m.get_n(); row++) */
+/* 	{ */
+/* 		for (unsigned int col=row+1; col<m.get_n(); col++) { */
+/* 			val = m.get(row, col); */
+/* 			if (val != 0){ */
+/* 				subtract_scalar(row, col, val); */
+/* 			} */
+/* 			val = m.get(col, row); */
+/* 			if (val != 0){ */
+/* 				subtract_scalar(col, row, val); */
+/* 			} */
+/* 		} */
+/* 	} */
+/* } */
 
 void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m){
 
@@ -23,6 +50,24 @@ void SparseMatrix::subtract_matrix(SymmetricDenseMatrix& m){
 		for (unsigned int col=row+1; col<m.get_n(); col++) {
 			val = m.get(flat_i);
 			if (val != 0){
+				subtract_scalar(row, col, val);
+				subtract_scalar(col, row, val);
+			}
+			flat_i++;
+		}
+	}
+}
+
+void SparseMatrix::subtract_matrix_multiple(SymmetricDenseMatrix& m, int scalar){
+
+	unsigned int flat_i = 0;
+	unsigned int val = 0;
+	for (unsigned int row=0; row<m.get_n(); row++)
+	{
+		for (unsigned int col=row+1; col<m.get_n(); col++) {
+			val = m.get(flat_i);
+			if (val != 0){
+				val *= scalar;
 				subtract_scalar(row, col, val);
 				subtract_scalar(col, row, val);
 			}

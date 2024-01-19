@@ -39,8 +39,11 @@ class SparseMatrix{
 	int get_n();
 	
 	void subtract_matrix_multiple(SparseMatrix& m, int scalar);
+	void subtract_matrix_multiple(SymmetricDenseMatrix& m, int scalar);
 	void subtract_matrix(SymmetricDenseMatrix& m);
+	void subtract_matrix(SparseMatrix& m);
 	void subtract_matrix(DenseMatrix& m);
+
 	void add_scalar(int a, int b, int v);
 	PyObject* to_numpy();
 	PyObject* to_numpy_and_divide(int numerator);
