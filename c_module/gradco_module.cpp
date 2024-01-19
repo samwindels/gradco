@@ -292,13 +292,14 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	std::chrono::system_clock::time_point start_time = init_time;
 	
 	// INITIALIZE MATRICES
-	SymmetricDenseMatrix A1_1     = SymmetricDenseMatrix(n);  // 3-node path, outside orbits
-	DenseMatrix A1_2     = DenseMatrix(n);  // 3-node path, outside and middle orbits
-	SymmetricDenseMatrix A12_12   = SymmetricDenseMatrix(n);  // 4-node cycle with chord, inside orbits
-	SymmetricDenseMatrix A3_3     = SymmetricDenseMatrix(n);  // 3-node triangle, inside orbits
-	SymmetricDenseMatrix A14_14   = SymmetricDenseMatrix(n);  // 4-node clique 
+	SymmetricDenseMatrix A1_1   = SymmetricDenseMatrix(n);  // 3-node path, outside orbits
+	DenseMatrix A1_2     	    = DenseMatrix(n);  // 3-node path, outside and middle orbits
+	SymmetricDenseMatrix A3_3   = SymmetricDenseMatrix(n);  // 3-node triangle, inside orbits
+	SymmetricDenseMatrix A12_12 = SymmetricDenseMatrix(n);  // 4-node cycle with chord, double hop orbits 
+	SymmetricDenseMatrix A14_14 = SymmetricDenseMatrix(n);  // 4-node clique 
 
 	int a, b, c, d;
+	bool bc_connected;
 
 	std::cout<<"BRUTE FORCE"<<std::endl;
 	for (a = 0; a < n; a++){
@@ -309,24 +310,96 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 				// b <- a -> c, with b < c
 				c = G.adj_out[a][j];
 				if (G.has_out_edge(b, c)){
-					// triangle
-					for (int k=j+1; k<G.adj_out[a].size(); k++){
-						d = G.adj_out[a][k];
-						if (G.has_out_edge(c, d)){
+					// triangle 
+					A3_3.increment(a, b);
+					A3_3.increment(a, c);
+					A3_3.increment(b, c);
+					bc_connected = true;
+				}
+				else { 
+					// 3-node path
+					// b <- a -> c, with b < c
+					A1_1.increment(b, c);
+					A1_2.increment(b, a);
+					A1_2.increment(c, a);
+					bc_connected = false; 
+				}
+			
+				// case where 'a' might be on orbit 13	
+				for (int k=j+1; k<G.adj_out[a].size(); k++){
+					d = G.adj_out[a][k];
+					if (bc_connected){
+						if (G.has_out_edge(b, d)){
 							if (G.has_out_edge(c, d)){
-							//update A14_14
+								// 4-node clique
+								A14_14.increment(a, b);
+								A14_14.increment(a, c);
+								A14_14.increment(a, d);
+								A14_14.increment(b, c);
+								A14_14.increment(b, d);
+								A14_14.increment(c, d);
 							}
-							else{
-								A12_12.increment(a, c);
+							else {
+								// 4-node cycle with chord
+								// G7 isomorphism 0
+								A12_12.increment(c, d);
 							}
+						} else if (G.has_out_edge(c, d)){
+							// 4-node cycle with chord
+							// G7 isomorphism 1
+							A12_12.increment(b, d);
+						}
+					} else if (G.has_out_edge(b, d) && G.has_out_edge(c, d)){
+						// 4-node cycle with chord
+						// G7 isomorphism 2
+						A12_12.increment(b, c);
+					}
+				}
+				// case where 'a' might be on orbit 12	
+				if (bc_connected){
+					for (int k=0; k<G.adj_out[b].size(); k++){
+						d = G.adj_out[b][k];
+						if ((!G.has_out_edge(a, d) && (G.has_out_edge(c, d) or G.has_out_edge(d,c)))){
+						// 4-node cycle with chord
+						// G7 isomorphism 3 and 4
+							A12_12.increment(a, d);
 						}
 					}
-					for(int k=0; k<G.adj_in[a].size();k++){
-						d = G.adj_in[a][k];
-						if (G.has_out_edge(d, c) && !G.has_out_edge(d, b)){
-							A12_12.increment(a, c);
+					for (int k=G.adj_in[b].size()-1; k>-1; k--){
+						d = G.adj_in[b][k];
+						if (d <=a) {break;}
+						if (G.has_out_edge(d, c) && ! G.has_out_edge(a, d)){
+							// 4-node cycle with chord
+							// G7 isomorphism 5
+							A12_12.increment(a, d);
 						}
 					}
+				}
+			}
+			for (int j=0; j<G.adj_out[b].size(); j++){
+				c = G.adj_out[b][j];
+				// out-out wedge
+				// a -> b -> c
+				if (! G.has_out_edge(a, c)){
+					// 3-node path
+					A1_1.increment(a, c);
+					A1_2.increment(a, b);
+					A1_2.increment(c, b);
+				}
+			}
+		}
+		for (int i=0; i<G.adj_out[a].size(); i++){
+			b = G.adj_out[a][i];
+			for (int j=G.adj_in[b].size()-1; j>-1; j--){
+				// out-in wedge
+				// a -> b <- c
+				c = G.adj_in[b][j];
+				if (c <= a){ break; }
+				if (! G.has_out_edge(a, c)){
+					A1_1.increment(a, c);
+					A1_2.increment(a, b);
+					A1_2.increment(c, b);
+
 				}
 			}
 		}
@@ -339,6 +412,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	std::cout<<"COMPUTING REDUNDANCY MATRICES"<<std::endl;
 	// INITIALIZE REDUNDANCY MATRICES
 	SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour
+	SparseMatrix A4_5_bis  = SparseMatrix(n);  // 4-node path, outside orbit and node two hops away 
+	SparseMatrix A5_5     = SparseMatrix(n);  // 4-node path, both inside orbits 
 	SparseMatrix A6_6     = SparseMatrix(n);  // 4-node star, outside orbits 
 	SparseMatrix A6_7     = SparseMatrix(n);  // 4-node star, outsite to centre orbits 
 	SparseMatrix A8_8     = SparseMatrix(n);  // 4-node cycle, neighbouring nodes 
@@ -347,10 +422,8 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	SparseMatrix A9_11    = SparseMatrix(n);  // 4-node paw,
 	SparseMatrix A10_10   = SparseMatrix(n);  // 4-node paw,
 	SparseMatrix A10_11   = SparseMatrix(n);  // 4-node paw,
-	/* SparseMatrix A12_12   = SparseMatrix(n);  // 4-node cycle with chord, */
 	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
 	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
-	SparseMatrix A14_14   = SparseMatrix(n);  // 4-node cycle with chord,
 	
 	/* for (int a = 0; a < n; a++){ */
 	/* 	if (G.adj_out[a].size() >= 2){ */
@@ -459,26 +532,26 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	// SINGLE HOP
 	// 1. dependend on infered matrices
 	/* A8_8.subtract_matrix_multiple(A5_5, 1); */
-	A8_8.subtract_matrix(A5_5);
+	/* A8_8.subtract_matrix(A5_5); */
 
 	// 2. depend on infered infered matrices
 	A12_13.subtract_matrix_multiple(A8_8, 1);	
 	A4_5.subtract_matrix_multiple(A8_8, 1);
 	
 	// 3. depends on infered infered infered matrices
-	A14_14.subtract_matrix_multiple(A12_13, 1);
+	/* A14_14.subtract_matrix_multiple(A12_13, 1); */
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
 	
 	// 4. depends on infered infered infered infered matrices	
 	A6_7.subtract_matrix_multiple(A9_11, 1);  // A_9_11 is already times 2 
-	A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two
+	/* A13_13.subtract_matrix_multiple(A14_14, 1);  // A14_14 is already times two */
 	
 	// DOUBLE HOP
 	// 1. dependend on brute force matrices
 	/* A8_8_bis.subtract_matrix_multiple(A4_5_bis, 1); */
-	A8_8_bis.subtract_matrix(A4_5_bis);
+	/* A8_8_bis.subtract_matrix(A4_5_bis); */
 	
 	// 2. dependend on infered matrices
 	/* A12_12.subtract_matrix_multiple(A8_8_bis, 1);  // A8_8_bis is already times 2 */
@@ -498,7 +571,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A1_1_numpy     = A1_1.to_numpy();
 	PyObject* A1_2_numpy     = A1_2.to_numpy();
 	PyObject* A3_3_numpy     = A3_3.to_numpy();
-	PyObject* A4_4_numpy     = A4_4.to_numpy();
+	PyObject* A4_4_numpy     = A3_3.to_numpy();
 	PyObject* A4_5_numpy     = A4_5.to_numpy();
 	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
@@ -511,13 +584,11 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A9_11_numpy    = A9_11.to_numpy_and_divide(2);
 	PyObject* A10_10_numpy   = A10_10.to_numpy();
 	PyObject* A10_11_numpy   = A10_11.to_numpy();
-	/* PyObject* A12_12_numpy   = A12_12.to_numpy_and_divide(2); */
 	PyObject* A12_12_numpy   = A12_12.to_numpy();
 	PyObject* A12_13_numpy   = A12_13.to_numpy();
 	// correcting only here to avoid iterating over the matrix twice (correction + to_numpy)
 	PyObject* A13_13_numpy   = A13_13.to_numpy_and_divide(2);  
-	/* PyObject* A14_14_numpy   = A14_14.to_numpy(); */
-	PyObject* A14_14_numpy = A14_14.to_numpy_and_divide(2);
+	PyObject* A14_14_numpy   = A14_14.to_numpy();
 
 	
 	PyObject* tuple = Py_BuildValue("(OOOOOOOOOOOOOOOOOOO)", 
