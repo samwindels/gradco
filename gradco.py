@@ -232,18 +232,18 @@ class Counter(object):
                         if c >b:
                             for d in G_digraph.successors(a):
                                 if d > c:
-                                    if G.has_edge(b, c):
-                                        if G.has_edge(b, d):
-                                            if not G.has_edge(c, d):
+                                    if G_digraph.has_edge(b, c):
+                                        if G_digraph.has_edge(b, d):
+                                            if not G_digraph.has_edge(c, d):
                                                 print("iso 0:", a, b, c, d)
                                                 A[c, d] += 1
                                                 A[d, c] += 1
-                                        elif G.has_edge(c, d):
-                                                print("iso 2:", a, b, c, d)
+                                        elif G_digraph.has_edge(c, d):
+                                                print("iso 1:", a, b, c, d)
                                                 A[b, d] += 1
                                                 A[d, b] += 1
-                                    elif G.has_edge(d, b) and G.has_edge(d, c):
-                                        print("iso 3:", a, b, c, d)
+                                    elif G_digraph.has_edge(b, d) and G.has_edge(c, d):
+                                        print("iso 2:", a, b, c, d)
                                         A[c, b] += 1
                                         A[b, c] += 1
         # a is on orbit 13
