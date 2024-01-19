@@ -2,6 +2,7 @@ import gradco_c_routines
 import numpy as np
 from scipy.sparse import csr_array, save_npz, load_npz
 
+
 class Counter(object):
 
     # (hop, orbit1, orbit2) -> c_index
@@ -67,6 +68,7 @@ class Counter(object):
     def __apply_degree_ordering(self, A):
         rowsum = np.asarray(A.sum(axis=1)).squeeze() # scipy returns numpy matrix instead of array
         order = np.argsort(rowsum, axis=0)
+        order = np.arange(A.shape[0]) # TODO: remove this line
         reverse_order = np.argsort(order)
         A = A[order, :]
         A = A[:, order]
@@ -207,49 +209,67 @@ class Counter(object):
             A = self.__apply_reverse_ordering(A)
             return A
     
-    # def compute_A12_12_digraph(adj):
+    def compute_A12_12_digraph(self, adj):
+        import networkx as nx
    
-    #     G_digraph = nx.from_numpy_array(adj, using=nx.DiGraph)
-    #     # G_digraph = nx.DiGraph(nodes=G.nodes())
-    #     # G_digraph.add_edges_from(G.edges())
-    #     # k = G_digraph.number_of_nodes()
-    #     A = np.zeros(A.shape)
-    
-    #     print(G_digraph.edges())
-    
-    #     for a in G_digraph.nodes():
-    #         for b in G_digraph.successors(a):
-    #             for c in G_digraph.successors(a):
-    #                 if c>b:
-    #                     if G.has_edge(a, c): # check if b,c have triangle neighbours
-    #                         # a is on orbit 12
-    #                         for d in G_digraph.successors(c):
-    #                             if d != a and d != b:
-    #                                 if G.has_edge(d, b):
-    #                                     if not G.has_edge(d, a):
-    #                                         # print(a, b, c, d)
-    #                                         A[a, d] += 1
-    #                                         A[d, a] += 1
-    #                         # check if a,b have triangle neighbours
-    #                         # a is on orbit 13
-    #                         # for d in G_digraph.neighbors(b):
-    #                         #     if d != c and d != a:
-    #                         #         if G_digraph.has_edge(d, a):
-    #                         #             if not G.has_edge(c, d):
-    #                         #                 A[c, d] += 1
-    #                         #                 # A[d, c] += 1
-    #                         #                 print('hit', a, b, c, d)
-    #                         for d in G_digraph.neighbors(a):
-    #                             if d != c and d != b:
-    #                                 if G.has_edge(d, b):
-    #                                     if not G.has_edge(c, d):
-    #                                         A[c, d] += 1
-    #                                         A[d, c] += 1
-    #     return A
+        G = nx.from_numpy_array(adj, create_using=nx.Graph)
+        G_digraph = nx.DiGraph(nodes=G.nodes())
+        # G_digraph = nx.from_numpy_array(adj, create_using=nx.DiGraph)
+        G_digraph.add_edges_from(G.edges())
+        # k = G_digraph.number_of_nodes()
+        A = np.zeros(adj.shape)
+
+        for i in range(6):
+            G_isoforms = nx.read_edgelist(f"determine_G7_directed_isoforms/G7_isoforms/G7_{i}.edgelist", create_using=nx.DiGraph)
+            if nx.is_isomorphic(G_digraph, G_isoforms):
+                print(f"ISOFORM {i}")
+
+        print(G_digraph.edges())
+        for a in G_digraph.nodes():
+            for b in G_digraph.successors(a):
+                if b > a:
+                    for c in G_digraph.successors(a):
+                        if c >b:
+                            for d in G_digraph.successors(a):
+                                if d > c:
+                                    if G.has_edge(b, c) and G.has_edge(b, d) and not G.has_edge(c, d):
+                                        print("iso 0:", a, b, c, d)
+                                        A[c, d] += 1
+                                        A[d, c] += 1
+                                    if G.has_edge(c, b) and G.has_edge(c, d) and not G.has_edge(b, d):
+                                        print("iso 2:", a, b, c, d)
+                                        A[b, d] += 1
+                                        A[d, b] += 1
+                                    if G.has_edge(d, b) and G.has_edge(d, c) and not G.has_edge(b, c):
+                                        print("iso 3:", a, b, c, d)
+                                        A[c, b] += 1
+                                        A[b, c] += 1
+        # a is on orbit 13
+        for a in G_digraph.nodes():
+            for b in G_digraph.successors(a):
+                if b > a:
+                    for c in G_digraph.successors(a):
+                        if c >b:
+                            for d in G_digraph.successors(b):
+                                if G.has_edge(b, c) and G.has_edge(d, c) and not G.has_edge(a, d):
+                                    print("iso 3 and 4:", a, b, c, d)
+                                    A[a, d] += 1
+                                    A[d, a] += 1
+                            for d in G_digraph.predecessors(b):
+                                if d > a:
+                                    if G.has_edge(b, c) and G.has_edge(d, c) and not G.has_edge(a, d):
+                                        print("iso 5", a, b, c, d)
+                                        A[a, d] += 1
+                                        A[d, a] += 1
+
+        return A
+
+        
     
     def get_orbit_adjacency(self, hop, o1, o2):
-        # if hop==1 and o1==12 and o2==12:
-        #     return self.compute_A12_12_digraph(self.__A)
+        print(hop, o1, o2)
+        if hop==2 and o1==12 and o2==12:
+            return self.compute_A12_12_digraph(self.__A)
 
         if o1 < o2: 
             key = (hop, o1, o2)
