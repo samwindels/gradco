@@ -106,29 +106,42 @@ class Counter(object):
             self.__compute_A4_4()
 
     def __compute_A4_4(self):
-            with time_it():
-                try:
-                    A3 = np.linalg.matrix_power(self.__A, 3)
-                except:
-                    A3 = np.linalg.matrix_power(self.__A.todense(), 3)
-            with time_it():
-                A3 -=  self.get_orbit_adjacency(1, 0, 0)
-                A3 -=  self.get_orbit_adjacency(1, 1, 2).todense()
-                A3 -=  self.get_orbit_adjacency(1, 2, 1).todense()
-                A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).todense()
-                A3 -= self.get_orbit_adjacency(1, 8, 8).todense()
-                A3 -= self.get_orbit_adjacency(2, 9, 10).todense()
-                A3 -= self.get_orbit_adjacency(2, 10, 9).todense()
-                A3 -= self.get_orbit_adjacency(1, 12, 13).todense()
-                A3 -= self.get_orbit_adjacency(1, 13, 12).todense()
-                A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
-                A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
-                np.fill_diagonal(A3, 0)
-                c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
-                rows, cols = A3.nonzero()
-                vals = A3[rows, cols]
-                if len(rows) > 0:
-                    self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
+        A4_4 = self.get_orbit_adjacency(2, 1, 1) @ self.get_orbit_adjacency(1, 0, 0)
+        A4_4 -= self.get_orbit_adjacency(1, 8, 8)
+        A4_4 -= self.get_orbit_adjacency(1, 12, 13)
+        A4_4 -= self.get_orbit_adjacency(2, 9, 10)
+        A4_4 -= self.get_orbit_adjacency(1, 1, 2)
+        c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+        rows, cols = A4_4.nonzero()
+        vals = A4_4[rows, cols]
+        if len(rows) > 0:
+            self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
+
+
+    # def __compute_A4_4(self):
+    #         with time_it():
+    #             try:
+    #                 A3 = np.linalg.matrix_power(self.__A, 3)
+    #             except:
+    #                 A3 = np.linalg.matrix_power(self.__A.todense(), 3)
+    #         with time_it():
+    #             A3 -=  self.get_orbit_adjacency(1, 0, 0)
+    #             A3 -=  self.get_orbit_adjacency(1, 1, 2).todense()
+    #             A3 -=  self.get_orbit_adjacency(1, 2, 1).todense()
+    #             A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).todense()
+    #             A3 -= self.get_orbit_adjacency(1, 8, 8).todense()
+    #             A3 -= self.get_orbit_adjacency(2, 9, 10).todense()
+    #             A3 -= self.get_orbit_adjacency(2, 10, 9).todense()
+    #             A3 -= self.get_orbit_adjacency(1, 12, 13).todense()
+    #             A3 -= self.get_orbit_adjacency(1, 13, 12).todense()
+    #             A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
+    #             A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
+    #             np.fill_diagonal(A3, 0)
+    #             c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+    #             rows, cols = A3.nonzero()
+    #             vals = A3[rows, cols]
+    #             if len(rows) > 0:
+    #                 self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
 
     # GRAPHLET ADJACENCIES
     def get_graphlet_adjacency(self, graphlet):
