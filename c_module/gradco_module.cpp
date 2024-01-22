@@ -545,7 +545,12 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	PyObject* A1_1_numpy     = A1_1.to_numpy();
 	PyObject* A1_2_numpy     = A1_2.to_numpy();
 	PyObject* A3_3_numpy     = A3_3.to_numpy();
-	PyObject* A4_4_numpy     = A3_3.to_numpy();
+	
+	const npy_intp dims[2] = {3, 0};
+	int* np_array_empty = new int[0];
+	// empty array. actual counts computed on python side
+	PyObject* A4_4_numpy     = PyArray_SimpleNewFromData(2, dims, NPY_INT, np_array_empty);  
+	
 	PyObject* A4_5_numpy     = A4_5.to_numpy();
 	PyObject* A4_5_bis_numpy = A4_5_bis.to_numpy();
 	PyObject* A5_5_numpy     = A5_5.to_numpy();
