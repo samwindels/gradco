@@ -55,10 +55,9 @@ class Counter(object):
 
         # book keeping
         self.__n = A.shape[0]            # number of nodes
-        self.__orbit_adjacencies = None  # where c counts will be stored
+        self.orbit_adjacencies = None  # where c counts will be stored
     
         
-
     # SANITY CHECKS ON ADJACENCY MATRIX
     def __assert_unweighted(self, A):
         if not np.all(np.logical_or(A == 0, A == 1)):
@@ -86,7 +85,7 @@ class Counter(object):
         # core_numbers = nx.core_number(G)
         # order = np.argsort([ core_numbers[node] for node in G.nodes()], axis=0)
         
-        # order = np.arange(A.shape[0]) # TODO: remove this line
+        order = np.arange(A.shape[0]) # TODO: remove this line
         
         reverse_order = np.argsort(order)
         A = A[order, :]
@@ -100,11 +99,38 @@ class Counter(object):
 
     # CALL C ROUTINES
     def count(self):
-        A = self.__A.todense()
-        with time_it():
-            A3 = np.linalg.matrix_power(A, 3)
+        # A = self.__A.todense()
         rows, cols = self.__A.nonzero()
-        self.__orbit_adjacencies = gradco_c_routines.gradco_c_count(rows, cols, self.__n)
+        if len(rows) > 0:
+            self.orbit_adjacencies = list(gradco_c_routines.gradco_c_count(rows, cols, self.__n))
+            self.__compute_A4_4()
+
+    def __compute_A4_4(self):
+            with time_it():
+                try:
+                    A3 = np.linalg.matrix_power(self.__A, 3)
+                except:
+                    A3 = np.linalg.matrix_power(self.__A.todense(), 3)
+            with time_it():
+                A3 -=  self.get_orbit_adjacency(1, 0, 0)
+                A3 -=  self.get_orbit_adjacency(1, 1, 2).todense()
+                A3 -=  self.get_orbit_adjacency(1, 2, 1).todense()
+                A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).todense()
+                A3 -= self.get_orbit_adjacency(1, 8, 8).todense()
+                A3 -= self.get_orbit_adjacency(2, 9, 10).todense()
+                A3 -= self.get_orbit_adjacency(2, 10, 9).todense()
+                A3 -= self.get_orbit_adjacency(1, 12, 13).todense()
+                A3 -= self.get_orbit_adjacency(1, 13, 12).todense()
+                A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
+                A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
+                np.fill_diagonal(A3, 0)
+                print('A3')
+                print(A3) 
+                c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+                rows, cols = A3.nonzero()
+                vals = A3[rows, cols]
+                if len(rows) > 0:
+                    self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
 
     # GRAPHLET ADJACENCIES
     def get_graphlet_adjacency(self, graphlet):
@@ -226,7 +252,7 @@ class Counter(object):
             return self.__get_graphlet_adjacency_0()
         else:
 
-            A_sparse = self.__orbit_adjacencies[i]
+            A_sparse = self.orbit_adjacencies[i]
             A = csr_array((A_sparse[2,:], (A_sparse[0,:], A_sparse[1,:])), shape=(self.__n, self.__n))
             A = self.__apply_reverse_ordering(A)
             return A
@@ -536,6 +562,7 @@ def main():
 
     counter = gradco.Counter(A)
     counter.count()
+    return
 
     # dense_c = gradco.Counter(A)
     # dense_c.count()
