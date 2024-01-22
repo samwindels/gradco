@@ -451,7 +451,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 						__update_A6_7_A9_11(A6_7, b, a, c, A1_2);
 						__update_A8_8_A12_13(A8_8, b, a, c, A1_1);
 						__update_A8_8bis_A4_5bis(A4_5_bis, b, a, c, A1_2);
-						/* __update_A8_8_A5_5(A8_8, b, a, c, A1_2); */
+						__update_A8_8_A5_5(A5_5, b, a, c, A1_2);
 						/* __update_A8_8bis_A4_5bis(A8_8_bis, b, a, c, A1_2); */
 						/* __update_A12_12_A8_8bis(A12_12, b, a, c, A1_1); */
 						__update_A12_12_A8_8bis(A8_8_bis, b, a, c, A1_1);
@@ -475,7 +475,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
  					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
 					__update_A8_8_A12_13(A8_8, a, b, c, A1_1);
-					/* __update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+					__update_A8_8_A5_5(A5_5, a, b, c, A1_2);
 					/* __update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
 					/* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); */
 					__update_A8_8bis_A4_5bis(A4_5_bis, a, b, c, A1_2);
@@ -499,7 +499,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 					__update_A6_7_A9_11(A6_7, a, b, c, A1_2);
  					__update_A6_6_A9_10(A6_6, a, b, c, A1_2);
 					__update_A8_8_A12_13(A8_8, a, b, c, A1_1);
-					/* __update_A8_8_A5_5(A8_8, a, b, c, A1_2); */
+					__update_A8_8_A5_5(A5_5, a, b, c, A1_2);
 					/* __update_A8_8bis_A4_5bis(A8_8_bis, a, b, c, A1_2); */
 					__update_A8_8bis_A4_5bis(A4_5_bis, a, b, c, A1_2);
 					/* /1* __update_A12_12_A8_8bis(A12_12, a, b, c, A1_1); *1/ */
