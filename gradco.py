@@ -124,8 +124,6 @@ class Counter(object):
                 A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
                 A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
                 np.fill_diagonal(A3, 0)
-                print('A3')
-                print(A3) 
                 c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
                 rows, cols = A3.nonzero()
                 vals = A3[rows, cols]

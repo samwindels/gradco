@@ -521,6 +521,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	// 1. dependend on brute force matrices
 	A12_13.subtract_matrix_multiple(A14_14, 2);
 	A13_13.subtract_matrix_multiple(A14_14, 2);
+	
 	A8_8_bis.subtract_matrix_multiple(A12_12, 2);
 	A9_10.subtract_matrix_multiple(A12_12, 2);
 	
@@ -529,7 +530,9 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	A9_11.subtract_matrix_multiple(A12_13, 1);
 	A10_10.subtract_matrix_multiple(A12_13, 1);
 	A10_11.subtract_matrix_multiple(A12_13, 1);
+	
 	A6_6.subtract_matrix_multiple(A9_10, 1);
+	A4_5_bis.subtract_matrix_multiple(A8_8_bis, 1);
 
 	/* //3. depend on infered infered matrices */
 	A4_5.subtract_matrix_multiple(A8_8, 1);
