@@ -106,11 +106,11 @@ class Counter(object):
             self.__compute_A4_4()
 
     def __compute_A4_4(self):
-        A4_4 = self.get_orbit_adjacency(2, 1, 1) @ self.get_orbit_adjacency(1, 0, 0)
-        A4_4 -= self.get_orbit_adjacency(1, 8, 8)
-        A4_4 -= self.get_orbit_adjacency(1, 12, 13)
-        A4_4 -= self.get_orbit_adjacency(2, 9, 10)
-        A4_4 -= self.get_orbit_adjacency(1, 1, 2)
+        A4_4 = self.get_orbit_adjacency(2, 1, 1).todense() @ self.get_orbit_adjacency(1, 0, 0).todense()
+        A4_4 -= self.get_orbit_adjacency(1, 8, 8).todense()
+        A4_4 -= self.get_orbit_adjacency(1, 12, 13).todense()
+        A4_4 -= self.get_orbit_adjacency(2, 9, 10).todense()
+        A4_4 -= self.get_orbit_adjacency(1, 1, 2).todense()
         c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
         rows, cols = A4_4.nonzero()
         vals = A4_4[rows, cols]
