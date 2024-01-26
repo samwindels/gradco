@@ -85,7 +85,7 @@ class Counter(object):
         # core_numbers = nx.core_number(G)
         # order = np.argsort([ core_numbers[node] for node in G.nodes()], axis=0)
         
-        order = np.arange(A.shape[0]) # TODO: remove this line
+        # order = np.arange(A.shape[0]) # TODO: remove this line
         
         reverse_order = np.argsort(order)
         A = A[order, :]
