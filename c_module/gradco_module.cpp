@@ -39,46 +39,53 @@ void __print_execution_time(std::chrono::system_clock::time_point start_time,
 // m = middle
 // r = right
 
-void  __update_A6_7_A9_11(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+void  __update_A6_7_A9_11(DenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m) -1);
 	A.add_scalar(r, m, A1_2.get(r, m) -1);
 }
 
-void __update_A8_8_A12_13(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
+void __update_A8_8_A12_13(SymmetricDenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
-	A.add_scalar(l, m, A1_1_lr);
-	A.add_scalar(r, m, A1_1_lr);
+
+	// A is symmetric	
+	if (l<m){
+		A.add_scalar(l, m, A1_1_lr);
+	}
+	if(r<m){
+		A.add_scalar(r, m, A1_1_lr);
+	}
 }
 
-void __update_A8_8_A5_5(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
-	A.add_scalar(l, m, A1_2.get(m, l));
-	A.add_scalar(r, m, A1_2.get(m, r));
+void __update_A8_8_A5_5(SymmetricDenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+	
+	if (l<m){A.add_scalar(l, m, A1_2.get(m, l));}
+	if (r<m){A.add_scalar(r, m, A1_2.get(m, r));}
 }
 
-void __update_A4_5_A8_8(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+void __update_A4_5_A8_8(DenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(m, r));
 	A.add_scalar(r, m, A1_2.get(m, l));
 }
 
-void __update_A9_11_A12_13(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
+void __update_A9_11_A12_13(DenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	A.add_scalar(l, m, A3_3.get(m, r));
 	A.add_scalar(r, m, A3_3.get(l, m));
 }
 
-void __update_A13_13_A14_14(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
+void __update_A13_13_A14_14(SymmetricDenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
 	A.add_scalar(l, m, A3_3_lm);
+	/* A.add_scalar(m, l, A3_3_lm); */
 	A.add_scalar(l, r, A3_3_lr);
-	A.add_scalar(m, l, A3_3_lm);
+	/* A.add_scalar(r, l, A3_3_lr); */
 	A.add_scalar(m, r, A3_3_mr);
-	A.add_scalar(r, l, A3_3_lr);
-	A.add_scalar(r, m, A3_3_mr);
+	/* A.add_scalar(r, m, A3_3_mr); */
 } 
 
 // SINGLE-HOP EQUATIONS, triangle-based
-void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
+void __update_A12_13_A14_14(DenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	int A3_3_lm = A3_3.get(l,m) - 1;
 	int A3_3_lr = A3_3.get(l,r) - 1;
 	int A3_3_mr = A3_3.get(m,r) - 1;
@@ -90,16 +97,37 @@ void __update_A12_13_A14_14(SparseMatrix& A, int l, int m, int r, SymmetricDense
 	A.add_scalar(r, m, A3_3_lm);
 }
 
-void __update_A10_10_A12_13(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
-	A.add_scalar(l, m, A1_2.get(l, r));
-	A.add_scalar(m, l, A1_2.get(m, r));
-	A.add_scalar(l, r, A1_2.get(l, m));
-	A.add_scalar(r, l, A1_2.get(r, m));
-	A.add_scalar(m, r, A1_2.get(m, l));
-	A.add_scalar(r, m, A1_2.get(r, l));
+void __update_A10_10_A12_13(SymmetricDenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+	// commented out because A is symmetric
+	if (l<m){
+		A.add_scalar(l, m, A1_2.get(l, r));
+	}
+	else{
+		A.add_scalar(m, l, A1_2.get(m, r));
+	}
+	if (l<r){
+		A.add_scalar(l, r, A1_2.get(l, m));
+	}
+	else{
+		A.add_scalar(r, l, A1_2.get(r, m));
+	}
+	if (m<r){
+		A.add_scalar(m, r, A1_2.get(m, l));
+	}
+	else{
+		A.add_scalar(r, m, A1_2.get(r, l));
+	}
+	
+		
+	/* A.add_scalar(l, m, A1_2.get(l, r)); */
+	/* A.add_scalar(m, l, A1_2.get(m, r)); */
+	/* A.add_scalar(l, r, A1_2.get(l, m)); */
+	/* A.add_scalar(r, l, A1_2.get(r, m)); */
+	/* A.add_scalar(m, r, A1_2.get(m, l)); */
+	/* A.add_scalar(r, m, A1_2.get(r, l)); */
 }
 
-void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+void __update_A10_11_A12_13(DenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, m, A1_2.get(l, m)); 
 	A.add_scalar(l, r, A1_2.get(l, r)); 
 	A.add_scalar(m, l, A1_2.get(m, l)); 
@@ -115,27 +143,29 @@ void __update_A10_11_A12_13(SparseMatrix& A, int l, int m, int r, DenseMatrix& A
 // l = left
 // m = middle
 // r = right
-void __update_A6_6_A9_10(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+void __update_A6_6_A9_10(SymmetricDenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 	A.add_scalar(l, r, A1_2.get(l, m) -1);
-	A.add_scalar(r, l, A1_2.get(r, m) -1);
+	// commented out because A is symmetric
+	/* A.add_scalar(r, l, A1_2.get(r, m) -1); */
 }
 
-void __update_A9_10_A12_12(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
+void __update_A9_10_A12_12(DenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A3_3){
 	A.add_scalar(l, r, A3_3.get(m, r));
 	A.add_scalar(r, l, A3_3.get(l, m));
 }
 
 
-void __update_A8_8bis_A4_5bis(SparseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
+void __update_A8_8bis_A4_5bis(DenseMatrix& A, int l, int m, int r, DenseMatrix& A1_2){
 
 	A.add_scalar(l, r, A1_2.get(m, r));
 	A.add_scalar(r, l, A1_2.get(m, l));
 }
 
-void __update_A12_12_A8_8bis(SparseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
+void __update_A12_12_A8_8bis(SymmetricDenseMatrix& A, int l, int m, int r, SymmetricDenseMatrix& A1_1){
 	int A1_1_lr = A1_1.get(l, r)-1;
 	A.add_scalar(l, r, A1_1_lr);
-	A.add_scalar(r, l, A1_1_lr);
+	// commented out because A is symmetric
+	/* A.add_scalar(r, l, A1_1_lr); */
 }
 
 
@@ -413,19 +443,20 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	
 	std::cout<<"COMPUTING REDUNDANCY MATRICES"<<std::endl;
 	// INITIALIZE REDUNDANCY MATRICES
-	SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour
-	SparseMatrix A4_5_bis  = SparseMatrix(n);  // 4-node path, outside orbit and node two hops away 
-	SparseMatrix A5_5     = SparseMatrix(n);  // 4-node path, both inside orbits 
-	SparseMatrix A6_6     = SparseMatrix(n);  // 4-node star, outside orbits 
-	SparseMatrix A6_7     = SparseMatrix(n);  // 4-node star, outsite to centre orbits 
-	SparseMatrix A8_8     = SparseMatrix(n);  // 4-node cycle, neighbouring nodes 
-	SparseMatrix A8_8_bis = SparseMatrix(n);  // 4-node cycle, nodes two hops away 
-	SparseMatrix A9_10    = SparseMatrix(n);  // 4-node paw, 
-	SparseMatrix A9_11    = SparseMatrix(n);  // 4-node paw,
-	SparseMatrix A10_10   = SparseMatrix(n);  // 4-node paw,
-	SparseMatrix A10_11   = SparseMatrix(n);  // 4-node paw,
-	SparseMatrix A12_13   = SparseMatrix(n);  // 4-node cycle with chord,
-	SparseMatrix A13_13   = SparseMatrix(n);  // 4-node cycle with chord,
+	/* SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour */
+	DenseMatrix A4_5     = DenseMatrix(n);  // 4-node path, outside orbit and neighbour
+	DenseMatrix A4_5_bis  = DenseMatrix(n);  // 4-node path, outside orbit and node two hops away 
+	SymmetricDenseMatrix A5_5 = SymmetricDenseMatrix(n);  // 4-node path, both inside orbits 
+	SymmetricDenseMatrix A6_6 = SymmetricDenseMatrix(n);  // 4-node star, outside orbits 
+	DenseMatrix A6_7     = DenseMatrix(n);  // 4-node star, outsite to centre orbits 
+	SymmetricDenseMatrix A8_8 = SymmetricDenseMatrix(n);  // 4-node cycle, neighbouring nodes 
+	SymmetricDenseMatrix A8_8_bis = SymmetricDenseMatrix(n);  // 4-node cycle, nodes two hops away 
+	DenseMatrix A9_10    = DenseMatrix(n);  // 4-node paw, 
+	DenseMatrix A9_11    = DenseMatrix(n);  // 4-node paw,
+	SymmetricDenseMatrix A10_10   = SymmetricDenseMatrix(n);  // 4-node paw,
+	DenseMatrix A10_11   = DenseMatrix(n);  // 4-node paw,
+	DenseMatrix A12_13   = DenseMatrix(n);  // 4-node cycle with chord,
+	SymmetricDenseMatrix A13_13 = SymmetricDenseMatrix(n);  // 4-node cycle with chord,
 	
 	for (int a = 0; a < n; a++){
 		if (G.adj_out[a].size() >= 2){
