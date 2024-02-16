@@ -13,6 +13,10 @@ def time_it() -> Iterator[None]:
         yield
     finally:
         toc: float = time.perf_counter()
+        elapsed = toc - tic
+        minutes = int(elapsed // 60)
+        seconds = int(elapsed % 60)
+        print(f"Computation time = {minutes}m {seconds}s")
         print(f"Computation time = {1000*(toc - tic):.3f}ms")
 
 class Counter(object):
@@ -111,6 +115,7 @@ class Counter(object):
 
     def __compute_A4_4(self):
 
+        print('Computing A4_4')
         with time_it():
             # float matmul is more optimised in BLAS than int matmul
             A4_4  = self.__to_float_array(self.get_orbit_adjacency(2, 1, 1).toarray())
