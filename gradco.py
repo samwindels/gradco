@@ -111,6 +111,10 @@ class Counter(object):
         A4_4 -= self.get_orbit_adjacency(1, 12, 13).todense()
         A4_4 -= self.get_orbit_adjacency(2, 9, 10).todense()
         A4_4 -= self.get_orbit_adjacency(1, 1, 2).todense()
+
+        A4_4 = A4_4[self.__order, :]
+        A4_4 = A4_4[:, self.__order]
+
         c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
         rows, cols = A4_4.nonzero()
         vals = A4_4[rows, cols]
@@ -119,11 +123,13 @@ class Counter(object):
 
 
     # def __compute_A4_4(self):
+    #         print('HOOT')
     #         with time_it():
+    #             A = self.__apply_reverse_ordering(self.__A)
     #             try:
-    #                 A3 = np.linalg.matrix_power(self.__A, 3)
+    #                 A3 = np.linalg.matrix_power(A, 3)
     #             except:
-    #                 A3 = np.linalg.matrix_power(self.__A.todense(), 3)
+    #                 A3 = np.linalg.matrix_power(A.todense(), 3)
     #         with time_it():
     #             A3 -=  self.get_orbit_adjacency(1, 0, 0)
     #             A3 -=  self.get_orbit_adjacency(1, 1, 2).todense()
@@ -137,10 +143,13 @@ class Counter(object):
     #             A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
     #             A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
     #             np.fill_diagonal(A3, 0)
+    #             A3 = A3[self.__order, :]
+    #             A3 = A3[:, self.__order]
     #             c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
     #             rows, cols = A3.nonzero()
     #             vals = A3[rows, cols]
     #             if len(rows) > 0:
+    #                 print('hiet')
     #                 self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
 
     # GRAPHLET ADJACENCIES
