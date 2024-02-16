@@ -99,7 +99,7 @@ class Counter(object):
 
     # CALL C ROUTINES
     def count(self):
-        # A = self.__A.todense()
+        # A = self.__A.toarray()
         rows, cols = self.__A.nonzero()
         if len(rows) > 0:
             self.orbit_adjacencies = list(gradco_c_routines.gradco_c_count(rows, cols, self.__n))
@@ -108,11 +108,12 @@ class Counter(object):
     def __compute_A4_4(self):
 
         with time_it():
-            A4_4 = self.get_orbit_adjacency(2, 1, 1).todense() @ self.get_orbit_adjacency(1, 0, 0).todense()
-            A4_4 -= self.get_orbit_adjacency(1, 8, 8).todense()
-            A4_4 -= self.get_orbit_adjacency(1, 12, 13).todense()
-            A4_4 -= self.get_orbit_adjacency(2, 9, 10).todense()
-            A4_4 -= self.get_orbit_adjacency(1, 1, 2).todense()
+            print(self.get_orbit_adjacency(2, 1, 1).toarray().dtype)
+            A4_4 = self.get_orbit_adjacency(2, 1, 1).toarray() @ self.get_orbit_adjacency(1, 0, 0).toarray()
+            A4_4 -= self.get_orbit_adjacency(1, 8, 8).toarray()
+            A4_4 -= self.get_orbit_adjacency(1, 12, 13).toarray()
+            A4_4 -= self.get_orbit_adjacency(2, 9, 10).toarray()
+            A4_4 -= self.get_orbit_adjacency(1, 1, 2).toarray()
 
             A4_4 = A4_4[self.__order, :]
             A4_4 = A4_4[:, self.__order]
@@ -131,19 +132,19 @@ class Counter(object):
     #             try:
     #                 A3 = np.linalg.matrix_power(A, 3)
     #             except:
-    #                 A3 = np.linalg.matrix_power(A.todense(), 3)
+    #                 A3 = np.linalg.matrix_power(A.toarray(), 3)
     #         with time_it():
     #             A3 -=  self.get_orbit_adjacency(1, 0, 0)
-    #             A3 -=  self.get_orbit_adjacency(1, 1, 2).todense()
-    #             A3 -=  self.get_orbit_adjacency(1, 2, 1).todense()
-    #             A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).todense()
-    #             A3 -= self.get_orbit_adjacency(1, 8, 8).todense()
-    #             A3 -= self.get_orbit_adjacency(2, 9, 10).todense()
-    #             A3 -= self.get_orbit_adjacency(2, 10, 9).todense()
-    #             A3 -= self.get_orbit_adjacency(1, 12, 13).todense()
-    #             A3 -= self.get_orbit_adjacency(1, 13, 12).todense()
-    #             A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).todense()
-    #             A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).todense()
+    #             A3 -=  self.get_orbit_adjacency(1, 1, 2).toarray()
+    #             A3 -=  self.get_orbit_adjacency(1, 2, 1).toarray()
+    #             A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).toarray()
+    #             A3 -= self.get_orbit_adjacency(1, 8, 8).toarray()
+    #             A3 -= self.get_orbit_adjacency(2, 9, 10).toarray()
+    #             A3 -= self.get_orbit_adjacency(2, 10, 9).toarray()
+    #             A3 -= self.get_orbit_adjacency(1, 12, 13).toarray()
+    #             A3 -= self.get_orbit_adjacency(1, 13, 12).toarray()
+    #             A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).toarray()
+    #             A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).toarray()
     #             np.fill_diagonal(A3, 0)
     #             A3 = A3[self.__order, :]
     #             A3 = A3[:, self.__order]
@@ -578,7 +579,7 @@ def main():
     G = nx.barabasi_albert_graph(n, m, seed=0)
     # A = nx.to_scipy_sparse_array(G)
     A = nx.adjacency_matrix(G)
-    A = A.todense()
+    A = A.toarray()
     # A = csr_matrix(A)
     # A = np.array(A)
 
@@ -593,7 +594,7 @@ def main():
     # sparse_c.count()
 
     # for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
-    #     print(A_sparse.todense())
+    #     print(A_sparse.toarray())
     #     if np.sum(A - A_sparse) != 0:
     #         print("ERROR")
     #         print(hop, o1, o2)
