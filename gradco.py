@@ -17,7 +17,6 @@ def time_it() -> Iterator[None]:
         minutes = int(elapsed // 60)
         seconds = int(elapsed % 60)
         print(f"Computation time = {minutes}m {seconds}s")
-        print(f"Computation time = {1000*(toc - tic):.3f}ms")
 
 class Counter(object):
 
