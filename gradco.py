@@ -105,18 +105,23 @@ class Counter(object):
             self.orbit_adjacencies = list(gradco_c_routines.gradco_c_count(rows, cols, self.__n))
             self.__compute_A4_4()
 
+
+    def __to_float_array(self, A):
+        return A.astype(np.float32, order='C')
+
     def __compute_A4_4(self):
 
         with time_it():
-            print(self.get_orbit_adjacency(2, 1, 1).toarray().dtype)
-            A4_4 = self.get_orbit_adjacency(2, 1, 1).toarray() @ self.get_orbit_adjacency(1, 0, 0).toarray()
-            A4_4 -= self.get_orbit_adjacency(1, 8, 8).toarray()
-            A4_4 -= self.get_orbit_adjacency(1, 12, 13).toarray()
-            A4_4 -= self.get_orbit_adjacency(2, 9, 10).toarray()
-            A4_4 -= self.get_orbit_adjacency(1, 1, 2).toarray()
-
+            # float matmul is more optimised in BLAS than int matmul
+            A4_4  = self.__to_float_array(self.get_orbit_adjacency(2, 1, 1).toarray())
+            A4_4 @= self.__to_float_array(self.get_orbit_adjacency(1, 0, 0).toarray())
+            A4_4 -= self.__to_float_array(self.get_orbit_adjacency(1, 8, 8).toarray())
+            A4_4 -= self.__to_float_array(self.get_orbit_adjacency(1, 12, 13).toarray())
+            A4_4 -= self.__to_float_array(self.get_orbit_adjacency(2, 9, 10).toarray())
+            A4_4 -= self.__to_float_array(self.get_orbit_adjacency(1, 1, 2).toarray())
             A4_4 = A4_4[self.__order, :]
             A4_4 = A4_4[:, self.__order]
+            A4_4 = A4_4.astype(np.int32, order='C')
 
             c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
             rows, cols = A4_4.nonzero()
