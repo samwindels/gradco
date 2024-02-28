@@ -383,26 +383,38 @@ class Counter(object):
 
 
 # METHODS FOR ITERATING OVER ADJACENCIES FROM FILES
-def iterate_graphlet_adjacencies_from_files(prefix):
-        for graphlet in range(9):
-            yield graphlet, load_npz(f'{prefix}graphlet_adjacency_{graphlet}.npz')
 
-def iterate_orbit_adjacencies_from_files(prefix, hop=None):
+def generate_graphlet_adjacency_file_handles(prefix):
+    for graphlet in range(9):
+        yield graphlet, f'{prefix}graphlet_adjacency_{graphlet}.npz'
+
+def generate_orbit_adjacency_file_handles(prefix, hop=None):
     for (_hop, o1, o2), c_index in Counter._Counter__ORBIT_ADJ_2_C_INDEX.items():
         if hop is None or _hop == hop:
-            A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz')
-            yield _hop, o1, o2, A
+            yield _hop, o1, o2, f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o1}_o2_{o2}.npz'
             if o1 != o2:
-                A = load_npz(f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o2}_o2_{o1}.npz')
-                yield _hop, o2, o1, A
+                yield _hop, o2, o1, f'{prefix}orbit_adjacency_hop_{_hop}_o1_{o2}_o2_{o1}.npz'
 
-def iterate_edge_orbit_adjacencies_from_files(prefix):
+def generate_edge_orbit_adjacency_file_handles(prefix):
     e = 0 
     for (_hop, o1, o2), c_index in Counter._Counter__ORBIT_ADJ_2_C_INDEX.items():
         if _hop == 1:
-            A = load_npz(f'{prefix}edge_orbit_adjacency_e_{e}.npz')
-            yield e, A
+            yield e, f'{prefix}edge_orbit_adjacency_e_{e}.npz'
             e += 1
+
+def iterate_graphlet_adjacencies_from_files(prefix):
+    for graphlet, file_handle in enumerate(generate_graphlet_adjacency_file_handles(prefix)):
+            yield graphlet, load_npz(f'{prefix}graphlet_adjacency_{graphlet}.npz')
+
+def iterate_orbit_adjacencies_from_files(prefix, hop=None):
+    for hop, o1, o2, file_handle in generate_orbit_adjacency_file_handles(prefix, hop):
+        A = load_npz(file_handle)
+        yield hop, o1, o2, A
+
+def iterate_edge_orbit_adjacencies_from_files(prefix):
+    for e, file_handle in generate_edge_orbit_adjacency_file_handles(prefix):
+        A = load_npz(file_handle)
+        yield e, A
 
 def get_edge_gdv_from_precomputed(prefix):
 
@@ -423,7 +435,7 @@ def get_edge_gdv_from_precomputed(prefix):
                                   
     gdvs = [ None ] * 12
     e = 0
-    for _hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix):
+    for _, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix, hop=1):
         key = (o1, o2)
         if o1 ==0 and o2 == 0:
             rows, cols = A.nonzero()
@@ -462,13 +474,11 @@ def get_gdv_from_precomputed(prefix):
                                   
     gdvs = [ None ] * 15
     incumbent_orbit = 0
-    for _hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix):
+    for _, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix, hop):
         key = (_hop, o1, o2)
         if key in orbit_2_scaling:
             scaling = orbit_2_scaling[key]
             gdvs[o1] = A.sum(axis=1).A1.squeeze() / scaling
-        if _hop>1:
-            break
     return np.stack(gdvs).T
 
 def get_graphlet_counts_from_precomputed(prefix):
