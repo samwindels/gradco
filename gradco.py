@@ -471,6 +471,24 @@ def get_gdv_from_precomputed(prefix):
             break
     return np.stack(gdvs).T
 
+def get_graphlet_counts_from_precomputed(prefix):
+    gdvs = get_gdv_from_precomputed(prefix)
+
+    count_0 = gdvs[:, 0]
+    count_1 = gdvs[:, 1] + gdvs[:, 2]
+    count_2 = gdvs[:, 3]
+    count_3 = gdvs[:, 4] + gdvs[:, 5]
+    count_4 = gdvs[:, 6] + gdvs[:, 7]
+    count_5 = gdvs[:, 8]
+    count_6 = gdvs[:, 9] + gdvs[:, 10] + gdvs[:, 11]
+    count_7 = gdvs[:, 12] + gdvs[:, 13]
+    count_8 = gdvs[:, 14]
+
+    gc = np.column_stack((count_0, count_1, count_2, count_3, count_4, count_5, 
+                          count_6, count_7, count_8))
+    return gc
+
+
 
 # CENTRALITIES
 def __normalise_symmetric(A):
