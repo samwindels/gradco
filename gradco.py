@@ -117,8 +117,8 @@ class Counter(object):
         print('Computing A4_4')
         with time_it():
             # float matmul is more optimised in BLAS than int matmul
-            A4_4  = self.__to_float_array(self.get_orbit_adjacency(2, 1, 1).toarray())
-            A4_4 @= self.__to_float_array(self.get_orbit_adjacency(1, 0, 0).toarray())
+            A4_4 = self.__to_float_array(self.get_orbit_adjacency(2, 1, 1).toarray())
+            A4_4 = A4_4 @ self.__to_float_array(self.get_orbit_adjacency(1, 0, 0).toarray())
             A4_4 -= self.__to_float_array(self.get_orbit_adjacency(1, 8, 8).toarray())
             A4_4 -= self.__to_float_array(self.get_orbit_adjacency(1, 12, 13).toarray())
             A4_4 -= self.__to_float_array(self.get_orbit_adjacency(2, 9, 10).toarray())
