@@ -481,6 +481,35 @@ def get_gdv_from_precomputed(prefix):
             gdvs[o1] = A.sum(axis=1).A1.squeeze() / scaling
     return np.stack(gdvs).T
 
+def get_gdvs():
+    # (hop, o1, o2): scaling_constant
+    orbit_2_scaling = {(1, 0, 0): 1, 
+                       (1, 1, 2): 1,
+                       (1, 2, 1): 2,
+                       (1, 3, 3): 2,
+                       (1, 4, 5): 1,
+                       (1, 5, 5): 1,
+                       (1, 6, 7): 1,
+                       (1, 7, 6): 3,
+                       (1, 8, 8): 2,
+                       (1, 9, 11): 1,
+                       (1, 10, 10): 1,
+                       (1, 11, 9): 1,
+                       (1, 12, 13): 2,
+                       (1, 13, 12): 2,
+                       (1, 14, 14): 3,
+                       }
+                                  
+    gdvs = [ None ] * 15
+    incumbent_orbit = 0
+    for _hop, o1, o2, A in generate_orbit_adjacencies(hop=1):
+        key = (_hop, o1, o2)
+        if key in orbit_2_scaling:
+            scaling = orbit_2_scaling[key]
+            gdvs[o1] = A.sum(axis=1).A1.squeeze() / scaling
+    return np.stack(gdvs).T
+
+
 def get_graphlet_counts_from_precomputed(prefix):
     gdvs = get_gdv_from_precomputed(prefix)
 
