@@ -36,6 +36,7 @@ def main():
           # Refers to gradco.py. Name of the module. Used as: import gradco
           py_modules=["gradco"],
           python_requires='>=3.10',
+          license_files=('LICENSE',),
           )
 
 
