@@ -1,7 +1,6 @@
 import gradco_c_routines
 import numpy as np
 from scipy.sparse import csr_array, save_npz, load_npz
-
 import time
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -53,15 +52,13 @@ class Counter(object):
         # assert A is a valid adjacency matrix
         self.__assert_has_entries(A)
         self.__assert_equal_dims(A)
-        # self.__assert_unweighted(A)
-        # self.__assert_symmetric(A)
 
         # apply degree ordering
         self.__A, self.__order, self.__reverse_order = self.__apply_degree_ordering(
             A)
 
         # book keeping
-        self.__n = A.shape[0]            # number of nodes
+        self.__n = A.shape[0]  # number of nodes
         self.orbit_adjacencies = None  # where c counts will be stored
 
     # SANITY CHECKS ON ADJACENCY MATRIX
@@ -87,14 +84,6 @@ class Counter(object):
         # scipy returns numpy matrix instead of array
         rowsum = np.asarray(A.sum(axis=1)).squeeze()
         order = np.argsort(rowsum, axis=0)
-        # import networkx as nx
-        # G = nx.from_scipy_sparse_array(A)
-        # G = nx.from_numpy_array(A)
-        # core_numbers = nx.core_number(G)
-        # order = np.argsort([ core_numbers[node] for node in G.nodes()], axis=0)
-
-        # order = np.arange(A.shape[0]) # TODO: remove this line
-
         reverse_order = np.argsort(order)
         A = A[order, :]
         A = A[:, order]
@@ -177,6 +166,13 @@ class Counter(object):
     # GRAPHLET ADJACENCIES
 
     def get_graphlet_adjacency(self, graphlet):
+        """ Return the adjacency matrix for a given graphlet.
+
+        Reference:
+            Windels, Sam FL, Noël Malod-Dognin, and Nataša Pržulj. "Graphlet
+            Laplacians for topology-function and topology-disease
+            relationships." Bioinformatics 35.24 (2019): 5226-5234.
+        """
 
         match graphlet:
             case 0:
@@ -268,6 +264,7 @@ class Counter(object):
 
     # ORBIT ADJACENCIES
     def generate_orbit_adjacencies(self, hop=None):
+        """ Generate all node orbit adjacencies. """
 
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
             if hop is None or _hop == hop:
@@ -277,6 +274,13 @@ class Counter(object):
                     yield _hop, o2, o1, A.T
 
     def generate_edge_orbit_adjacencies(self):
+        """ Generate all edge orbit adjacencies.
+
+        Reference:
+            Rossi, Ryan A., Nesreen K. Ahmed, and Eunyee Koh. "Higher-order
+            network representation learning." Companion Proceedings of the The
+            Web Conference 2018. 2018.
+        """
         e = 0
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
             if _hop == 1:
@@ -301,6 +305,15 @@ class Counter(object):
             return A
 
     def get_GDVs(self):
+        """ Return the graphlet degree vectors (GDVs) for the graph.
+
+        Reference:
+            Milenković, Tijana, and Nataša Pržulj. "Uncovering biological
+            network function via graphlet degree signatures." Cancer
+            informatics 6 (2008): CIN-S680.
+
+        """
+
         # (hop, o1, o2): scaling_constant
         orbit_2_scaling = {(1, 0, 0): 1,
                            (1, 1, 2): 1,
@@ -327,6 +340,48 @@ class Counter(object):
                 scaling = orbit_2_scaling[key]
                 GDVs[o1] = A.sum(axis=1).squeeze() / scaling
         return np.stack(GDVs).T
+
+    def get_edge_GDVs(self):
+        """ Return the edge graphlet degree vectors (GDVs) for the graph.
+
+        Reference:
+            Solava, Ryan W., Ryan P. Michaels, and Tijana Milenković.
+            "Graphlet-based edge clustering reveals pathogen-interacting
+            proteins." Bioinformatics 28.18 (2012): i480-i486.  
+        """
+
+        # (hop, o1, o2): scaling_constant
+        node_orbits = {(1, 2),
+                       (3, 3),
+                       (4, 5),
+                       (5, 5),
+                       (6, 7),
+                       (8, 8),
+                       (9, 11),
+                       (10, 10),
+                       (10, 11),
+                       (12, 13),
+                       (13, 13),
+                       (14, 14),
+                       }
+
+        gdvs = [None] * 12
+        e = 0
+        for _, o1, o2, A in self.generate_orbit_adjacencies(hop=1):
+            key = (o1, o2)
+            if o1 == 0 and o2 == 0:
+                rows, cols = A.nonzero()
+                triu_indices = rows < cols
+                rows = rows[triu_indices]
+                cols = cols[triu_indices]
+
+            if key in node_orbits:
+                if o1 != o2:
+                    A += A.T
+                # gdvs[e] = A[rows, cols].A1
+                gdvs[e] = A[rows, cols]
+                e += 1
+        return np.stack(gdvs).T
 
     def compute_A12_12_digraph(self, adj):
         import networkx as nx
@@ -547,119 +602,6 @@ def get_graphlet_counts_from_precomputed(prefix):
     return gc
 
 
-# CENTRALITIES
-def __normalise_symmetric(A):
-    """
-        Divide each entry of an adjacency matrix by square root of the
-        rowsum and colsum. Implementation assumes M is symmetric.
-    """
-    D_array = A.sum(axis=1).squeeze()
-    D_array = np.power(D_array, 0.5) + np.finfo(float).eps
-    A = A / D_array[:, None]
-    A = A / D_array[None, :]
-    # __assert_rows_sum_to_max_one(A)
-    # __assert_cols_sum_to_max_one(A)
-    return A
-
-
-def __normalise_rows(A):
-    """
-        Divide each entry of an adjacency matrix by the rowsum.
-    """
-    D_array = A.sum(axis=1).squeeze()
-    D_array = D_array + np.finfo(float).eps
-    A = A / D_array[:, None]
-
-    # __assert_rows_sum_to_one(A)
-    # __assert_rows_sum_to_max_one(A)
-
-    return A
-
-# def __assert_rows_sum_to_one(A):
-#     if not np.allclose(np.sum(A, axis=1), 1):
-#         raise ValueError("Not all rows of A sum to 1")
-
-# def __assert_rows_sum_to_max_one(A):
-#     if not np.all(np.sum(A, axis=1) <= 1):
-#         raise ValueError("Not all rows of A sum to 1 at most")
-
-# def __assert_cols_sum_to_max_one(A):
-#     if not np.all(np.sum(matrix, axis=0) <= 1):
-#         raise ValueError("Not all colls of A sum to 1 at most")
-
-
-def __power_iteration(matrix, num_iterations, convergence_threshold=1e-15):
-    # Generate a random initial guess for the dominant eigenvector
-    n = matrix.shape[0]
-    eigen_vector = np.random.rand(n)
-    # eigen_vector = np.ones(n)
-
-    for iteration in range(num_iterations):
-        # Compute the matrix-vector product
-        matrix_times_vector = np.dot(matrix, eigen_vector)
-
-        # Normalize the result to prevent divergence
-        eigen_vector = matrix_times_vector / \
-            np.linalg.norm(matrix_times_vector)
-
-        # Compute the eigenvalue estimate
-        eigen_value = np.dot(np.dot(eigen_vector, matrix), eigen_vector)
-
-        # Check for convergence
-        if iteration > 0:
-            eigen_value_change = abs(eigen_value - prev_eigen_value)
-            if eigen_value_change < convergence_threshold:
-                print(
-                    f"Poweriteration converged after {iteration} iterations.")
-                break
-
-        prev_eigen_value = eigen_value
-
-    return eigen_value, eigen_vector
-
-
-def __normalise(A, normalisation):
-    match normalisation:
-        case "rows":
-            A = __normalise_rows(A)
-        case "symmetric":
-            A = __normalise_symmetric(A)
-        case _:
-            raise ValueError("normalise must be either 'rows' or 'symmetric'")
-
-
-def generate_graphlet_centrality_from_precomputed(prefix, normalisation=None, num_iterations=1000):
-    for graphlet, A in iterate_graphlet_adjacencies_from_files(prefix):
-        A = A.toarray()
-        if normalisation is not None:
-            __normalise(A, normalisation)
-        eigen_value, eigen_vector = __power_iteration(A, num_iterations)
-        yield graphlet, eigen_value, eigen_vector
-
-
-def generate_orbit_centrality_from_precomputed(prefix, normalisation=None, hop=None, num_iterations=1000):
-    for hop, o1, o2, A in iterate_orbit_adjacencies_from_files(prefix, hop):
-        A = A.toarray()
-        A += 1  # add identity matrix to make sure it is irreducible
-        if normalisation is not None:
-            __normalise(A, normalisation)
-
-        eigen_value, eigen_vector = __power_iteration(A, num_iterations)
-        yield hop, o1, o2, eigen_value, eigen_vector
-        if o1 != o2:
-            eigen_value, eigen_vector = __power_iteration(A.T, num_iterations)
-            yield hop, o2, o1, eigen_value, eigen_vector
-
-
-def generate_edge_orbit_centrality_from_precomputed(prefix, normalisation=None, num_iterations=1000):
-    for e, A in iterate_edge_orbit_adjacencies_from_files(prefix):
-        A = A.toarray()
-        if normalisation is not None:
-            __normalise(A, normalisation)
-        eigen_value, eigen_vector = __power_iteration(A, num_iterations)
-        yield e, eigen_value, eigen_vector
-
-
 def main():
 
     import gradco as gradco
@@ -669,60 +611,22 @@ def main():
     n = 1000
     m = 4
     G = nx.barabasi_albert_graph(n, m, seed=0)
-    # A = nx.to_scipy_sparse_array(G)
     A = nx.adjacency_matrix(G)
     A = A.toarray()
-    # A = csr_matrix(A)
-    # A = np.array(A)
 
     counter = gradco.Counter(A)
     counter.count()
-    return
-
-    # dense_c = gradco.Counter(A)
-    # dense_c.count()
-
-    # sparse_c = gradco.Counter(csr_array(A))
-    # sparse_c.count()
-
-    # for ((hop, o1, o2, A), (_, _,_, A_sparse))  in zip(dense_c.generate_orbit_adjacencies(), sparse_c.generate_orbit_adjacencies()):
-    #     print(A_sparse.toarray())
-    #     if np.sum(A - A_sparse) != 0:
-    #         print("ERROR")
-    #         print(hop, o1, o2)
-    #         print(A-A_sparse)
-    #         # break
-
-    prefix = "scratch/"
-    counter.save_graphlet_adjacencies(prefix)
-    counter.save_orbit_adjacencies(prefix)
-    counter.save_edge_orbit_adjacencies(prefix)
-    for graphlet, A in gradco.iterate_graphlet_adjacencies_from_files(prefix):
-        print("read GA:", graphlet)
-    for o1, o2, hop, A in gradco.iterate_orbit_adjacencies_from_files(prefix):
-        print("read OA:", o1, o2, hop)
-    for e, A in gradco.iterate_edge_orbit_adjacencies_from_files(prefix):
-        print("read EA:", e)
-    for graphlet, eigen_value, eigen_vector in gradco.generate_graphlet_centrality_from_precomputed(prefix):
-        print("graphlet:", graphlet)
-    for hop, o2, o1, eigen_value, eigen_vector in gradco.generate_orbit_centrality_from_precomputed(prefix):
-        print("orbit:", hop, o1, o2)
-    for e, eigen_value, eigen_vector in gradco.generate_edge_orbit_centrality_from_precomputed(prefix, num_iterations=1000):
-        print("edge orbit:", e)
 
     orca_counts = gradco.run_orca(G, "node")
-    w_counts = gradco.get_gdv_from_precomputed(prefix)
+    w_counts = counter.get_GDVs()
     for i in range(15):
         print(i, np.sum(orca_counts[:, i] - w_counts[:, i]))
 
     orca_counts = gradco.run_orca(G, "edge")
-    w_counts = gradco.get_edge_gdv_from_precomputed(prefix)
-    print(orca_counts.shape)
-    print(w_counts.shape)
+    w_counts = counter.get_edge_GDVs()
 
     for i in range(12):
         print(i, np.sum(orca_counts[:, i] - w_counts[:, i]))
-        pass
 
 
 def run_orca(G, mode):
