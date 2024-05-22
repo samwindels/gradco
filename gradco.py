@@ -133,36 +133,6 @@ class Counter(object):
             if len(rows) > 0:
                 self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
 
-    # def __compute_A4_4(self):
-    #         print('HOOT')
-    #         with time_it():
-    #             A = self.__apply_reverse_ordering(self.__A)
-    #             try:
-    #                 A3 = np.linalg.matrix_power(A, 3)
-    #             except:
-    #                 A3 = np.linalg.matrix_power(A.toarray(), 3)
-    #         with time_it():
-    #             A3 -=  self.get_orbit_adjacency(1, 0, 0)
-    #             A3 -=  self.get_orbit_adjacency(1, 1, 2).toarray()
-    #             A3 -=  self.get_orbit_adjacency(1, 2, 1).toarray()
-    #             A3 -=  2 * self.get_orbit_adjacency(1, 3, 3).toarray()
-    #             A3 -= self.get_orbit_adjacency(1, 8, 8).toarray()
-    #             A3 -= self.get_orbit_adjacency(2, 9, 10).toarray()
-    #             A3 -= self.get_orbit_adjacency(2, 10, 9).toarray()
-    #             A3 -= self.get_orbit_adjacency(1, 12, 13).toarray()
-    #             A3 -= self.get_orbit_adjacency(1, 13, 12).toarray()
-    #             A3 -= 2 * self.get_orbit_adjacency(2, 12, 12).toarray()
-    #             A3 -= 2 * self.get_orbit_adjacency(1, 14, 14).toarray()
-    #             np.fill_diagonal(A3, 0)
-    #             A3 = A3[self.__order, :]
-    #             A3 = A3[:, self.__order]
-    #             c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
-    #             rows, cols = A3.nonzero()
-    #             vals = A3[rows, cols]
-    #             if len(rows) > 0:
-    #                 print('hiet')
-    #                 self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
-
     # GRAPHLET ADJACENCIES
 
     def get_graphlet_adjacency(self, graphlet):
