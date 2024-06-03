@@ -1,17 +1,17 @@
 import gradco as gradco
-import numpy as np
 import networkx as nx
 from scipy.sparse import csr_array
 
 
 def main():
 
+    # generate a random graph
     n = 1000
     m = 10
     G = nx.barabasi_albert_graph(n, m, seed=42)
     A = nx.to_scipy_sparse_array(G)
 
-    # create our counter object
+    # create GRADCO counter object
     counter = gradco.Counter(A)
 
     # count the orbit adjacency matrices

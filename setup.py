@@ -27,12 +27,16 @@ def main():
     # c++2b => 23 working draft
     # gnu++2b => working draft with GNU extensions
 
+    long_description = open("pypi_description.rst").read()
+
     setup(name="gradco",  # Name of the package. Used at install: pip install gradco
-          version="0.1.3",
-          description="GRaphled-orbit ADjacency COunter (GRADCO).",
+          version="0.1.5",
+          description="GRaphlet-orbit ADjacency COunter (GRADCO).",
           author="Sam Windels",
           author_email="sam.windels@gmail.com",
           ext_modules=[c_module],
+          data_files=['pypi_description.rst'],
+          long_description=long_description,
           # Refers to gradco.py. Name of the module. Used as: import gradco
           py_modules=["gradco"],
           python_requires='>=3.10',
