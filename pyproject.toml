@@ -1,5 +1,7 @@
+# Documentation: https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
+
 [build-system]
-requires = ["setuptools>=61.0", "wheel>=0.31.0", "twine>=1.11.0", "Cython", "numpy>=1.26.4"]
+requires = ["setuptools>=61.0", "wheel>=0.31.0", "twine>=1.11.0", "cython", "numpy>=1.26.4,<2.0"]
 build-backend = "setuptools.build_meta"
 
 # [project]

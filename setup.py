@@ -30,7 +30,7 @@ def main():
     long_description = open("pypi_description.rst").read()
 
     setup(name="gradco",  # Name of the package. Used at install: pip install gradco
-          version="0.1.5",
+          version="0.1.6",
           description="GRaphlet-orbit ADjacency COunter (GRADCO).",
           author="Sam Windels",
           author_email="sam.windels@gmail.com",
