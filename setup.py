@@ -29,7 +29,7 @@ def main():
 
     setup(
         ext_modules=[c_module],
-        py_modules=["gradco"],
+        py_modules=["gradco", "tests"],
     )
 
 

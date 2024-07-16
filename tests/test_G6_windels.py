@@ -1,4 +1,4 @@
-from test.test_helper import matches_count_windels
+from tests.test_helper import matches_count_windels
 
 
 # def test_0():

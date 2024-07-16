@@ -1,4 +1,4 @@
-from test.test_helper import matches_orca
+from tests.test_helper import matches_orca
 
 
 # def test_0():
@@ -7167,5 +7167,3 @@ def test_1023():
     triu = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     exp_counts = [12.0, 12.0, 12.0, 12.0, 12.0]
     assert matches_orca(triu, 1, 3, 3, exp_counts)
-
-
