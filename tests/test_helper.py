@@ -7,7 +7,7 @@ import inspect
 from scipy.sparse import csr_array, csr_matrix
 
 
-DEBUG = True
+DEBUG = False
 # DEBUG = False
 
 
@@ -36,7 +36,7 @@ def matches_count_windels(triu, graphlet, expected_counts):
     # print(triu_counts)
     outcome = np.array_equal(triu_counts, expected_counts)
     if outcome:
-        if np.sum(triu_counts<0)>0:
+        if np.sum(triu_counts < 0) > 0:
             outcome = False
 
     if DEBUG and outcome is False:
@@ -109,7 +109,7 @@ def matches_orca(triu, o1, o2, hop, expected_counts):
     counts = np.sum(A_orbit, axis=1)
     outcome = np.array_equal(counts, expected_counts)
     if outcome:
-        if np.sum(np.asarray(A_orbit)<0)>0:
+        if np.sum(np.asarray(A_orbit) < 0) > 0:
             print('CONTAINS NEGATIVES')
             outcome = False
 
