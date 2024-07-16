@@ -1,20 +1,28 @@
-# Documentation: https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
+# Documentation: 
+#    - https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
+#    - https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel>=0.31.0", "twine>=1.11.0", "cython", "numpy>=1.26.4,<2.0"]
+requires = ["setuptools>=61.0", "wheel>=0.31.0", "twine>=1.11.0", "cython", 
+	    "numpy>=1.26.4,<2.0"]
 build-backend = "setuptools.build_meta"
 
-# [project]
-# name = "Gradco"
-# version = "0.0.1"
-# authors = [
-#   { name="Sam F. L. Windels", email="sam.windels@gmail.com" },
-# ]
-# description = "Counts Graphlet Adjacency matrices"
-# readme = "README.md"
-# requires-python = ">=3.10"
-# classifiers = [
-#     "Programming Language :: Python :: 3",
-#     "License :: OSI Approved :: MIT License",
-#     "Operating System :: OS Independent",
-# ]
+[project]
+name = "gradco" # Name in pypi: pip install gradco
+version="0.1.6"
+description="GRaphlet-orbit ADjacency COunter (GRADCO)."
+readme = "README.rst"
+requires-python='>=3.10'
+dependencies = [
+    "scipy",
+    "numpy>=1.26.4,<2.0"
+]
+authors = [{name = "Sam F. L. Windels", email = "sam.windels@bsc.es"}]
+maintainers = [{name = "Sam F. L. Windels", email = "sam.windels@bsc.es"}]
+license = {file = "LICENSE"}
+keywords = ["graphlets", "motifs", "network analysis", "graph",
+	    "bioinformatics", "systems biology"]
+
+[tool.cibuildwheel]
+test-requires = ["pytest", "matplotlib"]
+test-command = "pytest {project}/tests"
