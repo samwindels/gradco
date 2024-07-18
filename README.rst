@@ -6,6 +6,11 @@ GRaphlet-orbit ADjacency COunter (GRADCO)
     :target: http://badge.fury.io/py/gradco
 .. image:: https://img.shields.io/pypi/dm/gradco.svg?label=PyPI%20downloads)
     :target: https://pypi.org/project/gradco/
+.. image:: https://img.shields.io/badge/DOI-10.48550/arXiv.2405.14194-blue
+    :target: https://doi.org/10.48550/arXiv.2405.14194
+
+[![Nature Paper](https://img.shields.io/badge/DOI-10.1038%2Fs41586--020--2649--2-blue)](
+)
 
 
 
