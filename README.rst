@@ -77,6 +77,7 @@ Roadmap
 -------
 
 We forsee the following steps to take GRADCO from alpha to full release:
+
     - set up a GitHub workflow to automatically compile and test the code
     - set up a GitHub workflow to automatically deploy the code to PyPI
     - add windows to the precompiled wheels
@@ -85,6 +86,7 @@ We forsee the following steps to take GRADCO from alpha to full release:
     - upgrade to numpy 2.0
 
 In the future, we plan to add the following features:
+
     - speed up the counter
     - reduce the memory footprint
     - add larger graphlets
