@@ -84,6 +84,7 @@ We forsee the following steps to take GRADCO from alpha to full release:
     - add a bug report template
     - add docs
     - upgrade to numpy 2.0
+    - sync versioning and pypi versioning
 
 In the future, we plan to add the following features:
 
