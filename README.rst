@@ -2,9 +2,12 @@
 GRaphlet-orbit ADjacency COunter (GRADCO)
 =========================================
 
-.. image:: https://badge.fury.io/py/gradco.png
+.. image:: https://badge.fury.io/py/gradco.svg
     :target: http://badge.fury.io/py/gradco
-
+.. image:: https://img.shields.io/pypi/dm/gradco.svg?label=PyPI%20downloads)
+    :target: https://pypistats.org/packages/gradco
+.. image:: https://img.shields.io/badge/DOI-10.48550/arXiv.2405.14194-blue
+    :target: https://doi.org/10.48550/arXiv.2405.14194
 
 This is our alpha-version of GRADCO, our general purpose counter that can
 output graphlet degree vectors (GDVs), edge graphlet degree vectors, graphlet
