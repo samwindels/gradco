@@ -22,6 +22,13 @@ license = {file = "LICENSE"}
 keywords = ["graphlets", "motifs", "network analysis", "graph",
 	    "bioinformatics", "systems biology"]
 
+[project.urls]
+# Homepage = "https://example.com"
+# Documentation = "https://readthedocs.org"
+repository = "https://github.com/samwindels/gradco"
+# Issues = "https://github.com/me/spam/issues"
+# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
 [tool.cibuildwheel]
 test-requires = ["pytest", "matplotlib", "networkx", "numpy==1.26.0"] # testing + debugging 
 test-command = "pytest {project}/tests"
