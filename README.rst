@@ -9,6 +9,10 @@ GRaphlet-orbit ADjacency COunter (GRADCO)
 .. image:: https://img.shields.io/badge/DOI-10.48550/arXiv.2405.14194-blue
     :target: https://doi.org/10.48550/arXiv.2405.14194
 
+------------
+Introduction
+------------
+
 This is our alpha-version of GRADCO, our general purpose counter that can
 output graphlet degree vectors (GDVs), edge graphlet degree vectors, graphlet
 adjacency matrices, edge orbit adjacency matrices and node orbit adjacency
@@ -21,6 +25,10 @@ within graphlets). We mathematically prove random walks miss various orbit
 adjacencies and illustrate that these orbit adjacencies have real-world value
 in a multiclass label prediction setting. If you use GRADCO, please cite our
 paper.
+
+-----------------
+Quick start guide
+-----------------
 
 We are working on improving the documentation. For now, we provide the example
 code below to illustrate how to use our counter, GRADCO.
@@ -63,4 +71,23 @@ code below to illustrate how to use our counter, GRADCO.
         # get the edge orbit adjacency matrices
         for e, A in enumerate(counter.generate_edge_orbit_adjacencies()):
             print("EA:", e)
+
+-------
+Roadmap
+-------
+
+We forsee the following steps to take GRADCO from alpha to full release:
+- set up a GitHub workflow to automatically compile and test the code
+- set up a GitHub workflow to automatically deploy the code to PyPI
+- add windows to the precompiled wheels
+- add a bug report template
+- add docs
+- upgrade to numpy 2.0
+
+In the future, we plan to add the following features:
+- speed up the counter
+- reduce the memory footprint
+- add larger graphlets
+
+The best way to support our project is to cite our paper. 
 
