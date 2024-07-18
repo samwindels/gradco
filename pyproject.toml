@@ -14,7 +14,7 @@ readme = "README.rst"
 requires-python='>=3.10'
 dependencies = [
     "scipy",
-    "numpy>=1.21.0,<2.0"
+    "numpy>=1.26.0,<2.0"
 ]
 authors = [{name = "Sam F. L. Windels", email = "sam.windels@bsc.es"}]
 maintainers = [{name = "Sam F. L. Windels", email = "sam.windels@bsc.es"}]
@@ -23,5 +23,5 @@ keywords = ["graphlets", "motifs", "network analysis", "graph",
 	    "bioinformatics", "systems biology"]
 
 [tool.cibuildwheel]
-test-requires = ["pytest", "matplotlib", "networkx"] # testing + debugging 
+test-requires = ["pytest", "matplotlib", "networkx", "numpy==1.26.0"] # testing + debugging 
 test-command = "pytest {project}/tests"
