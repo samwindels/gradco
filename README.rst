@@ -1,18 +1,63 @@
-=============================
-Graphlet Adjacency Counter
-=============================
+=========================================
+GRaphlet-orbit ADjacency COunter (GRADCO)
+=========================================
 
 .. image:: https://badge.fury.io/py/gradco.png
     :target: http://badge.fury.io/py/gradco
 
-.. image:: https://travis-ci.org/samwindels/gradco.png?branch=master
-    :target: https://travis-ci.org/samwindels/gradco
 
-Python package to count graphlet adjacencies for graphlets up to four nodes.
+This is our alpha-version of GRADCO, our general purpose counter that can
+output graphlet degree vectors (GDVs), edge graphlet degree vectors, graphlet
+adjacency matrices, edge orbit adjacency matrices and node orbit adjacency
+matrices. GRADCO is part of our submission 'Graphlets correct for the
+topological information missed by random walks' (`DOI:10.48550/arXiv.2405.14194
+<https://doi.org/10.48550/arXiv.2405.14194>`_), in which we formally define the
+topological information that is implicitly captured by random walks in terms of
+orbit adjacencies (i.e., the co-occurence of nodes on symmetric positions
+within graphlets). We mathematically prove random walks miss various orbit
+adjacencies and illustrate that these orbit adjacencies have real-world value
+in a multiclass label prediction setting. If you use GRADCO, please cite our
+paper.
 
+We are working on improving the documentation. For now, we provide the example
+code below to illustrate how to use our counter, GRADCO.
 
-Features
---------
+.. code-block:: python
 
-* TODO
+    import gradco as gradco
+    import networkx as nx
+    from scipy.sparse import csr_array
+    
+    
+    def main():
+    
+        # generate a random graph
+        n = 1000
+        m = 10
+        G = nx.barabasi_albert_graph(n, m, seed=42)
+        A = nx.to_scipy_sparse_array(G)
+    
+        # create GRADCO counter object
+        counter = gradco.Counter(A)
+    
+        # count the orbit adjacency matrices
+        counter.count()
+    
+        # iterate over the orbit adjacencies
+        for hop, o1, o2, A in counter.generate_orbit_adjacencies():
+            print("O:", hop, o1, o2)
+    
+        # iterate the graphlet adjacencies
+        for graphlet, A in enumerate(counter.generate_graphlet_adjacencies()):
+            print("GA:", graphlet)
+    
+        # get the graphlet degree vectors
+        GDV = counter.get_GDVs()
+    
+        # get the edge graphlet degree vectors
+        eGDV = counter.get_edge_GDVs()
+    
+        # get the edge orbit adjacency matrices
+        for e, A in enumerate(counter.generate_edge_orbit_adjacencies()):
+            print("EA:", e)
 
