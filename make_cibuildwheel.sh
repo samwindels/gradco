@@ -13,14 +13,14 @@
 # build wheels
 
 # MACOS
-# pipx run cibuildwheel --only "cp310-macosx_arm64"
-# pipx run cibuildwheel --only "cp311-macosx_arm64"
+pipx run cibuildwheel --only "cp310-macosx_arm64"
+pipx run cibuildwheel --only "cp311-macosx_arm64"
 pipx run cibuildwheel --only "cp312-macosx_arm64"
 # pipx run cibuildwheel --only "cp313-macosx_arm64" # FAILS: numpy compilation
 
-# pipx run cibuildwheel --only "cp310-macosx_x86_64"
-# pipx run cibuildwheel --only "cp311-macosx_x86_64"
-# pipx run cibuildwheel --only "cp312-macosx_x86_64"
+pipx run cibuildwheel --only "cp310-macosx_x86_64"
+pipx run cibuildwheel --only "cp311-macosx_x86_64"
+pipx run cibuildwheel --only "cp312-macosx_x86_64"
 # pipx run cibuildwheel --only "cp313-macosx_x86_64" # FAILS: numpy compilation
 
 # pipx run cibuildwheel --only "cp310-macosx_universal2"
@@ -34,9 +34,9 @@ pipx run cibuildwheel --only "cp312-macosx_arm64"
 
 # MANYLINUX (glibc)
 
-# pipx run cibuildwheel --only "cp310-manylinux_x86_64"
-# pipx run cibuildwheel --only "cp311-manylinux_x86_64"
-# pipx run cibuildwheel --only "cp312-manylinux_x86_64"
+pipx run cibuildwheel --only "cp310-manylinux_x86_64"
+pipx run cibuildwheel --only "cp311-manylinux_x86_64"
+pipx run cibuildwheel --only "cp312-manylinux_x86_64"
 # pipx run cibuildwheel --only "cp313-manylinux_x86_64"  # FAILS: does not show up in wheelhouse
 # pipx run cibuildwheel --only "cp313t-manylinux_x86_64" # FAILS: gradco does not compile
 
@@ -48,9 +48,9 @@ pipx run cibuildwheel --only "cp312-macosx_arm64"
 
 # pipx run cibuildwheel --only "pp310-manylinux_x86_64" 
 
-# pipx run cibuildwheel --only "cp310-manylinux_aarch64"
-# pipx run cibuildwheel --only "cp311-manylinux_aarch64"
-# pipx run cibuildwheel --only "cp312-manylinux_aarch64"
+pipx run cibuildwheel --only "cp310-manylinux_aarch64"
+pipx run cibuildwheel --only "cp311-manylinux_aarch64"
+pipx run cibuildwheel --only "cp312-manylinux_aarch64"
 # pipx run cibuildwheel --only "cp313-manylinux_aarch64"  # not tested 
 # pipx run cibuildwheel --only "cp313t-manylinux_aarch64" # not tested
 
