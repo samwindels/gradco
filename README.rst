@@ -2,8 +2,11 @@
 GRaphlet-orbit ADjacency COunter (GRADCO)
 =========================================
 
-.. image:: https://badge.fury.io/py/gradco.png
+.. image:: https://badge.fury.io/py/gradco.svg
     :target: http://badge.fury.io/py/gradco
+.. image:: https://img.shields.io/pypi/dm/gradco.svg?label=PyPI%20downloads)
+    :target: https://pypi.org/project/gradco/
+
 
 
 This is our alpha-version of GRADCO, our general purpose counter that can
