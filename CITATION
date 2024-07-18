@@ -1,0 +1,9 @@
+@misc{windels2024graphlets,
+      title={Graphlets correct for the topological information missed by random walks}, 
+      author={Sam F. L. Windels and No{\"e}l Malod-Dognin and Nata{\v{s}}a Pr{\v{z}}ulj},
+      year={2024},
+      eprint={2405.14194},
+      archivePrefix={arXiv},
+      primaryClass={cs.SI},
+      url={https://arxiv.org/abs/2405.14194}, 
+}
