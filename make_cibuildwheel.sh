@@ -15,7 +15,7 @@
 # MACOS
 # pipx run cibuildwheel --only "cp310-macosx_arm64"
 # pipx run cibuildwheel --only "cp311-macosx_arm64"
-# pipx run cibuildwheel --only "cp312-macosx_arm64"
+pipx run cibuildwheel --only "cp312-macosx_arm64"
 # pipx run cibuildwheel --only "cp313-macosx_arm64" # FAILS: numpy compilation
 
 # pipx run cibuildwheel --only "cp310-macosx_x86_64"
@@ -106,7 +106,7 @@
 
 # WINDOWS
 # pipx run cibuildwheel --only "cp310-win32"
-pipx run cibuildwheel --only "cp310-win_amd64"
+# pipx run cibuildwheel --only "cp310-win_amd64"
 # pipx run cibuildwheel --only "cp311-win_32"
 # pipx run cibuildwheel --only "cp311-win_amd64"
 # pipx run cibuildwheel --only "cp312-win32"
