@@ -9,11 +9,6 @@ GRaphlet-orbit ADjacency COunter (GRADCO)
 .. image:: https://img.shields.io/badge/DOI-10.48550/arXiv.2405.14194-blue
     :target: https://doi.org/10.48550/arXiv.2405.14194
 
-[![Nature Paper](https://img.shields.io/badge/DOI-10.1038%2Fs41586--020--2649--2-blue)](
-)
-
-
-
 This is our alpha-version of GRADCO, our general purpose counter that can
 output graphlet degree vectors (GDVs), edge graphlet degree vectors, graphlet
 adjacency matrices, edge orbit adjacency matrices and node orbit adjacency
