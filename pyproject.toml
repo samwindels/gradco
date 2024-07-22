@@ -25,7 +25,7 @@ keywords = ["graphlets", "motifs", "network analysis", "graph",
 [project.urls]
 # Homepage = "https://example.com"
 # Documentation = "https://readthedocs.org"
-Source = "https://github.com/samwindels/gradco"
+source = "https://github.com/samwindels/gradco"
 # Issues = "https://github.com/me/spam/issues"
 # Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
