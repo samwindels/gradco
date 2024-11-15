@@ -108,30 +108,30 @@ class Counter(object):
 
     def __compute_A4_4(self):
 
-        print('Computing A4_4')
-        with time_it():
+        # print('Computing A4_4')
+        # with time_it():
             # float matmul is more optimised in BLAS than int matmul
-            A4_4 = self.__to_float_array(
+        A4_4 = self.__to_float_array(
                 self.get_orbit_adjacency(2, 1, 1).toarray())
-            A4_4 = A4_4 @ self.__to_float_array(
+        A4_4 = A4_4 @ self.__to_float_array(
                 self.get_orbit_adjacency(1, 0, 0).toarray())
-            A4_4 -= self.__to_float_array(
+        A4_4 -= self.__to_float_array(
                 self.get_orbit_adjacency(1, 8, 8).toarray())
-            A4_4 -= self.__to_float_array(
+        A4_4 -= self.__to_float_array(
                 self.get_orbit_adjacency(1, 12, 13).toarray())
-            A4_4 -= self.__to_float_array(
+        A4_4 -= self.__to_float_array(
                 self.get_orbit_adjacency(2, 9, 10).toarray())
-            A4_4 -= self.__to_float_array(
+        A4_4 -= self.__to_float_array(
                 self.get_orbit_adjacency(1, 1, 2).toarray())
-            A4_4 = A4_4[self.__order, :]
-            A4_4 = A4_4[:, self.__order]
-            A4_4 = A4_4.astype(np.int32, order='C')
+        A4_4 = A4_4[self.__order, :]
+        A4_4 = A4_4[:, self.__order]
+        A4_4 = A4_4.astype(np.int32, order='C')
 
-            c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
-            rows, cols = A4_4.nonzero()
-            vals = A4_4[rows, cols]
-            if len(rows) > 0:
-                self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
+        c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+        rows, cols = A4_4.nonzero()
+        vals = A4_4[rows, cols]
+        if len(rows) > 0:
+            self.orbit_adjacencies[c_index] = np.vstack((rows, cols, vals))
 
     # GRAPHLET ADJACENCIES
 
