@@ -28,8 +28,8 @@ void __print_execution_time(std::chrono::system_clock::time_point start_time,
     std::chrono::seconds remaining_seconds = duration - minutes;
 
     // Output the duration in minutes and seconds
-    std::cout << "Execution Time: " << minutes.count() << " minutes and "
-              << remaining_seconds.count() << " seconds" << std::endl;
+    /* std::cout << "Execution Time: " << minutes.count() << " minutes and " */
+    /*           << remaining_seconds.count() << " seconds" << std::endl; */
 }
 
 // SINGLE-HOP EQUATIONS, path-based
@@ -178,7 +178,7 @@ void __count_four_node_path_based(DirectedGraph& G,
 				  DenseMatrix& A4_5_bis, 
 				  SymmetricDenseMatrix& A5_5){
 	int a, b, c, d;
-	std::cout<<"BRUTE FORCE FOUR NODE PATHS"<<std::endl;
+	/* std::cout<<"BRUTE FORCE FOUR NODE PATHS"<<std::endl; */
 	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point start_time = init_time;
 	// brute force old	
@@ -318,7 +318,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 
 	/* std::cout<<"contiguous"<<PyArray_IS_C_CONTIGUOUS(rows)<<std::endl; */
 
-	std::cout<<"BUILDING DIGRAPH"<<std::endl;
+	/* std::cout<<"BUILDING DIGRAPH"<<std::endl; */
 	DirectedGraph G = DirectedGraph(n, rows, cols);
 	std::chrono::system_clock::time_point init_time = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point start_time = init_time;
@@ -333,7 +333,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	int a, b, c, d;
 	bool bc_connected;
 
-	std::cout<<"BRUTE FORCE"<<std::endl;
+	/* std::cout<<"BRUTE FORCE"<<std::endl; */
 	for (a = 0; a < n; a++){
 		for (int i=0; i<G.adj_out[a].size(); i++){
 			b = G.adj_out[a][i];
@@ -441,7 +441,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
 	
-	std::cout<<"COMPUTING REDUNDANCY MATRICES"<<std::endl;
+	/* std::cout<<"COMPUTING REDUNDANCY MATRICES"<<std::endl; */
 	// INITIALIZE REDUNDANCY MATRICES
 	/* SparseMatrix A4_5     = SparseMatrix(n);  // 4-node path, outside orbit and neighbour */
 	DenseMatrix A4_5     = DenseMatrix(n);  // 4-node path, outside orbit and neighbour
@@ -547,7 +547,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
 
-	std::cout<<"COMPUTING ADJACENCY MATRICES"<<std::endl;
+	/* std::cout<<"COMPUTING ADJACENCY MATRICES"<<std::endl; */
 	/* // ordering matters !!! */  	
 	// 1. dependend on brute force matrices
 	A12_13.subtract_matrix_multiple(A14_14, 2);
@@ -575,7 +575,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
 	start_time = end_time;
 
 	//FORMAT RESULTS
-	std::cout<<"CONVERTING TO NUMPY ARRAYS"<<std::endl;
+	/* std::cout<<"CONVERTING TO NUMPY ARRAYS"<<std::endl; */
 	PyObject* A1_1_numpy     = A1_1.to_numpy();
 	PyObject* A1_2_numpy     = A1_2.to_numpy();
 	PyObject* A3_3_numpy     = A3_3.to_numpy();
@@ -632,7 +632,7 @@ static PyObject *gradco_c_count(PyObject *self, PyObject *args) {
     	end_time = std::chrono::system_clock::now();
 	__print_execution_time(start_time, end_time);
 	start_time = end_time;
-	std::cout<<"TOTAL TIME"<<std::endl;
+	/* std::cout<<"TOTAL TIME"<<std::endl; */
 	__print_execution_time(init_time, end_time);
 
 	
