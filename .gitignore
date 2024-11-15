@@ -1,5 +1,7 @@
 ## macos
 
+wheelhouse/*
+
 # Logs and databases #
 ######################
 *.log
