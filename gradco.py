@@ -431,3 +431,11 @@ class Counter(object):
                 return A
             else:
                 return A.T
+
+    def __del__(self):
+        if self.orbit_adjacencies is not None:
+            for A in self.orbit_adjacencies:
+                del A
+            self.orbit_adjacencies.clear()
+
+
