@@ -97,7 +97,8 @@ class Counter(object):
     # CALL C ROUTINES
     def count(self, compute_A4_4=None):
 
-        compute_A4_4 = compute_A4_4 or True
+        if compute_A4_4 is None:
+            compute_A4_4 = True
 
         # A = self.__A.toarray()
         rows, cols = self.__A.nonzero()
