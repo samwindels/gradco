@@ -95,13 +95,20 @@ class Counter(object):
         return A
 
     # CALL C ROUTINES
-    def count(self):
+    def count(self, compute_A4_4=None):
+
+        compute_A4_4 = compute_A4_4 or True
+
         # A = self.__A.toarray()
         rows, cols = self.__A.nonzero()
         if len(rows) > 0:
             self.orbit_adjacencies = list(
                 gradco_c_routines.gradco_c_count(rows, cols, self.__n))
-            self.__compute_A4_4()
+            if compute_A4_4:
+                self.__compute_A4_4()
+            else:
+                c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+                self.orbit_adjacencies[c_index] = None
 
     def __to_float_array(self, A):
         return A.astype(np.float32, order='C')
@@ -168,15 +175,19 @@ class Counter(object):
 
     def generate_graphlet_adjacencies(self):
 
-        yield self.__get_graphlet_adjacency_0()
-        yield self.__get_graphlet_adjacency_1()
-        yield self.__get_graphlet_adjacency_2()
-        yield self.__get_graphlet_adjacency_3()
-        yield self.__get_graphlet_adjacency_4()
-        yield self.__get_graphlet_adjacency_5()
-        yield self.__get_graphlet_adjacency_6()
-        yield self.__get_graphlet_adjacency_7()
-        yield self.__get_graphlet_adjacency_8()
+        yield 0, self.__get_graphlet_adjacency_0()
+        yield 1, self.__get_graphlet_adjacency_1()
+        yield 2, self.__get_graphlet_adjacency_2()
+
+        c_index = self.__ORBIT_ADJ_2_C_INDEX[3, 4, 4]
+        if self.orbit_adjacencies[c_index] is not None:
+            yield 3, self.__get_graphlet_adjacency_3()
+
+        yield 4, self.__get_graphlet_adjacency_4()
+        yield 5, self.__get_graphlet_adjacency_5()
+        yield 6, self.__get_graphlet_adjacency_6()
+        yield 7, self.__get_graphlet_adjacency_7()
+        yield 8, self.__get_graphlet_adjacency_8()
 
     def __get_graphlet_adjacency_0(self):
         A = self.__apply_reverse_ordering(self.__A)
@@ -238,10 +249,11 @@ class Counter(object):
 
         for (_hop, o1, o2), c_index in self.__ORBIT_ADJ_2_C_INDEX.items():
             if hop is None or _hop == hop:
-                A = self.__get_orbit_adjacency_from_c_index(c_index)
-                yield _hop, o1, o2, A
-                if o1 != o2:
-                    yield _hop, o2, o1, A.T
+                if self.orbit_adjacencies[c_index] is not None:
+                    A = self.__get_orbit_adjacency_from_c_index(c_index)
+                    yield _hop, o1, o2, A
+                    if o1 != o2:
+                        yield _hop, o2, o1, A.T
 
     def generate_edge_orbit_adjacencies(self):
         """ Generate all edge orbit adjacencies.
